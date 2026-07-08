@@ -4,7 +4,7 @@ Web y gestor de contenidos de la **Pizzería Voy Volando** (C. Cristóbal Colón
 
 - **Web pública** (`/`): one-page con animaciones de scroll (GSAP), carta con precios y filtro de
   alérgenos, galería, pizza del mes, reseñas de Google y contacto.
-- **Panel de admin** (`/admin.html`): edita carta, galería (con optimización automática de imagen),
+- **Panel de admin** (`/admin`): edita carta, galería (con optimización automática de imagen),
   pizza del mes, textos del hero/historia, contacto y horarios. Todo se publica al instante, sin
   redeploy.
 
@@ -23,7 +23,7 @@ pnpm dev               # desarrollo (recarga con --watch)
 pnpm start             # producción
 ```
 
-- Web: http://localhost:3000 · Admin: http://localhost:3000/admin.html
+- Web: http://localhost:3000 · Admin: http://localhost:3000/admin
 - Primera vez sin `ADMIN_PASSWORD` en `.env`: la contraseña es `admin1234` — cámbiala desde el
   panel (Configuración) en el primer uso.
 
@@ -56,7 +56,7 @@ src/
                        monthly-special, reviews, settings
 tests/api.test.js      Tests de integración contra la app real (datos en tmp)
 public/index.html      Web pública (+ css/main.css, js/main.js)
-public/admin.html      Panel de administración (+ css/admin.css, js/admin.js)
+public/admin.html      Panel de administración, servido en /admin (+ css/admin.css, js/admin.js)
 public/assets/gallery/ Fotos subidas (optimizadas a WebP)
 data/*.json            Contenido editable (carta, config, pizza del mes, orden de galería)
 data/auth.json         Hash de contraseña (gitignored, se autogenera)

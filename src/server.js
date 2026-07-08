@@ -3,7 +3,7 @@ const { createApp } = require('./app');
 
 const server = createApp().listen(PORT, () => {
   console.log(`🍕  Voy Volando · http://localhost:${PORT}`);
-  console.log(`🔧  Admin panel  · http://localhost:${PORT}/admin.html`);
+  console.log(`🔧  Admin panel  · http://localhost:${PORT}/admin`);
 });
 
 // Graceful shutdown: Railway sends SIGTERM on redeploy — finish in-flight

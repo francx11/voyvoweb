@@ -1,5 +1,6 @@
 // Express app assembly. Exported as a factory so the tests can build an
 // app without opening a port; src/server.js is the real entry point.
+const path = require('path');
 const express = require('express');
 const { PROD, PUBLIC_DIR } = require('./config');
 const { initAuth } = require('./services/passwords');
@@ -16,6 +17,13 @@ function createApp() {
 
   app.use(securityHeaders);
   app.use(express.json({ limit: '1mb' }));
+
+  // Clean URL for the admin panel: registered before static so
+  // express.static never serves admin.html directly. Old links/bookmarks
+  // to admin.html keep working via redirect instead of breaking outright.
+  app.get('/admin', (_req, res) => res.sendFile(path.join(PUBLIC_DIR, 'admin.html')));
+  app.get('/admin.html', (_req, res) => res.redirect(301, '/admin'));
+
   app.use(express.static(PUBLIC_DIR)); // only public/ — never data/ or src/
 
   app.use('/api', require('./routes/auth'));
