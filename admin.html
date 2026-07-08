@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Voy Volando</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #C41E3A; --red-d: #9b1830;
+      --gold: #C9A84C;
+      --bg: #0d0d0d; --bg2: #161616; --bg3: #1e1e1e; --bg4: #252525;
+      --border: rgba(255,255,255,0.08);
+      --text: #f0ece4; --muted: rgba(240,236,228,0.5);
+      --green: #22c55e; --orange: #f59e0b;
+      --font: 'Inter', system-ui, sans-serif;
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── LOGIN ───────────────────────────── */
+    #login-screen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(ellipse at 50% 0%, #1a0308 0%, var(--bg) 70%);
+    }
+    .login-box {
+      width: 100%; max-width: 380px; padding: 2.5rem;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 1rem; text-align: center;
+    }
+    .login-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; margin-bottom: 0.4rem; }
+    .login-logo em { font-style: italic; color: var(--red); }
+    .login-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 2rem; letter-spacing: 0.05em; }
+    .login-box input {
+      width: 100%; padding: 0.85rem 1rem; margin-bottom: 1rem;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 0.5rem; color: var(--text); font-family: var(--font);
+      font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+    }
+    .login-box input:focus { border-color: var(--red); }
+    .login-error { color: #f87171; font-size: 0.82rem; margin-bottom: 0.8rem; min-height: 1.2em; }
+
+    /* ── LAYOUT ──────────────────────────── */
+    #app { display: none; min-height: 100vh; }
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
+      background: var(--bg2); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; z-index: 10;
+    }
+    .sidebar-logo {
+      padding: 1.5rem 1.2rem 1rem;
+      font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900;
+      border-bottom: 1px solid var(--border); color: var(--text);
+    }
+    .sidebar-logo em { font-style: italic; color: var(--red); }
+    .sidebar-logo small { display: block; font-family: var(--font); font-size: 0.68rem; color: var(--muted); font-weight: 400; margin-top: 0.2rem; letter-spacing: 0.05em; }
+    .sidebar-nav { flex: 1; padding: 0.8rem 0; overflow-y: auto; }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 1.2rem; cursor: pointer;
+      font-size: 0.85rem; font-weight: 500; color: var(--muted);
+      transition: color 0.2s, background 0.2s; border-radius: 0;
+    }
+    .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .nav-item.active { color: var(--text); background: rgba(196,30,58,0.12); border-right: 2px solid var(--red); }
+    .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .sidebar-bottom { padding: 1rem 1.2rem; border-top: 1px solid var(--border); }
+    .btn-logout {
+      width: 100%; padding: 0.65rem; background: transparent;
+      border: 1px solid var(--border); border-radius: 0.5rem;
+      color: var(--muted); font-family: var(--font); font-size: 0.8rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    .main-content { margin-left: 220px; padding: 2rem 2.5rem; min-height: 100vh; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── TOP BAR ─────────────────────────── */
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; }
+    .page-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* ── BUTTONS ─────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.6rem 1.2rem; border-radius: 0.5rem; cursor: pointer;
+      font-family: var(--font); font-size: 0.82rem; font-weight: 600;
+      border: none; transition: all 0.2s; text-decoration: none;
+    }
+    .btn svg { width: 14px; height: 14px; }
+    .btn-red   { background: var(--red); color: #fff; }
+    .btn-red:hover { background: var(--red-d); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .btn-danger { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+
+    /* ── TABLES ──────────────────────────── */
+    .table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { padding: 0.75rem 1rem; text-align: left; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: var(--bg3); border-bottom: 1px solid var(--border); }
+    td { padding: 0.85rem 1rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .pill {
+      display: inline-block; padding: 0.2rem 0.6rem; border-radius: 2rem;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.05em;
+      border: 1px solid currentColor; opacity: 0.85;
+    }
+    .toggle {
+      width: 36px; height: 20px; border-radius: 10px;
+      background: var(--bg4); border: 1px solid var(--border);
+      cursor: pointer; position: relative; transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .toggle.on { background: var(--green); border-color: var(--green); }
+    .toggle::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 14px; height: 14px; border-radius: 50%; background: #fff;
+      transition: transform 0.2s;
+    }
+    .toggle.on::after { transform: translateX(16px); }
+
+    /* ── CARDS ───────────────────────────── */
+    .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.5rem; }
+    .card + .card { margin-top: 1rem; }
+
+    /* ── FORMS ───────────────────────────── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-field label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .form-field input, .form-field textarea, .form-field select {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 0.5rem; padding: 0.7rem 0.9rem;
+      color: var(--text); font-family: var(--font); font-size: 0.88rem;
+      outline: none; transition: border-color 0.2s; resize: vertical;
+    }
+    .form-field input:focus, .form-field textarea:focus, .form-field select:focus { border-color: var(--red); }
+    .form-field select option { background: #1a1a1a; }
+    .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.2rem; }
+
+    /* ── MODAL ───────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center;
+      z-index: 100; padding: 1rem; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 1rem; padding: 1.8rem; width: 100%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 900; }
+    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.4rem; line-height: 1; padding: 0.2rem; }
+    .modal-close:hover { color: var(--text); }
+
+    /* ── GALERÍA ─────────────────────────── */
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: 0.75rem;
+      padding: 2.5rem; text-align: center; cursor: pointer;
+      transition: border-color 0.2s, background 0.2s; margin-bottom: 1.5rem;
+    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--red); background: rgba(196,30,58,0.05); }
+    .upload-zone svg { width: 36px; height: 36px; stroke: var(--muted); margin-bottom: 0.8rem; }
+    .upload-zone p { font-size: 0.88rem; color: var(--muted); }
+    .upload-zone strong { color: var(--text); }
+    #file-input { display: none; }
+
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
+    .gallery-item {
+      position: relative; border-radius: 0.5rem; overflow: hidden;
+      aspect-ratio: 1; background: var(--bg3);
+    }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .gallery-item-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+
+    /* ── RESEÑAS ─────────────────────────── */
+    .reviews-header {
+      display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 0.75rem; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem;
+    }
+    .rating-big { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+    .stars { color: #fbbf24; font-size: 1.1rem; letter-spacing: 0.05em; }
+    .review-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 0.75rem; padding: 1.2rem; margin-bottom: 0.75rem;
+    }
+    .review-meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+    .review-avatar {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .review-name { font-weight: 600; font-size: 0.88rem; }
+    .review-date { font-size: 0.75rem; color: var(--muted); }
+    .review-text { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .review-stars { color: #fbbf24; font-size: 0.85rem; margin-left: auto; }
+
+    /* ── NOTICE ──────────────────────────── */
+    .notice {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 1rem 1.2rem; border-radius: 0.5rem; font-size: 0.83rem; line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
+    .notice-info   { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #93c5fd; }
+    .notice-warn   { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: #fcd34d; }
+    .notice-success{ background: rgba(34,197,94,0.1);  border: 1px solid rgba(34,197,94,0.2);  color: #86efac; }
+    .notice svg    { width: 16px; height: 16px; flex-shrink: 0; margin-top: 0.1rem; }
+
+    /* ── TOAST ───────────────────────────── */
+    #toast {
+      position: fixed; bottom: 1.5rem; right: 1rem; z-index: 999;
+      background: var(--bg3); border: 1px solid var(--border);
+      padding: 0.8rem 1.2rem; border-radius: 0.6rem;
+      font-size: 0.85rem; transform: translateY(80px); opacity: 0;
+      transition: transform 0.3s, opacity 0.3s; pointer-events: none;
+      max-width: calc(100vw - 2rem);
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.ok   { border-color: var(--green); }
+    #toast.err  { border-color: #f87171; }
+
+    /* ── MOBILE TOP BAR ──────────────────── */
+    .mobile-topbar {
+      display: none;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+      height: 56px; background: var(--bg2); border-bottom: 1px solid var(--border);
+      align-items: center; justify-content: space-between; padding: 0 1rem;
+    }
+    .mobile-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900; }
+    .mobile-logo em { font-style: italic; color: var(--red); }
+    .btn-icon {
+      background: none; border: none; color: var(--text); cursor: pointer;
+      padding: 0.5rem; border-radius: 0.4rem; display: flex; align-items: center;
+      transition: background 0.2s; min-width: 40px; min-height: 40px; justify-content: center;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.06); }
+    .btn-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+    /* Sidebar overlay (mobile) */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; z-index: 14;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(2px);
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ── RESPONSIVE ──────────────────────── */
+    @media (max-width: 768px) {
+      /* Show mobile top bar */
+      .mobile-topbar { display: flex; }
+
+      /* Sidebar becomes a drawer */
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+        z-index: 15;
+      }
+      .sidebar.open { transform: translateX(0); box-shadow: 4px 0 40px rgba(0,0,0,0.5); }
+
+      /* Main content full-width, below top bar */
+      .main-content {
+        margin-left: 0;
+        padding: 1.2rem 1rem;
+        padding-top: calc(56px + 1.2rem);
+      }
+
+      /* Page header stacks */
+      .page-header { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+      .page-title { font-size: 1.3rem; }
+
+      /* Tabla de pizzas → tarjetas */
+      .table-wrap { background: transparent; border: none; border-radius: 0; }
+      .table-wrap table { display: block; }
+      .table-wrap thead { display: none; }
+      .table-wrap tbody { display: flex; flex-direction: column; gap: 0.75rem; }
+      .table-wrap tr {
+        display: block;
+        background: var(--bg2); border: 1px solid var(--border);
+        border-radius: 0.75rem; padding: 0.9rem 1rem; overflow: hidden;
+      }
+      .table-wrap tr:hover { background: var(--bg2); }
+      .table-wrap td {
+        display: flex; align-items: center; justify-content: space-between;
+        border: none; padding: 0.35rem 0; font-size: 0.85rem;
+      }
+      /* Pizza name row spans full width */
+      .table-wrap td:first-child {
+        border-bottom: 1px solid var(--border); padding-bottom: 0.6rem; margin-bottom: 0.2rem;
+      }
+      .table-wrap td:not(:first-child)::before {
+        content: attr(data-label);
+        font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em;
+        text-transform: uppercase; color: var(--muted); flex-shrink: 0;
+      }
+      .table-wrap td:last-child { gap: 0.5rem; justify-content: flex-end; padding-top: 0.6rem; border-top: 1px solid var(--border); margin-top: 0.2rem; }
+      /* Make buttons bigger on mobile */
+      .btn-sm { padding: 0.55rem 1rem; font-size: 0.8rem; }
+
+      /* Forms → 1 column */
+      .form-grid { grid-template-columns: 1fr !important; }
+      .form-field.full { grid-column: 1 !important; }
+      .form-row { grid-template-columns: 1fr; }
+
+      /* Modal → bottom sheet */
+      .modal-overlay { align-items: flex-end; padding: 0; }
+      .modal {
+        border-radius: 1.2rem 1.2rem 0 0;
+        max-width: 100%; width: 100%;
+        max-height: 92vh; padding: 1.5rem 1.2rem;
+      }
+
+      /* Gallery → 2 cols */
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+
+      /* Upload zone compact */
+      .upload-zone { padding: 1.5rem 1rem; }
+
+      /* Card form → full width button */
+      .form-actions { flex-direction: column; }
+      .form-actions .btn { width: 100%; justify-content: center; padding: 0.85rem; }
+
+      /* Nav items bigger touch target */
+      .nav-item { padding: 0.9rem 1.2rem; min-height: 50px; font-size: 0.9rem; }
+
+      /* Toggle bigger */
+      .toggle { width: 44px; height: 26px; border-radius: 13px; }
+      .toggle::after { width: 20px; height: 20px; top: 2px; left: 2px; }
+      .toggle.on::after { transform: translateX(18px); }
+
+      /* Login box full width on small screens */
+      .login-box { padding: 2rem 1.5rem; margin: 1rem; }
+
+      /* Config cards */
+      .card { padding: 1.2rem; }
+    }
+
+    @media (max-width: 420px) {
+      .main-content { padding: 1rem 0.75rem; padding-top: calc(56px + 1rem); }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── LOGIN ──────────────────────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Voy <em>Volando</em></div>
+    <p class="login-sub">Panel de administración</p>
+    <div id="login-error" class="login-error"></div>
+    <form id="login-form">
+      <input type="password" id="pwd" placeholder="Contraseña" autofocus>
+      <button type="submit" class="btn btn-red" style="width:100%;justify-content:center;padding:.85rem">
+        Entrar
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ─── APP ────────────────────────────────────────────────────────────────── -->
+<div id="app">
+
+  <!-- Mobile top bar -->
+  <div class="mobile-topbar">
+    <button class="btn-icon" id="btn-menu-open" aria-label="Abrir menú">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="mobile-logo">Voy <em>Volando</em></span>
+    <button class="btn-icon" id="btn-logout-mobile" aria-label="Cerrar sesión">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+
+  <!-- Sidebar overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      Voy <em>Volando</em>
+      <small>Panel de administración</small>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-page="carta">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Carta
+      </div>
+      <div class="nav-item" data-page="galeria">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Galería
+      </div>
+      <div class="nav-item" data-page="pizzames">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Pizza del Mes
+      </div>
+      <div class="nav-item" data-page="resenas">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Reseñas Google
+      </div>
+      <div class="nav-item" data-page="config">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Configuración
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <button class="btn-logout" id="btn-logout">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <!-- ── CARTA ─────────────────────────────────────────────────────── -->
+    <div class="page active" id="page-carta">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Carta</h1>
+          <p class="page-subtitle">Gestiona las pizzas visibles en la web</p>
+        </div>
+        <button class="btn btn-red" id="btn-add-pizza">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nueva pizza
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Pizza</th>
+              <th>Descripción</th>
+              <th>Tag</th>
+              <th>Visible</th>
+              <th style="text-align:right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="carta-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── GALERÍA ────────────────────────────────────────────────────── -->
+    <div class="page" id="page-galeria">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Galería</h1>
+          <p class="page-subtitle" id="gallery-count">Cargando fotos...</p>
+        </div>
+      </div>
+      <div class="upload-zone" id="upload-zone">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+        <p><strong>Arrastra fotos aquí</strong> o haz clic para seleccionar</p>
+        <p style="font-size:0.75rem;margin-top:0.4rem">JPG, PNG, WebP — máx. 15 MB por foto</p>
+        <input type="file" id="file-input" accept="image/*" multiple>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+
+    <!-- ── PIZZA DEL MES ──────────────────────────────────────────────── -->
+    <div class="page" id="page-pizzames">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Pizza del Mes</h1>
+          <p class="page-subtitle">Aparece en la web como sección destacada</p>
+        </div>
+      </div>
+      <div class="card">
+        <form id="form-pizzames">
+          <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem">
+            <div class="toggle" id="toggle-pizzames"></div>
+            <label style="font-size:0.85rem;cursor:pointer" onclick="document.getElementById('toggle-pizzames').click()">
+              Mostrar sección "Pizza del Mes" en la web
+            </label>
+          </div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Emoji / Icono</label>
+              <input type="text" id="pm-emoji" placeholder="🔥" maxlength="4">
+            </div>
+            <div class="form-field">
+              <label>Badge (etiqueta pequeña)</label>
+              <input type="text" id="pm-badge" placeholder="Edición limitada">
+            </div>
+            <div class="form-field full">
+              <label>Nombre de la pizza</label>
+              <input type="text" id="pm-nombre" placeholder="Speciale del Chef" required>
+            </div>
+            <div class="form-field full">
+              <label>Descripción</label>
+              <textarea id="pm-descripcion" rows="3" placeholder="Describe los ingredientes y lo que la hace especial este mes..."></textarea>
+            </div>
+            <div class="form-field full">
+              <label>Texto del botón CTA</label>
+              <input type="text" id="pm-cta" placeholder="Llama para pedirla">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-red">Guardar pizza del mes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ── RESEÑAS ────────────────────────────────────────────────────── -->
+    <div class="page" id="page-resenas">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Reseñas de Google</h1>
+          <p class="page-subtitle">Se muestran automáticamente en la web</p>
+        </div>
+        <button class="btn btn-ghost" id="btn-refresh-reviews">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Actualizar
+        </button>
+      </div>
+      <div id="reviews-content"></div>
+    </div>
+
+    <!-- ── CONFIGURACIÓN ──────────────────────────────────────────────── -->
+    <div class="page" id="page-config">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Configuración</h1>
+          <p class="page-subtitle">Google Reviews y seguridad</p>
+        </div>
+      </div>
+
+      <!-- Google -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Reseñas de Google Places</h3>
+        <div class="notice notice-info">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            Necesitas una <strong>Google Places API Key</strong> y el <strong>Place ID</strong> de tu negocio.<br>
+            Consigue la API key en <strong>console.cloud.google.com</strong> → APIs → Places API.<br>
+            El Place ID lo encuentras buscando tu negocio en <strong>developers.google.com/maps/documentation/places/web-service/place-id</strong>
+          </div>
+        </div>
+        <form id="form-config-google">
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Google Places API Key</label>
+              <input type="text" id="cfg-api-key" placeholder="AIzaSy...">
+            </div>
+            <div class="form-field full">
+              <label>Google Place ID</label>
+              <input type="text" id="cfg-place-id" placeholder="ChIJ...">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-red">Guardar configuración Google</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="card">
+        <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Cambiar contraseña</h3>
+        <form id="form-password">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Nueva contraseña</label>
+              <input type="password" id="cfg-pwd1" placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="form-field">
+              <label>Confirmar contraseña</label>
+              <input type="password" id="cfg-pwd2" placeholder="Repetir contraseña">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-red">Cambiar contraseña</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── MODAL PIZZA ────────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-pizza">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modal-pizza-title">Nueva pizza</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <form id="form-pizza">
+      <input type="hidden" id="pizza-id">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Emoji</label>
+          <input type="text" id="pizza-emoji" placeholder="🍕" maxlength="4">
+        </div>
+        <div class="form-field">
+          <label>Nombre *</label>
+          <input type="text" id="pizza-nombre" placeholder="Nombre de la pizza" required>
+        </div>
+        <div class="form-field full">
+          <label>Descripción</label>
+          <textarea id="pizza-desc" rows="3" placeholder="Ingredientes y descripción..."></textarea>
+        </div>
+        <div class="form-field">
+          <label>Tag (etiqueta)</label>
+          <input type="text" id="pizza-tag" placeholder="Clásica, Gourmet...">
+        </div>
+        <div class="form-field">
+          <label>Color del tag (hex)</label>
+          <input type="text" id="pizza-color" placeholder="#C41E3A">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-red">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ── TOAST ──────────────────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<script>
+  // ── State ───────────────────────────────────────────────────────────────────
+  let TOKEN = localStorage.getItem('vv_admin_token') || '';
+
+  // ── API helper ──────────────────────────────────────────────────────────────
+  async function api(method, path, body) {
+    const opts = {
+      method,
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN }
+    };
+    if (body !== undefined) opts.body = JSON.stringify(body);
+    const r = await fetch(path, opts);
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.error || r.statusText);
+    return json;
+  }
+
+  async function apiUpload(formData) {
+    const r = await fetch('/api/galeria/upload', {
+      method: 'POST',
+      headers: { 'x-admin-token': TOKEN },
+      body: formData
+    });
+    const json = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(json.error || r.statusText);
+    return json;
+  }
+
+  // ── Toast ───────────────────────────────────────────────────────────────────
+  let toastTimer;
+  function toast(msg, type = 'ok') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `show ${type}`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.className = '', 3000);
+  }
+
+  // ── LOGIN ───────────────────────────────────────────────────────────────────
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pwd = document.getElementById('pwd').value;
+    try {
+      const { token } = await api('POST', '/api/login', { password: pwd });
+      TOKEN = token;
+      localStorage.setItem('vv_admin_token', token);
+      showApp();
+    } catch (err) {
+      document.getElementById('login-error').textContent = err.message;
+    }
+  });
+
+  async function checkToken() {
+    if (!TOKEN) return;
+    try {
+      await api('GET', '/api/config');
+      showApp();
+    } catch {
+      localStorage.removeItem('vv_admin_token');
+      TOKEN = '';
+    }
+  }
+
+  // ── Mobile sidebar ──────────────────────────────────────────────────────────
+  function openSidebar()  {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebar-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('btn-menu-open').addEventListener('click', openSidebar);
+  document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
+
+  // ── Logout (both desktop and mobile buttons) ─────────────────────────────────
+  async function doLogout() {
+    try { await api('POST', '/api/logout'); } catch {}
+    TOKEN = '';
+    localStorage.removeItem('vv_admin_token');
+    closeSidebar();
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+  document.getElementById('btn-logout').addEventListener('click', doLogout);
+  document.getElementById('btn-logout-mobile').addEventListener('click', doLogout);
+
+  function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    navigate('carta');
+  }
+
+  // ── NAVIGATION ──────────────────────────────────────────────────────────────
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      navigate(item.dataset.page);
+      closeSidebar(); // cierra el drawer en móvil al seleccionar sección
+    });
+  });
+
+  function navigate(page) {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.page === page));
+    document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === `page-${page}`));
+    if (page === 'carta')    loadCarta();
+    if (page === 'galeria')  loadGaleria();
+    if (page === 'pizzames') loadPizzaMes();
+    if (page === 'resenas')  loadResenas();
+    if (page === 'config')   loadConfig();
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CARTA
+  // ═══════════════════════════════════════════════════════════════════════════
+  async function loadCarta() {
+    const pizzas = await api('GET', '/api/carta').catch(() => []);
+    const tbody  = document.getElementById('carta-tbody');
+    tbody.innerHTML = pizzas.map(p => `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:0.6rem">
+            <span style="font-size:1.4rem">${p.emoji || '🍕'}</span>
+            <strong style="font-size:0.9rem">${esc(p.nombre)}</strong>
+          </div>
+        </td>
+        <td data-label="Descripción" style="color:var(--muted);max-width:280px;font-size:0.82rem">${esc(p.descripcion || '')}</td>
+        <td data-label="Tag">
+          <span class="pill" style="color:${p.tagColor || '#C41E3A'};border-color:${p.tagColor || '#C41E3A'}">
+            ${esc(p.tag || '')}
+          </span>
+        </td>
+        <td data-label="Visible">
+          <div class="toggle ${p.activa ? 'on' : ''}" onclick="togglePizza('${p.id}', this)"></div>
+        </td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick='openEditPizza(${JSON.stringify(p)})'>Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deletePizza('${p.id}')">Borrar</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('btn-add-pizza').addEventListener('click', () => {
+    document.getElementById('modal-pizza-title').textContent = 'Nueva pizza';
+    document.getElementById('form-pizza').reset();
+    document.getElementById('pizza-id').value = '';
+    openModal();
+  });
+
+  function openEditPizza(p) {
+    document.getElementById('modal-pizza-title').textContent = 'Editar pizza';
+    document.getElementById('pizza-id').value    = p.id;
+    document.getElementById('pizza-emoji').value = p.emoji  || '';
+    document.getElementById('pizza-nombre').value= p.nombre || '';
+    document.getElementById('pizza-desc').value  = p.descripcion || '';
+    document.getElementById('pizza-tag').value   = p.tag   || '';
+    document.getElementById('pizza-color').value = p.tagColor || '#C41E3A';
+    openModal();
+  }
+
+  document.getElementById('form-pizza').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id    = document.getElementById('pizza-id').value;
+    const datos = {
+      emoji:       document.getElementById('pizza-emoji').value,
+      nombre:      document.getElementById('pizza-nombre').value,
+      descripcion: document.getElementById('pizza-desc').value,
+      tag:         document.getElementById('pizza-tag').value,
+      tagColor:    document.getElementById('pizza-color').value || '#C41E3A',
+    };
+    try {
+      if (id) await api('PUT', `/api/carta/${id}`, datos);
+      else    await api('POST', '/api/carta', datos);
+      closeModal();
+      loadCarta();
+      toast(id ? 'Pizza actualizada ✓' : 'Pizza añadida ✓');
+    } catch (err) { toast(err.message, 'err'); }
+  });
+
+  async function togglePizza(id, el) {
+    el.classList.toggle('on');
+    const activa = el.classList.contains('on');
+    await api('PUT', `/api/carta/${id}`, { activa }).catch(() => {});
+  }
+
+  async function deletePizza(id) {
+    if (!confirm('¿Borrar esta pizza?')) return;
+    await api('DELETE', `/api/carta/${id}`);
+    loadCarta();
+    toast('Pizza eliminada');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GALERÍA
+  // ═══════════════════════════════════════════════════════════════════════════
+  async function loadGaleria() {
+    const files = await api('GET', '/api/galeria').catch(() => []);
+    document.getElementById('gallery-count').textContent = `${files.length} foto${files.length !== 1 ? 's' : ''}`;
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = files.map(f => `
+      <div class="gallery-item">
+        <img src="${f.url}" alt="${f.filename}" loading="lazy">
+        <div class="gallery-item-overlay">
+          <button class="btn btn-danger btn-sm" onclick="deletePhoto('${f.filename}')">Borrar</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function deletePhoto(filename) {
+    if (!confirm('¿Borrar esta foto?')) return;
+    await api('DELETE', `/api/galeria/${filename}`);
+    loadGaleria();
+    toast('Foto eliminada');
+  }
+
+  // Upload zone
+  const uploadZone = document.getElementById('upload-zone');
+  const fileInput  = document.getElementById('file-input');
+
+  uploadZone.addEventListener('click', () => fileInput.click());
+  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    uploadFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', () => uploadFiles(fileInput.files));
+
+  async function uploadFiles(files) {
+    if (!files.length) return;
+    const fd = new FormData();
+    for (const f of files) fd.append('fotos', f);
+    toast('Subiendo fotos...');
+    try {
+      await apiUpload(fd);
+      loadGaleria();
+      toast(`${files.length} foto${files.length > 1 ? 's' : ''} subida${files.length > 1 ? 's' : ''} ✓`);
+    } catch (err) { toast(err.message, 'err'); }
+    fileInput.value = '';
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // PIZZA DEL MES
+  // ═══════════════════════════════════════════════════════════════════════════
+  async function loadPizzaMes() {
+    const pm = await api('GET', '/api/pizzames').catch(() => ({}));
+    document.getElementById('pm-emoji').value      = pm.emoji  || '';
+    document.getElementById('pm-nombre').value     = pm.nombre || '';
+    document.getElementById('pm-descripcion').value= pm.descripcion || '';
+    document.getElementById('pm-badge').value      = pm.badge  || '';
+    document.getElementById('pm-cta').value        = pm.cta    || '';
+    const toggle = document.getElementById('toggle-pizzames');
+    toggle.classList.toggle('on', !!pm.activa);
+    toggle._activa = !!pm.activa;
+  }
+
+  document.getElementById('toggle-pizzames').addEventListener('click', function() {
+    this.classList.toggle('on');
+    this._activa = this.classList.contains('on');
+  });
+
+  document.getElementById('form-pizzames').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const datos = {
+      activa:      document.getElementById('toggle-pizzames').classList.contains('on'),
+      emoji:       document.getElementById('pm-emoji').value,
+      nombre:      document.getElementById('pm-nombre').value,
+      descripcion: document.getElementById('pm-descripcion').value,
+      badge:       document.getElementById('pm-badge').value,
+      cta:         document.getElementById('pm-cta').value,
+    };
+    try {
+      await api('PUT', '/api/pizzames', datos);
+      toast('Pizza del mes guardada ✓');
+    } catch (err) { toast(err.message, 'err'); }
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RESEÑAS
+  // ═══════════════════════════════════════════════════════════════════════════
+  async function loadResenas() {
+    const container = document.getElementById('reviews-content');
+    container.innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Cargando reseñas...</p>';
+    try {
+      const data = await api('GET', '/api/reviews');
+      if (!data.configured) {
+        container.innerHTML = `
+          <div class="notice notice-warn">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div>API de Google no configurada. Ve a <strong>Configuración</strong> para añadir tu API Key y Place ID.</div>
+          </div>`;
+        return;
+      }
+      const stars = (n) => '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n));
+      container.innerHTML = `
+        <div class="reviews-header">
+          <div class="rating-big">${data.rating || '-'}</div>
+          <div>
+            <div class="stars">${stars(data.rating || 0)}</div>
+            <div style="font-size:0.82rem;color:var(--muted);margin-top:0.3rem">${data.total || 0} reseñas en Google</div>
+          </div>
+        </div>
+        ${(data.reviews || []).map(r => `
+          <div class="review-card">
+            <div class="review-meta">
+              <div class="review-avatar">${(r.author_name || '?')[0].toUpperCase()}</div>
+              <div>
+                <div class="review-name">${esc(r.author_name || '')}</div>
+                <div class="review-date">${r.relative_time_description || ''}</div>
+              </div>
+              <div class="review-stars">${stars(r.rating || 0)}</div>
+            </div>
+            <p class="review-text">${esc(r.text || '')}</p>
+          </div>
+        `).join('')}
+        ${!data.reviews?.length ? '<p style="color:var(--muted);font-size:0.85rem">No hay reseñas disponibles.</p>' : ''}
+      `;
+    } catch (err) {
+      container.innerHTML = `<div class="notice notice-warn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div>${esc(err.message)}</div></div>`;
+    }
+  }
+
+  document.getElementById('btn-refresh-reviews').addEventListener('click', loadResenas);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONFIGURACIÓN
+  // ═══════════════════════════════════════════════════════════════════════════
+  async function loadConfig() {
+    const cfg = await api('GET', '/api/config').catch(() => ({}));
+    document.getElementById('cfg-api-key').value  = cfg.googleApiKey  || '';
+    document.getElementById('cfg-place-id').value = cfg.googlePlaceId || '';
+  }
+
+  document.getElementById('form-config-google').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    try {
+      await api('PUT', '/api/config', {
+        googleApiKey:  document.getElementById('cfg-api-key').value.trim(),
+        googlePlaceId: document.getElementById('cfg-place-id').value.trim(),
+      });
+      toast('Configuración de Google guardada ✓');
+    } catch (err) { toast(err.message, 'err'); }
+  });
+
+  document.getElementById('form-password').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const p1 = document.getElementById('cfg-pwd1').value;
+    const p2 = document.getElementById('cfg-pwd2').value;
+    if (p1 !== p2) return toast('Las contraseñas no coinciden', 'err');
+    if (p1.length < 6) return toast('Mínimo 6 caracteres', 'err');
+    try {
+      await api('PUT', '/api/config', { newPassword: p1 });
+      document.getElementById('form-password').reset();
+      toast('Contraseña cambiada ✓');
+    } catch (err) { toast(err.message, 'err'); }
+  });
+
+  // ── Modal helpers ───────────────────────────────────────────────────────────
+  function openModal()  { document.getElementById('modal-pizza').classList.add('open'); }
+  function closeModal() { document.getElementById('modal-pizza').classList.remove('open'); }
+  document.getElementById('modal-pizza').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  // ── Util ────────────────────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  // ── Init ────────────────────────────────────────────────────────────────────
+  checkToken();
+</script>
+</body>
+</html>

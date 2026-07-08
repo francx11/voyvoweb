@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voy Volando — Pizzería Artesanal · Santa Fe, Granada</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #C41E3A;
+      --red-dark: #8B0000;
+      --gold: #C9A84C;
+      --cream: #F5F0E8;
+      --bg: #080808;
+      --bg2: #111111;
+      --bg3: #160808;
+      --text: #F5F0E8;
+      --muted: rgba(245,240,232,0.55);
+      --display: 'Playfair Display', Georgia, serif;
+      --body: 'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--body); overflow-x: hidden; }
+
+    /* ── LOADER ───────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.6s, visibility 0.6s;
+    }
+    #loader.out { opacity: 0; visibility: hidden; }
+    .loader-logo {
+      font-family: var(--display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      overflow: hidden;
+    }
+    .loader-logo span { display: inline-block; transform: translateY(100%); }
+
+    /* ── NAV ──────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 1.8rem 4rem;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: background 0.5s ease, padding 0.4s ease, border-color 0.5s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(24px);
+      padding: 1rem 4rem;
+      border-bottom-color: rgba(196,30,58,0.2);
+    }
+    .nav-logo {
+      font-family: var(--display); font-size: 1.4rem; font-weight: 700;
+      color: var(--text); text-decoration: none; letter-spacing: 0.03em;
+    }
+    .nav-logo em { font-style: italic; color: var(--red); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--red); color: #fff !important;
+      padding: 0.55rem 1.4rem; border-radius: 2rem;
+      transition: background 0.3s, transform 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--red-dark) !important; transform: translateY(-1px); }
+
+    /* ── HERO ─────────────────────────────────── */
+    #hero {
+      position: relative;
+      height: 300vh;
+    }
+    .hero-sticky {
+      position: sticky; top: 0;
+      width: 100%; height: 100vh;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Fallback background */
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, #2a0008 0%, #0a0a0a 70%);
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(196,30,58,0.12) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(201,168,76,0.06) 0%, transparent 50%);
+    }
+    /* Floating particles */
+    .particles { position: absolute; inset: 0; pointer-events: none; }
+    .particle {
+      position: absolute; border-radius: 50%;
+      background: var(--red); opacity: 0.15;
+      animation: float linear infinite;
+    }
+
+    /* Video scrubbing */
+    #hero-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    #hero-video.loaded { opacity: 1; }
+    .video-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.6) 100%);
+    }
+
+    /* Hero content */
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 0 2rem;
+      max-width: 900px;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: 0; transform: translateY(20px);
+    }
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 900; line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title .line { display: block; overflow: hidden; }
+    .hero-title .line span { display: block; transform: translateY(110%); }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 300; color: var(--muted);
+      margin-bottom: 3rem;
+      opacity: 0; transform: translateY(20px);
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      opacity: 0; transform: translateY(20px);
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.9rem 2.2rem; border-radius: 3rem;
+      font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.05em; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+      cursor: pointer; border: none;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--red); color: #fff;
+      box-shadow: 0 4px 24px rgba(196,30,58,0.3);
+    }
+    .btn-primary:hover { background: var(--red-dark); box-shadow: 0 8px 32px rgba(196,30,58,0.4); }
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid rgba(245,240,232,0.2);
+    }
+    .btn-ghost:hover { border-color: rgba(245,240,232,0.5); }
+
+    /* Scroll progress bar */
+    .scroll-progress {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+      opacity: 0;
+    }
+    .scroll-progress-label {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
+    }
+    .scroll-bar { width: 1px; height: 50px; background: rgba(245,240,232,0.2); position: relative; overflow: hidden; }
+    .scroll-bar::after {
+      content: ''; position: absolute; top: -100%; left: 0;
+      width: 100%; height: 100%;
+      background: var(--gold);
+      animation: scroll-hint 2s ease-in-out infinite;
+    }
+
+    /* Hero scroll-driven text overlays */
+    .hero-overlay-text {
+      position: absolute; inset: 0; z-index: 3;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+    }
+    .hero-phrase {
+      position: absolute;
+      font-family: var(--display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 700;
+      text-align: center;
+      max-width: 700px;
+      padding: 0 2rem;
+      opacity: 0;
+    }
+    .hero-phrase em { font-style: italic; color: var(--gold); }
+
+    /* ── MARQUEE ──────────────────────────────── */
+    .marquee-wrap {
+      overflow: hidden;
+      background: var(--red);
+      padding: 1rem 0;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .marquee-track {
+      display: flex; gap: 0;
+      animation: marquee 20s linear infinite;
+      width: max-content;
+    }
+    .marquee-item {
+      font-family: var(--display); font-size: 1.1rem; font-weight: 700;
+      font-style: italic; color: #fff; white-space: nowrap;
+      padding: 0 3rem;
+    }
+    .marquee-dot { color: rgba(255,255,255,0.5); font-style: normal; }
+
+    /* ── SECTIONS COMMON ──────────────────────── */
+    section { padding: 8rem 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 4rem; }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 1.2rem;
+    }
+    .section-title {
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+    .section-sub {
+      font-size: 1.05rem; color: var(--muted); max-width: 540px; line-height: 1.7;
+    }
+    .reveal { opacity: 0; transform: translateY(40px); }
+
+    /* ── HISTORIA ─────────────────────────────── */
+    #historia { background: var(--bg3); overflow: hidden; }
+    .historia-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+    }
+    .historia-text .big-number {
+      font-family: var(--display);
+      font-size: clamp(5rem, 12vw, 9rem);
+      font-weight: 900; color: var(--red);
+      opacity: 0.15; line-height: 1;
+      margin-bottom: -2rem; display: block;
+    }
+    .historia-text h2 { font-family: var(--display); font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; margin-bottom: 1.5rem; }
+    .historia-text p { color: var(--muted); line-height: 1.8; margin-bottom: 1.2rem; font-size: 1rem; }
+    .historia-visual {
+      position: relative; display: flex; align-items: center; justify-content: center;
+    }
+    .pizza-art {
+      width: clamp(250px, 35vw, 420px);
+      height: clamp(250px, 35vw, 420px);
+      border-radius: 50%;
+      background: conic-gradient(
+        #a0522d 0deg 30deg, #c0392b 30deg 90deg,
+        #a0522d 90deg 150deg, #c0392b 150deg 210deg,
+        #a0522d 210deg 270deg, #c0392b 270deg 330deg,
+        #a0522d 330deg 360deg
+      );
+      box-shadow: 0 0 80px rgba(196,30,58,0.25), inset 0 0 40px rgba(0,0,0,0.4);
+      position: relative;
+    }
+    .pizza-art::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 68%; height: 68%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #f4d03f 0%, #e8b84b 40%, #c9922a 100%);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .pizza-art::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20%; height: 20%;
+      border-radius: 50%;
+      background: radial-gradient(circle, #d35400 0%, #922b21 100%);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .pizza-label {
+      position: absolute; bottom: -2rem; right: -1rem;
+      background: var(--bg); border: 1px solid rgba(196,30,58,0.3);
+      padding: 0.8rem 1.5rem; border-radius: 0.5rem;
+      font-size: 0.8rem; color: var(--muted);
+    }
+    .pizza-label strong { display: block; color: var(--text); font-family: var(--display); font-size: 1rem; }
+
+    /* ── CARTA ────────────────────────────────── */
+    #carta { background: var(--bg2); }
+    .carta-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4rem; flex-wrap: wrap; gap: 2rem; }
+    .pizza-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .pizza-card {
+      background: var(--bg3);
+      border: 1px solid rgba(245,240,232,0.06);
+      border-radius: 1rem;
+      padding: 2rem;
+      cursor: pointer;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      opacity: 0; transform: translateY(30px) scale(0.97);
+    }
+    .pizza-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      border-color: rgba(196,30,58,0.3);
+      box-shadow: 0 16px 48px rgba(196,30,58,0.1);
+    }
+    .pizza-icon {
+      width: 64px; height: 64px; border-radius: 50%; margin-bottom: 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+    }
+    .pizza-card h3 {
+      font-family: var(--display); font-size: 1.35rem; font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+    .pizza-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.5rem; }
+    .pizza-tag {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.35rem 0.8rem; border-radius: 2rem;
+      border: 1px solid rgba(196,30,58,0.4); color: var(--red);
+      display: inline-block;
+    }
+
+    /* ── SERVICIOS ────────────────────────────── */
+    #servicios { background: var(--bg); }
+    .servicios-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 4rem; }
+    .servicio-card {
+      padding: 2.5rem 2rem;
+      border: 1px solid rgba(245,240,232,0.07);
+      border-radius: 1rem;
+      background: var(--bg2);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .servicio-card:hover { border-color: rgba(196,30,58,0.4); transform: translateY(-4px); }
+    .servicio-icon {
+      width: 52px; height: 52px;
+      background: rgba(196,30,58,0.12);
+      border-radius: 0.75rem;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .servicio-icon svg { width: 24px; height: 24px; stroke: var(--red); fill: none; stroke-width: 1.5; }
+    .servicio-card h3 { font-family: var(--display); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.8rem; }
+    .servicio-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ── GALERÍA ──────────────────────────────── */
+    #galeria { background: var(--bg3); }
+    .galeria-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 3rem; }
+    .galeria-cell {
+      border-radius: 0.75rem; overflow: hidden; position: relative;
+      aspect-ratio: 1;
+      background: var(--bg2);
+      border: 1px dashed rgba(245,240,232,0.1);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .galeria-cell:first-child { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; min-height: 300px; }
+    .galeria-cell img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .galeria-cell-overlay {
+      position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .galeria-cell:hover .galeria-cell-overlay { opacity: 1; }
+    .galeria-placeholder {
+      text-align: center; color: var(--muted);
+      font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .galeria-placeholder svg { width: 28px; height: 28px; margin-bottom: 0.6rem; opacity: 0.3; stroke: var(--text); fill: none; stroke-width: 1.5; }
+
+    /* ── PIZZA DEL MES ────────────────────────── */
+    #pizzames {
+      background: linear-gradient(135deg, #1a0005 0%, #0d0d0d 60%);
+      border-top: 1px solid rgba(196,30,58,0.2);
+      border-bottom: 1px solid rgba(196,30,58,0.2);
+    }
+    .pizzames-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+    .pizzames-visual { display: flex; align-items: center; justify-content: center; position: relative; }
+    .pizzames-badge {
+      position: absolute; top: -1rem; right: 0;
+      background: var(--gold); color: #000;
+      font-size: 0.65rem; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 0.4rem 1rem; border-radius: 2rem;
+    }
+    .pizzames-emoji {
+      font-size: clamp(5rem, 12vw, 9rem); line-height: 1;
+      filter: drop-shadow(0 0 40px rgba(196,30,58,0.4));
+      animation: float-pm 4s ease-in-out infinite;
+    }
+    @keyframes float-pm {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-15px) rotate(3deg); }
+    }
+    .pizzames-text .pm-tag {
+      display: inline-block; font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 1rem;
+    }
+    .pizzames-text h2 {
+      font-family: var(--display); font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900; line-height: 1.1; margin-bottom: 1.2rem;
+    }
+    .pizzames-text p { color: var(--muted); font-size: 1rem; line-height: 1.8; margin-bottom: 2rem; }
+
+    /* ── RESEÑAS ──────────────────────────────── */
+    #resenas { background: var(--bg2); }
+    .resenas-header { display: flex; align-items: center; gap: 2rem; margin-bottom: 3rem; flex-wrap: wrap; }
+    .rating-display { display: flex; align-items: baseline; gap: 0.5rem; }
+    .rating-number { font-family: var(--display); font-size: 4rem; font-weight: 900; line-height: 1; }
+    .rating-info .stars-row { color: #fbbf24; font-size: 1.2rem; letter-spacing: 0.05em; }
+    .rating-info .total { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
+    .resenas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .resena-card {
+      background: var(--bg3); border: 1px solid rgba(245,240,232,0.07);
+      border-radius: 1rem; padding: 1.5rem;
+      transition: border-color 0.3s;
+    }
+    .resena-card:hover { border-color: rgba(196,30,58,0.25); }
+    .resena-meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .resena-avatar {
+      width: 40px; height: 40px; border-radius: 50%; background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem; flex-shrink: 0; color: #fff;
+    }
+    .resena-name { font-weight: 600; font-size: 0.88rem; }
+    .resena-date { font-size: 0.75rem; color: var(--muted); }
+    .resena-stars { color: #fbbf24; font-size: 0.85rem; margin-left: auto; }
+    .resena-text { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+    /* ── CONTACTO ─────────────────────────────── */
+    #contacto { background: var(--bg2); }
+    .contacto-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 6rem; align-items: start; }
+    .contacto-info h2 { font-family: var(--display); font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; margin-bottom: 2rem; }
+    .info-block { display: flex; gap: 1rem; margin-bottom: 1.8rem; }
+    .info-block-icon {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(196,30,58,0.1); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .info-block-icon svg { width: 18px; height: 18px; stroke: var(--red); fill: none; stroke-width: 1.5; }
+    .info-block-text .label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+    .info-block-text p { font-size: 0.95rem; color: var(--text); }
+    .info-block-text a { color: var(--text); text-decoration: none; }
+    .info-block-text a:hover { color: var(--red); }
+
+    .contacto-form { display: flex; flex-direction: column; gap: 1.2rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-field { display: flex; flex-direction: column; gap: 0.5rem; }
+    .form-field label { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .form-field input, .form-field textarea, .form-field select {
+      background: rgba(245,240,232,0.04);
+      border: 1px solid rgba(245,240,232,0.1);
+      border-radius: 0.5rem;
+      padding: 0.9rem 1rem;
+      color: var(--text); font-family: var(--body); font-size: 0.9rem;
+      transition: border-color 0.3s;
+      outline: none; resize: none;
+    }
+    .form-field input:focus, .form-field textarea:focus, .form-field select:focus { border-color: var(--red); }
+    .form-field select option { background: #1a1a1a; }
+    .form-field textarea { min-height: 130px; }
+    .btn-full { width: 100%; justify-content: center; font-size: 0.9rem; padding: 1.1rem; }
+
+    /* ── FOOTER ───────────────────────────────── */
+    footer {
+      background: #000; padding: 4rem 0 2rem;
+      border-top: 1px solid rgba(196,30,58,0.15);
+    }
+    .footer-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 3rem; margin-bottom: 3rem; }
+    .footer-brand { max-width: 280px; }
+    .footer-logo { font-family: var(--display); font-size: 1.6rem; font-weight: 900; color: var(--text); margin-bottom: 0.8rem; }
+    .footer-logo em { font-style: italic; color: var(--red); }
+    .footer-tagline { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .footer-links h4 { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+    .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-links a { font-size: 0.88rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--text); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding-top: 2rem; border-top: 1px solid rgba(245,240,232,0.06); }
+    .footer-bottom p { font-size: 0.8rem; color: var(--muted); }
+    .footer-phone a { color: var(--red); text-decoration: none; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.05em; }
+
+    /* ── ANIMATIONS ───────────────────────────── */
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes float {
+      0%   { transform: translateY(0) scale(1);   opacity: 0.12; }
+      50%  { transform: translateY(-40px) scale(1.2); opacity: 0.2; }
+      100% { transform: translateY(0) scale(1);   opacity: 0.12; }
+    }
+    @keyframes scroll-hint {
+      0%   { top: -100%; }
+      50%  { top: 0%; }
+      100% { top: 100%; }
+    }
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    /* ── RESPONSIVE ───────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1.5rem 2rem; }
+      nav.scrolled { padding: 0.8rem 2rem; }
+      .nav-links { display: none; }
+      .container { padding: 0 2rem; }
+      .historia-grid, .contacto-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .pizza-grid { grid-template-columns: repeat(2, 1fr); }
+      .servicios-grid { grid-template-columns: 1fr; }
+      .galeria-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto; }
+      .galeria-cell:first-child { grid-column: span 2; grid-row: span 1; }
+      .galeria-cell:nth-child(2) { grid-column: span 2; }
+    }
+    @media (max-width: 540px) {
+      .pizza-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-logo">
+      <span>Voy</span>&nbsp;<span style="color:#C41E3A">Volando</span>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">Voy <em>Volando</em></a>
+    <ul class="nav-links">
+      <li><a href="#historia">Nosotros</a></li>
+      <li><a href="#carta">Carta</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#galeria">Galería</a></li>
+      <li><a href="tel:958442847" class="nav-cta">Pedir ahora</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-sticky">
+      <!-- Fallback background -->
+      <div class="hero-bg" id="hero-bg">
+        <!-- Particles generated by JS -->
+        <div class="particles" id="particles"></div>
+      </div>
+
+      <!-- Video (activates when assets/hero.mp4 exists) -->
+      <video id="hero-video" muted playsinline preload="auto" src="assets/hero.mp4"></video>
+      <div class="video-overlay"></div>
+
+      <!-- Main content (fades on scroll) -->
+      <div class="hero-content" id="hero-main">
+        <span class="hero-eyebrow">Santa Fe, Granada · Desde siempre</span>
+        <h1 class="hero-title">
+          <span class="line"><span>Pizza</span></span>
+          <span class="line"><span class="italic-red" style="font-style:italic;color:#C41E3A">auténtica.</span></span>
+        </h1>
+        <p class="hero-sub">Ingredientes frescos, recetas de siempre<br>y el sabor que no se olvida.</p>
+        <div class="hero-actions">
+          <a href="tel:958442847" class="btn btn-primary">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.59A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Llamar · 958 44 28 47
+          </a>
+          <a href="#carta" class="btn btn-ghost">Ver la carta</a>
+        </div>
+      </div>
+
+      <!-- Scroll-driven phrases -->
+      <div class="hero-overlay-text">
+        <p class="hero-phrase" id="phrase1">Masa artesanal.<br><em>Horno de leña.</em></p>
+        <p class="hero-phrase" id="phrase2"><em>Ingredientes</em><br>que se notan.</p>
+        <p class="hero-phrase" id="phrase3">Para llevar,<br>a domicilio<br>o en nuestro local.</p>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="scroll-progress" id="scroll-progress">
+        <span class="scroll-progress-label">Scroll</span>
+        <div class="scroll-bar"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track" id="marquee">
+      <span class="marquee-item">Margarita <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Speciale <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Tonno <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Rucola <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Salami <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Calzone <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Margarita <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Speciale <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Tonno <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Rucola <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Salami <span class="marquee-dot">·</span></span>
+      <span class="marquee-item">Calzone <span class="marquee-dot">·</span></span>
+    </div>
+  </div>
+
+  <!-- HISTORIA -->
+  <section id="historia">
+    <div class="container">
+      <div class="historia-grid">
+        <div class="historia-text reveal">
+          <span class="section-tag">Nuestra historia</span>
+          <span class="big-number">30+</span>
+          <h2>Pasión por la pizza auténtica</h2>
+          <p>En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.</p>
+          <p>Nuestro secreto está en la masa: elaborada artesanalmente cada mañana, fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro.</p>
+          <a href="tel:958442847" class="btn btn-primary" style="margin-top:1.5rem">Reservar mesa</a>
+        </div>
+        <div class="historia-visual reveal">
+          <div class="pizza-art" id="pizza-art-anim"></div>
+          <div class="pizza-label">
+            <strong>Voy Volando</strong>
+            C. Cristóbal Colón, 7 · Santa Fe
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARTA -->
+  <section id="carta">
+    <div class="container">
+      <div class="carta-header">
+        <div>
+          <span class="section-tag">Nuestras pizzas</span>
+          <h2 class="section-title reveal">La carta</h2>
+          <p class="section-sub reveal">Clásicas y gourmet. Todas con ingredientes frescos, masa artesanal y elaboradas al momento.</p>
+        </div>
+        <a href="tel:958442847" class="btn btn-ghost reveal">Pedir por teléfono</a>
+      </div>
+      <div class="pizza-grid" id="pizza-grid">
+        <!-- Cargado dinámicamente desde /api/carta -->
+      </div>
+    </div>
+  </section>
+
+  <!-- PIZZA DEL MES (oculta hasta que se active desde el admin) -->
+  <section id="pizzames" style="display:none">
+    <div class="container">
+      <div class="pizzames-grid">
+        <div class="pizzames-visual reveal">
+          <span class="pizzames-badge" id="pm-badge-web"></span>
+          <span class="pizzames-emoji" id="pm-emoji-web">🔥</span>
+        </div>
+        <div class="pizzames-text reveal">
+          <span class="pm-tag">Pizza del Mes</span>
+          <h2 id="pm-nombre-web"></h2>
+          <p id="pm-desc-web"></p>
+          <a href="tel:958442847" class="btn btn-primary" id="pm-cta-web">Llamar para pedirla</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section id="servicios">
+    <div class="container">
+      <span class="section-tag">Cómo pedimos</span>
+      <h2 class="section-title reveal" style="max-width:500px">Como quieras, donde quieras</h2>
+      <div class="servicios-grid">
+        <div class="servicio-card reveal">
+          <div class="servicio-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <h3>A domicilio</h3>
+          <p>Te la llevamos a casa. Llama al <a href="tel:958442847" style="color:var(--red)">958 44 28 47</a> y te la enviamos lo antes posible.</p>
+        </div>
+        <div class="servicio-card reveal">
+          <div class="servicio-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Para llevar</h3>
+          <p>Pide por teléfono y recoge en unos minutos sin esperas. Tu pizza lista cuando llegues.</p>
+        </div>
+        <div class="servicio-card reveal">
+          <div class="servicio-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>En el local</h3>
+          <p>Disfruta en nuestro comedor de C. Cristóbal Colón, 7. Reserva o ven sin cita.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERÍA -->
+  <section id="galeria">
+    <div class="container">
+      <span class="section-tag">Galería</span>
+      <h2 class="section-title reveal">Momentos en Voy Volando</h2>
+      <div class="galeria-grid" id="galeria-grid">
+        <!-- Cargado dinámicamente desde /api/galeria -->
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEÑAS GOOGLE (se muestra solo si la API está configurada) -->
+  <section id="resenas" style="display:none">
+    <div class="container">
+      <span class="section-tag">Lo que dicen de nosotros</span>
+      <div class="resenas-header reveal">
+        <div class="rating-display">
+          <span class="rating-number" id="rating-number">—</span>
+        </div>
+        <div class="rating-info">
+          <div class="stars-row" id="rating-stars"></div>
+          <div class="total" id="rating-total"></div>
+        </div>
+      </div>
+      <div class="resenas-grid" id="resenas-grid"></div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto">
+    <div class="container">
+      <div class="contacto-grid">
+        <div class="contacto-info reveal">
+          <span class="section-tag">Encuéntranos</span>
+          <h2>Ven a vernos<br>o llámanos</h2>
+          <div style="margin-top:2.5rem">
+            <div class="info-block">
+              <div class="info-block-icon">
+                <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div class="info-block-text">
+                <div class="label">Dirección</div>
+                <p>C. Cristóbal Colón, 7<br>18320 Santa Fe, Granada</p>
+              </div>
+            </div>
+            <div class="info-block">
+              <div class="info-block-icon">
+                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.59A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              </div>
+              <div class="info-block-text">
+                <div class="label">Teléfono</div>
+                <p><a href="tel:958442847">958 44 28 47</a></p>
+              </div>
+            </div>
+            <div class="info-block">
+              <div class="info-block-icon">
+                <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div class="info-block-text">
+                <div class="label">Email</div>
+                <p><a href="mailto:info@voyvolandosantafe.com">info@voyvolandosantafe.com</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal">
+          <form class="contacto-form" onsubmit="handleForm(event)">
+            <div class="form-row">
+              <div class="form-field">
+                <label>Nombre</label>
+                <input type="text" placeholder="Tu nombre" required>
+              </div>
+              <div class="form-field">
+                <label>Teléfono</label>
+                <input type="tel" placeholder="Tu teléfono">
+              </div>
+            </div>
+            <div class="form-field">
+              <label>¿Qué necesitas?</label>
+              <select>
+                <option value="">Selecciona una opción</option>
+                <option>Hacer un pedido</option>
+                <option>Reservar mesa</option>
+                <option>Consulta general</option>
+                <option>Evento o grupo</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Mensaje</label>
+              <textarea placeholder="Cuéntanos lo que necesitas..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Enviar mensaje</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo">Voy <em>Volando</em></div>
+          <p class="footer-tagline">Pizzería artesanal en Santa Fe, Granada. Ingredientes frescos, recetas de siempre, sabores que no se olvidan.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Menú</h4>
+          <ul>
+            <li><a href="#historia">Nosotros</a></li>
+            <li><a href="#carta">Carta</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#galeria">Galería</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="tel:958442847">958 44 28 47</a></li>
+            <li><a href="mailto:info@voyvolandosantafe.com">info@voyvolandosantafe.com</a></li>
+            <li><a href="#">C. Cristóbal Colón, 7</a></li>
+            <li><a href="#">Santa Fe, Granada</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2024 Voy Volando · Pizzería Artesanal</p>
+        <div class="footer-phone"><a href="tel:958442847">📞 Llamar ahora · 958 44 28 47</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ── LOADER ─────────────────────────────── */
+    const loaderSpans = document.querySelectorAll('#loader .loader-logo span');
+    gsap.to(loaderSpans, { y: 0, stagger: 0.08, duration: 0.7, ease: 'power3.out', delay: 0.2,
+      onComplete() {
+        gsap.to('#loader', { opacity: 0, duration: 0.6, delay: 0.5,
+          onComplete() { document.getElementById('loader').classList.add('out'); initPage(); }
+        });
+      }
+    });
+
+    /* ── NAV ─────────────────────────────────── */
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    /* ── PARTICLES ─────────────────────────── */
+    const particleContainer = document.getElementById('particles');
+    for (let i = 0; i < 12; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 6 + 3;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random()*100}%; top:${Math.random()*100}%;
+        animation-duration:${Math.random()*6+6}s;
+        animation-delay:${Math.random()*-8}s;
+      `;
+      particleContainer.appendChild(p);
+    }
+
+    /* ── VIDEO SCRUBBING ────────────────────── */
+    const video = document.getElementById('hero-video');
+    let videoReady = false;
+
+    video.addEventListener('canplaythrough', () => {
+      video.classList.add('loaded');
+      videoReady = true;
+      video.pause();
+      document.getElementById('hero-bg').style.opacity = '0';
+    });
+    video.addEventListener('error', () => {
+      // No video — keep CSS fallback
+      video.style.display = 'none';
+    });
+
+    /* ── HERO SCROLL SCRUBBING ────────────── */
+    function initPage() {
+
+      /* Hero intro */
+      const tl = gsap.timeline();
+      tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' })
+        .to('.hero-title .line span', { y: 0, stagger: 0.12, duration: 0.9, ease: 'power3.out' }, '-=0.3')
+        .to('.hero-sub',     { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, '-=0.4')
+        .to('.hero-actions', { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '-=0.3')
+        .to('#scroll-progress', { opacity: 1, duration: 0.5 }, '-=0.1');
+
+      /* Hero scroll timeline */
+      const heroSection = document.getElementById('hero');
+      const heroMain    = document.getElementById('hero-main');
+      const phrase1     = document.getElementById('phrase1');
+      const phrase2     = document.getElementById('phrase2');
+      const phrase3     = document.getElementById('phrase3');
+
+      ScrollTrigger.create({
+        trigger: heroSection,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: true,
+        onUpdate(self) {
+          const p = self.progress;
+
+          /* Video scrub */
+          if (videoReady && video.duration) {
+            video.currentTime = p * video.duration;
+          }
+
+          /* Fade out hero main */
+          const mainOpacity = p < 0.15 ? 1 : Math.max(0, 1 - (p - 0.15) / 0.1);
+          gsap.set(heroMain, { opacity: mainOpacity, y: -p * 60 });
+
+          /* Phrase 1: 0.2 → 0.4 */
+          const p1 = p < 0.2 ? 0 : p < 0.28 ? (p - 0.2) / 0.08 : p < 0.38 ? 1 : Math.max(0, 1 - (p - 0.38) / 0.05);
+          gsap.set(phrase1, { opacity: p1, y: (1 - p1) * 30 });
+
+          /* Phrase 2: 0.45 → 0.65 */
+          const p2 = p < 0.45 ? 0 : p < 0.53 ? (p - 0.45) / 0.08 : p < 0.63 ? 1 : Math.max(0, 1 - (p - 0.63) / 0.05);
+          gsap.set(phrase2, { opacity: p2, y: (1 - p2) * 30 });
+
+          /* Phrase 3: 0.7 → 0.9 */
+          const p3 = p < 0.7 ? 0 : p < 0.78 ? (p - 0.7) / 0.08 : p < 0.9 ? 1 : Math.max(0, 1 - (p - 0.9) / 0.05);
+          gsap.set(phrase3, { opacity: p3, y: (1 - p3) * 30 });
+        }
+      });
+
+      /* Pizza art rotation */
+      gsap.to('#pizza-art-anim', {
+        rotation: 360,
+        duration: 20,
+        ease: 'linear',
+        repeat: -1
+      });
+
+      /* ── REVEAL ELEMENTS ──────────────────── */
+      gsap.utils.toArray('.reveal').forEach(el => {
+        gsap.to(el, {
+          opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' }
+        });
+      });
+
+      /* ── PIZZA CARDS stagger ────────────── */
+      gsap.utils.toArray('.pizza-card').forEach((card, i) => {
+        gsap.to(card, {
+          opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'power3.out',
+          scrollTrigger: { trigger: card, start: 'top 88%' },
+          delay: (i % 3) * 0.08
+        });
+      });
+
+      /* ── HISTORIA parallax ──────────────── */
+      gsap.to('.pizza-art', {
+        y: -50,
+        ease: 'none',
+        scrollTrigger: { trigger: '#historia', start: 'top bottom', end: 'bottom top', scrub: true }
+      });
+
+      /* ── Load dynamic content ───────────── */
+      loadCarta();
+      loadGaleria();
+      loadPizzaMes();
+      loadResenas();
+    }
+
+    /* ── DYNAMIC DATA LOADING ────────── */
+    async function loadCarta() {
+      try {
+        const pizzas = await fetch('/api/carta').then(r => r.json());
+        const grid = document.getElementById('pizza-grid');
+        if (!pizzas.length) return;
+        grid.innerHTML = pizzas.filter(p => p.activa !== false).map(p => `
+          <div class="pizza-card">
+            <div class="pizza-icon" style="background:${hexToAlpha(p.tagColor||'#C41E3A',0.15)}">${p.emoji||'🍕'}</div>
+            <h3>${esc(p.nombre)}</h3>
+            <p>${esc(p.descripcion||'')}</p>
+            <span class="pizza-tag" style="color:${p.tagColor||'#C41E3A'};border-color:${p.tagColor||'#C41E3A'}">${esc(p.tag||'')}</span>
+          </div>
+        `).join('');
+        gsap.utils.toArray('#pizza-grid .pizza-card').forEach((card, i) => {
+          gsap.fromTo(card, { opacity:0, y:30, scale:0.97 }, {
+            opacity:1, y:0, scale:1, duration:0.6, ease:'power3.out',
+            scrollTrigger: { trigger: card, start: 'top 88%' },
+            delay: (i%3)*0.08
+          });
+        });
+        const names = pizzas.map(p=>p.nombre);
+        const doubled = [...names,...names];
+        document.getElementById('marquee').innerHTML = doubled.map(n =>
+          `<span class="marquee-item">${esc(n)} <span class="marquee-dot">·</span></span>`
+        ).join('');
+      } catch { /* API no disponible */ }
+    }
+
+    async function loadGaleria() {
+      try {
+        const files = await fetch('/api/galeria').then(r => r.json());
+        const grid = document.getElementById('galeria-grid');
+        if (!files.length) {
+          grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);font-size:0.85rem">
+            Sube fotos desde el panel de admin para que aparezcan aquí.</div>`;
+          return;
+        }
+        grid.innerHTML = files.map((f, i) => `
+          <div class="galeria-cell" ${i===0?'style="grid-column:span 2;grid-row:span 2"':''}>
+            <img src="${f.url}" alt="" loading="lazy">
+            <div class="galeria-cell-overlay"></div>
+          </div>
+        `).join('');
+      } catch { /* sin galería */ }
+    }
+
+    async function loadPizzaMes() {
+      try {
+        const pm = await fetch('/api/pizzames').then(r => r.json());
+        if (!pm.activa) return;
+        document.getElementById('pm-emoji-web').textContent = pm.emoji || '🔥';
+        document.getElementById('pm-nombre-web').textContent = pm.nombre || '';
+        document.getElementById('pm-desc-web').textContent   = pm.descripcion || '';
+        document.getElementById('pm-badge-web').textContent  = pm.badge || '';
+        if (pm.cta) document.getElementById('pm-cta-web').textContent = pm.cta;
+        document.getElementById('pizzames').style.display = 'block';
+      } catch { /* sin pizza del mes */ }
+    }
+
+    async function loadResenas() {
+      try {
+        const data = await fetch('/api/reviews').then(r => r.json());
+        if (!data.configured || !data.reviews?.length) return;
+        const stars = n => '★'.repeat(Math.round(n||0)) + '☆'.repeat(5-Math.round(n||0));
+        document.getElementById('rating-number').textContent = data.rating || '';
+        document.getElementById('rating-stars').textContent  = stars(data.rating);
+        document.getElementById('rating-total').textContent  = `${data.total||0} reseñas en Google`;
+        document.getElementById('resenas-grid').innerHTML = data.reviews.map(r => `
+          <div class="resena-card reveal">
+            <div class="resena-meta">
+              <div class="resena-avatar">${(r.author_name||'?')[0].toUpperCase()}</div>
+              <div>
+                <div class="resena-name">${esc(r.author_name||'')}</div>
+                <div class="resena-date">${r.relative_time_description||''}</div>
+              </div>
+              <div class="resena-stars">${stars(r.rating)}</div>
+            </div>
+            <p class="resena-text">${esc(r.text||'')}</p>
+          </div>
+        `).join('');
+        document.getElementById('resenas').style.display = 'block';
+        gsap.utils.toArray('#resenas-grid .reveal').forEach(el => {
+          gsap.fromTo(el, {opacity:0,y:30}, {
+            opacity:1, y:0, duration:0.7,
+            scrollTrigger: { trigger: el, start: 'top 88%' }
+          });
+        });
+      } catch { /* sin reseñas */ }
+    }
+
+    function hexToAlpha(hex, alpha) {
+      try {
+        const r = parseInt(hex.slice(1,3),16);
+        const g = parseInt(hex.slice(3,5),16);
+        const b = parseInt(hex.slice(5,7),16);
+        return `rgba(${r},${g},${b},${alpha})`;
+      } catch { return `rgba(196,30,58,${alpha})`; }
+    }
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    /* ── FORM ─────────────────────────────── */
+    function handleForm(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type=submit]');
+      btn.textContent = '¡Mensaje enviado! ✓';
+      btn.style.background = '#27ae60';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = 'Enviar mensaje';
+        btn.style.background = '';
+        btn.disabled = false;
+        e.target.reset();
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

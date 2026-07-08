@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+!.env.example
+data/auth.json
+*.log
+.DS_Store
+Thumbs.db
+backups/
