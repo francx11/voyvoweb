@@ -18,6 +18,12 @@ const DATA_DIR = path.join(ROOT, 'data');
 const GALLERY = path.join(PUBLIC_DIR, 'assets', 'gallery');
 
 // ── Middleware ────────────────────────────────────────────────────────────────
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(PUBLIC_DIR)); // solo public/ — nunca data/ ni src/
 
@@ -265,6 +271,34 @@ app.delete('/api/carta/:id', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
+// ── Carta en PDF (el cliente suele cargarla así) ──────────────────────────────
+const uploadPdf = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype === 'application/pdf') cb(null, true);
+    else cb(new Error('Solo se permite PDF'));
+  },
+});
+
+app.post('/api/carta/pdf', requireAuth, uploadPdf.single('carta'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Archivo PDF requerido' });
+  const cfg = readJSON('config.json', {});
+  const anterior = cfg.site?.carta?.pdf;
+  const name = `carta-${Date.now()}.pdf`; // nombre versionado: evita caché obsoleta
+  fs.writeFileSync(path.join(PUBLIC_DIR, 'assets', name), req.file.buffer);
+  if (anterior) {
+    const fpAnterior = path.join(PUBLIC_DIR, path.basename(anterior));
+    const fpAssets = path.join(PUBLIC_DIR, 'assets', path.basename(anterior));
+    if (fs.existsSync(fpAssets)) fs.unlinkSync(fpAssets);
+    else if (fs.existsSync(fpAnterior)) fs.unlinkSync(fpAnterior);
+  }
+  cfg.site = cfg.site || {};
+  cfg.site.carta = { ...(cfg.site.carta || {}), pdf: `/assets/${name}` };
+  writeJSON('config.json', cfg);
+  res.json({ ok: true, pdf: cfg.site.carta.pdf });
+});
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // PIZZA DEL MES
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -356,7 +390,12 @@ app.get('/api/site', (_req, res) => {
 
 app.put('/api/site', requireAuth, (req, res) => {
   const cfg = readJSON('config.json', {});
-  cfg.site = { ...(cfg.site || {}), ...req.body };
+  const previa = cfg.site || {};
+  cfg.site = { ...previa, ...req.body };
+  if (req.body.carta) {
+    // merge profundo: el modo no debe pisar la ruta del PDF ya subido
+    cfg.site.carta = { ...(previa.carta || {}), ...req.body.carta };
+  }
   writeJSON('config.json', cfg);
   res.json({ ok: true });
 });

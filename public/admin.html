@@ -439,6 +439,27 @@
           Nueva pizza
         </button>
       </div>
+
+      <!-- Modo de carta: productos editables o PDF subido -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <h3 style="font-size:1rem;font-weight:600;margin-bottom:0.8rem">Cómo se muestra la carta en la web</h3>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1rem">
+          <label style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;cursor:pointer">
+            <input type="radio" name="carta-modo" value="productos" id="modo-productos" style="margin-top:0.25rem">
+            <span><strong>Productos editables</strong> (recomendado: mejor posicionamiento en Google y permite el filtro de alérgenos)</span>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;cursor:pointer">
+            <input type="radio" name="carta-modo" value="pdf" id="modo-pdf" style="margin-top:0.25rem">
+            <span><strong>PDF subido</strong> (la web muestra un botón "Ver la carta"; los buscadores no leen bien el PDF)</span>
+          </label>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap">
+          <button type="button" class="btn btn-ghost" id="btn-subir-pdf">Subir carta en PDF</button>
+          <input type="file" id="pdf-input" accept="application/pdf" style="display:none">
+          <span id="pdf-actual" style="font-size:0.8rem;color:var(--muted)"></span>
+        </div>
+      </div>
+
       <div class="table-wrap">
         <table>
           <thead>
@@ -830,7 +851,7 @@
   function navigate(page) {
     document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.page === page));
     document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === `page-${page}`));
-    if (page === 'carta')     loadCarta();
+    if (page === 'carta')     { loadCarta(); loadCartaModo(); }
     if (page === 'galeria')   loadGaleria();
     if (page === 'pizzames')  loadPizzaMes();
     if (page === 'contenido') loadContenido();
@@ -871,6 +892,53 @@
       </tr>
     `).join('');
   }
+
+  // ── Modo de carta (productos vs PDF) ────────────────────────────────────────
+  async function loadCartaModo() {
+    const s = await api('GET', '/api/site').catch(() => ({}));
+    const carta = s.carta || {};
+    const modo = carta.modo === 'pdf' ? 'pdf' : 'productos';
+    document.getElementById(`modo-${modo}`).checked = true;
+    document.getElementById('pdf-actual').innerHTML = carta.pdf
+      ? `PDF actual: <a href="${carta.pdf}" target="_blank" rel="noopener" style="color:var(--text)">${carta.pdf.split('/').pop()}</a>`
+      : 'Ningún PDF subido todavía';
+  }
+
+  document.querySelectorAll('input[name=carta-modo]').forEach(r => {
+    r.addEventListener('change', async () => {
+      const modo = document.querySelector('input[name=carta-modo]:checked').value;
+      if (modo === 'pdf') {
+        const s = await api('GET', '/api/site').catch(() => ({}));
+        if (!s.carta?.pdf) {
+          toast('Sube primero un PDF para poder activar este modo', 'err');
+          document.getElementById('modo-productos').checked = true;
+          return;
+        }
+      }
+      try {
+        await api('PUT', '/api/site', { carta: { modo } });
+        toast('Modo de carta guardado ✓ La web ya lo muestra');
+      } catch (err) { toast(err.message, 'err'); }
+    });
+  });
+
+  const pdfInput = document.getElementById('pdf-input');
+  document.getElementById('btn-subir-pdf').addEventListener('click', () => pdfInput.click());
+  pdfInput.addEventListener('change', async () => {
+    if (!pdfInput.files.length) return;
+    const fd = new FormData();
+    fd.append('carta', pdfInput.files[0]);
+    toast('Subiendo PDF...');
+    try {
+      const r = await fetch('/api/carta/pdf', { method: 'POST', body: fd });
+      const json = await r.json().catch(() => ({}));
+      if (r.status === 401) showLogin();
+      if (!r.ok) throw new Error(json.error || r.statusText);
+      toast('Carta PDF subida ✓');
+      loadCartaModo();
+    } catch (err) { toast(err.message, 'err'); }
+    pdfInput.value = '';
+  });
 
   async function movePizza(i, dir) {
     const j = i + dir;

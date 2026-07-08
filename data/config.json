@@ -18,6 +18,10 @@
       "titulo": "Pasión por la pizza auténtica",
       "parrafo1": "En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.",
       "parrafo2": "Nuestro secreto está en la masa: elaborada artesanalmente cada mañana, fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro."
+    },
+    "carta": {
+      "pdf": null,
+      "modo": "productos"
     }
   }
 }
