@@ -32,22 +32,48 @@ pnpm start             # producción
 | Comando | Qué hace |
 |---|---|
 | `pnpm dev` / `pnpm start` | Servidor en desarrollo / producción |
-| `pnpm check` | ESLint + Prettier + chequeo de sintaxis (correr antes de cada deploy) |
+| `pnpm test` | Tests de integración de la API (node:test, sin dependencias extra) |
+| `pnpm check` | ESLint + Prettier + tests (correr antes de cada deploy) |
 | `pnpm format` | Formatea código y docs |
 | `pnpm backup` | Copia `data/` y la galería a `backups/<fecha>/` |
 
 ## Estructura
 
 ```
-src/server.js          API Express + estáticos (solo sirve public/)
-public/index.html      Web pública
-public/admin.html      Panel de administración
+src/
+  server.js            Punto de entrada: arranque + apagado graceful (SIGTERM)
+  app.js               Ensamblado de la app Express (factory, usada por los tests)
+  config.js            Entorno, rutas de disco y constantes ajustables
+  lib/json-store.js    Persistencia JSON con escritura atómica (tmp + rename)
+  services/            Lógica de negocio sin HTTP:
+    passwords.js         hash y verificación de contraseña (scrypt / sha256 legado)
+    sessions.js          sesiones en memoria + cookies
+    login-limiter.js     rate limit de login por IP
+    gallery-store.js     reconciliación disco ↔ gallery.json
+    google-reviews.js    Places API con caché (10 min)
+  middleware/          security headers, requireAuth, multer, error handler JSON
+  routes/              un router por dominio: auth, menu, gallery, site,
+                       monthly-special, reviews, settings
+tests/api.test.js      Tests de integración contra la app real (datos en tmp)
+public/index.html      Web pública (+ css/main.css, js/main.js)
+public/admin.html      Panel de administración (+ css/admin.css, js/admin.js)
 public/assets/gallery/ Fotos subidas (optimizadas a WebP)
 data/*.json            Contenido editable (carta, config, pizza del mes, orden de galería)
 data/auth.json         Hash de contraseña (gitignored, se autogenera)
 docs/                  Análisis de competencia, stack y plan de despliegue
 scripts/backup.mjs     Backup de datos y galería
 ```
+
+### Convenciones para evolucionar el código
+
+- **Una feature nueva de API** = un fichero en `routes/` (+ servicio en `services/` si tiene
+  lógica propia) y su montaje en `app.js`. Las rutas no tocan disco directamente: pasan por
+  `lib/json-store.js` o un servicio.
+- **La API siempre responde JSON**, también en errores: cualquier `throw`/`next(err)` acaba en
+  `middleware/error-handler.js`. Los errores esperados llevan `err.status` (< 500).
+- **Constantes ajustables** (límites de subida, TTLs, tamaños de imagen) viven en `src/config.js`,
+  no repartidas por el código.
+- Tras cualquier cambio: `pnpm check`.
 
 ## Seguridad
 
