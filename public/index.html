@@ -344,6 +344,16 @@
       border: 1px solid rgba(196,30,58,0.4); color: var(--red);
       display: inline-block;
     }
+    .pizza-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; }
+    .pizza-precio {
+      font-family: var(--display); font-size: 1.25rem; font-weight: 700;
+      color: var(--gold); white-space: nowrap;
+    }
+    .pizza-alergenos {
+      font-size: 0.7rem; color: var(--muted); margin-top: 0.9rem;
+      letter-spacing: 0.03em; line-height: 1.5;
+    }
+    .pizza-alergenos strong { color: rgba(245,240,232,0.7); font-weight: 500; }
 
     /* ── SERVICIOS ────────────────────────────── */
     #servicios { background: var(--bg); }
@@ -552,7 +562,7 @@
       <li><a href="#carta">Carta</a></li>
       <li><a href="#servicios">Servicios</a></li>
       <li><a href="#galeria">Galería</a></li>
-      <li><a href="tel:958442847" class="nav-cta">Pedir ahora</a></li>
+      <li><a href="tel:958442847" class="nav-cta js-order">Pedir ahora</a></li>
     </ul>
   </nav>
 
@@ -571,16 +581,16 @@
 
       <!-- Main content (fades on scroll) -->
       <div class="hero-content" id="hero-main">
-        <span class="hero-eyebrow">Santa Fe, Granada · Desde siempre</span>
+        <span class="hero-eyebrow" id="hero-eyebrow">Santa Fe, Granada · Desde siempre</span>
         <h1 class="hero-title">
-          <span class="line"><span>Pizza</span></span>
-          <span class="line"><span class="italic-red" style="font-style:italic;color:#C41E3A">auténtica.</span></span>
+          <span class="line"><span id="hero-t1">Pizza</span></span>
+          <span class="line"><span class="italic-red" id="hero-t2" style="font-style:italic;color:#C41E3A">auténtica.</span></span>
         </h1>
-        <p class="hero-sub">Ingredientes frescos, recetas de siempre<br>y el sabor que no se olvida.</p>
+        <p class="hero-sub" id="hero-sub">Ingredientes frescos, recetas de siempre<br>y el sabor que no se olvida.</p>
         <div class="hero-actions">
-          <a href="tel:958442847" class="btn btn-primary">
+          <a href="tel:958442847" class="btn btn-primary js-tel-btn">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.59A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-            Llamar · 958 44 28 47
+            <span class="js-tel-label">Llamar · 958 44 28 47</span>
           </a>
           <a href="#carta" class="btn btn-ghost">Ver la carta</a>
         </div>
@@ -626,16 +636,16 @@
         <div class="historia-text reveal">
           <span class="section-tag">Nuestra historia</span>
           <span class="big-number">30+</span>
-          <h2>Pasión por la pizza auténtica</h2>
-          <p>En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.</p>
-          <p>Nuestro secreto está en la masa: elaborada artesanalmente cada mañana, fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro.</p>
-          <a href="tel:958442847" class="btn btn-primary" style="margin-top:1.5rem">Reservar mesa</a>
+          <h2 id="hist-titulo">Pasión por la pizza auténtica</h2>
+          <p id="hist-p1">En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.</p>
+          <p id="hist-p2">Nuestro secreto está en la masa: elaborada artesanalmente cada mañana, fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro.</p>
+          <a href="tel:958442847" class="btn btn-primary js-tel" style="margin-top:1.5rem">Reservar mesa</a>
         </div>
         <div class="historia-visual reveal">
           <div class="pizza-art" id="pizza-art-anim"></div>
           <div class="pizza-label">
             <strong>Voy Volando</strong>
-            C. Cristóbal Colón, 7 · Santa Fe
+            <span id="label-direccion">C. Cristóbal Colón, 7 · Santa Fe</span>
           </div>
         </div>
       </div>
@@ -651,7 +661,7 @@
           <h2 class="section-title reveal">La carta</h2>
           <p class="section-sub reveal">Clásicas y gourmet. Todas con ingredientes frescos, masa artesanal y elaboradas al momento.</p>
         </div>
-        <a href="tel:958442847" class="btn btn-ghost reveal">Pedir por teléfono</a>
+        <a href="tel:958442847" class="btn btn-ghost reveal js-order" id="carta-cta">Pedir por teléfono</a>
       </div>
       <div class="pizza-grid" id="pizza-grid">
         <!-- Cargado dinámicamente desde /api/carta -->
@@ -688,7 +698,7 @@
             <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </div>
           <h3>A domicilio</h3>
-          <p>Te la llevamos a casa. Llama al <a href="tel:958442847" style="color:var(--red)">958 44 28 47</a> y te la enviamos lo antes posible.</p>
+          <p>Te la llevamos a casa. Llama al <a href="tel:958442847" class="js-tel js-tel-text" style="color:var(--red)">958 44 28 47</a> y te la enviamos lo antes posible.</p>
         </div>
         <div class="servicio-card reveal">
           <div class="servicio-icon">
@@ -702,7 +712,7 @@
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
           </div>
           <h3>En el local</h3>
-          <p>Disfruta en nuestro comedor de C. Cristóbal Colón, 7. Reserva o ven sin cita.</p>
+          <p>Disfruta en nuestro comedor de <span class="js-direccion">C. Cristóbal Colón, 7</span>. Reserva o ven sin cita.</p>
         </div>
       </div>
     </div>
@@ -750,7 +760,7 @@
               </div>
               <div class="info-block-text">
                 <div class="label">Dirección</div>
-                <p>C. Cristóbal Colón, 7<br>18320 Santa Fe, Granada</p>
+                <p><span class="js-direccion">C. Cristóbal Colón, 7</span><br><span class="js-poblacion">18320 Santa Fe, Granada</span></p>
               </div>
             </div>
             <div class="info-block">
@@ -759,7 +769,7 @@
               </div>
               <div class="info-block-text">
                 <div class="label">Teléfono</div>
-                <p><a href="tel:958442847">958 44 28 47</a></p>
+                <p><a href="tel:958442847" class="js-tel js-tel-text">958 44 28 47</a></p>
               </div>
             </div>
             <div class="info-block">
@@ -768,7 +778,16 @@
               </div>
               <div class="info-block-text">
                 <div class="label">Email</div>
-                <p><a href="mailto:info@voyvolandosantafe.com">info@voyvolandosantafe.com</a></p>
+                <p><a href="mailto:info@voyvolandosantafe.com" class="js-email">info@voyvolandosantafe.com</a></p>
+              </div>
+            </div>
+            <div class="info-block" id="horarios-block" style="display:none">
+              <div class="info-block-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="info-block-text">
+                <div class="label">Horario</div>
+                <p id="ct-horarios"></p>
               </div>
             </div>
           </div>
@@ -827,16 +846,16 @@
         <div class="footer-links">
           <h4>Contacto</h4>
           <ul>
-            <li><a href="tel:958442847">958 44 28 47</a></li>
-            <li><a href="mailto:info@voyvolandosantafe.com">info@voyvolandosantafe.com</a></li>
-            <li><a href="#">C. Cristóbal Colón, 7</a></li>
-            <li><a href="#">Santa Fe, Granada</a></li>
+            <li><a href="tel:958442847" class="js-tel js-tel-text">958 44 28 47</a></li>
+            <li><a href="mailto:info@voyvolandosantafe.com" class="js-email">info@voyvolandosantafe.com</a></li>
+            <li><a href="#" class="js-direccion">C. Cristóbal Colón, 7</a></li>
+            <li><a href="#" class="js-poblacion">Santa Fe, Granada</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
         <p>© 2024 Voy Volando · Pizzería Artesanal</p>
-        <div class="footer-phone"><a href="tel:958442847">📞 Llamar ahora · 958 44 28 47</a></div>
+        <div class="footer-phone"><a href="tel:958442847" class="js-tel">📞 Llamar ahora · <span class="js-tel-text">958 44 28 47</span></a></div>
       </div>
     </div>
   </footer>
@@ -971,10 +990,65 @@
       });
 
       /* ── Load dynamic content ───────────── */
+      loadSite();
       loadCarta();
       loadGaleria();
       loadPizzaMes();
       loadResenas();
+    }
+
+    /* ── CONTENIDO EDITABLE (hero, historia, contacto) ────────── */
+    async function loadSite() {
+      try {
+        const s = await fetch('/api/site').then(r => r.json());
+        const setText = (sel, val) => {
+          if (!val) return;
+          document.querySelectorAll(sel).forEach(el => el.textContent = val);
+        };
+        if (s.hero) {
+          setText('#hero-eyebrow', s.hero.eyebrow);
+          setText('#hero-t1', s.hero.titulo1);
+          setText('#hero-t2', s.hero.titulo2);
+          if (s.hero.sub) document.getElementById('hero-sub').innerHTML =
+            esc(s.hero.sub).replace(/\n/g, '<br>');
+        }
+        if (s.historia) {
+          setText('#hist-titulo', s.historia.titulo);
+          setText('#hist-p1', s.historia.parrafo1);
+          setText('#hist-p2', s.historia.parrafo2);
+        }
+        setText('.js-direccion', s.direccion);
+        setText('.js-poblacion', s.poblacion);
+        setText('.js-email', s.email);
+        if (s.direccion) {
+          const pobCorta = (s.poblacion || '').replace(/^\d+\s*/, '').split(',')[0];
+          setText('#label-direccion', `${s.direccion}${pobCorta ? ' · ' + pobCorta : ''}`);
+        }
+        if (s.email) document.querySelectorAll('.js-email').forEach(a => a.href = `mailto:${s.email}`);
+        if (s.telefono) {
+          const telHref = 'tel:' + s.telefono.replace(/[^\d+]/g, '');
+          document.querySelectorAll('.js-tel, .js-tel-btn, .js-order').forEach(a => a.href = telHref);
+          setText('.js-tel-text', s.telefono);
+          const lbl = document.querySelector('.js-tel-label');
+          if (lbl) lbl.textContent = `Llamar · ${s.telefono}`;
+        }
+        // Horario (no existía en el proyecto origen: solo se muestra si está relleno)
+        if (s.horarios && !/^PENDIENTE/i.test(s.horarios)) {
+          document.getElementById('ct-horarios').innerHTML = esc(s.horarios).replace(/\n/g, '<br>');
+          document.getElementById('horarios-block').style.display = 'flex';
+        }
+        // Diferenciador: pedido directo por WhatsApp si hay número configurado
+        if (s.whatsapp) {
+          const wa = `https://wa.me/${s.whatsapp}?text=${encodeURIComponent('Hola, quiero hacer un pedido 🍕')}`;
+          document.querySelectorAll('.js-order').forEach(a => {
+            a.href = wa;
+            a.target = '_blank';
+            a.rel = 'noopener';
+          });
+          const cartaCta = document.getElementById('carta-cta');
+          if (cartaCta) cartaCta.textContent = 'Pedir por WhatsApp';
+        }
+      } catch { /* API no disponible: se quedan los textos por defecto */ }
     }
 
     /* ── DYNAMIC DATA LOADING ────────── */
@@ -983,12 +1057,17 @@
         const pizzas = await fetch('/api/carta').then(r => r.json());
         const grid = document.getElementById('pizza-grid');
         if (!pizzas.length) return;
+        const precioFmt = (n) => Number(n).toFixed(2).replace('.', ',') + ' €';
         grid.innerHTML = pizzas.filter(p => p.activa !== false).map(p => `
           <div class="pizza-card">
-            <div class="pizza-icon" style="background:${hexToAlpha(p.tagColor||'#C41E3A',0.15)}">${p.emoji||'🍕'}</div>
+            <div class="pizza-card-head">
+              <div class="pizza-icon" style="background:${hexToAlpha(p.tagColor||'#C41E3A',0.15)}">${p.emoji||'🍕'}</div>
+              ${p.precio != null ? `<span class="pizza-precio">${precioFmt(p.precio)}</span>` : ''}
+            </div>
             <h3>${esc(p.nombre)}</h3>
             <p>${esc(p.descripcion||'')}</p>
             <span class="pizza-tag" style="color:${p.tagColor||'#C41E3A'};border-color:${p.tagColor||'#C41E3A'}">${esc(p.tag||'')}</span>
+            ${p.alergenos?.length ? `<div class="pizza-alergenos"><strong>Alérgenos:</strong> ${p.alergenos.map(esc).join(', ')}</div>` : ''}
           </div>
         `).join('');
         gsap.utils.toArray('#pizza-grid .pizza-card').forEach((card, i) => {
@@ -1017,7 +1096,7 @@
         }
         grid.innerHTML = files.map((f, i) => `
           <div class="galeria-cell" ${i===0?'style="grid-column:span 2;grid-row:span 2"':''}>
-            <img src="${f.url}" alt="" loading="lazy">
+            <img src="${f.url}" alt="${esc(f.alt || 'Pizzería Voy Volando')}" loading="lazy">
             <div class="galeria-cell-overlay"></div>
           </div>
         `).join('');

@@ -406,6 +406,10 @@
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         Pizza del Mes
       </div>
+      <div class="nav-item" data-page="contenido">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Contenido web
+      </div>
       <div class="nav-item" data-page="resenas">
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         Reseñas Google
@@ -441,7 +445,8 @@
             <tr>
               <th>Pizza</th>
               <th>Descripción</th>
-              <th>Tag</th>
+              <th>Precio</th>
+              <th>Alérgenos</th>
               <th>Visible</th>
               <th style="text-align:right">Acciones</th>
             </tr>
@@ -462,7 +467,7 @@
       <div class="upload-zone" id="upload-zone">
         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
         <p><strong>Arrastra fotos aquí</strong> o haz clic para seleccionar</p>
-        <p style="font-size:0.75rem;margin-top:0.4rem">JPG, PNG, WebP — máx. 15 MB por foto</p>
+        <p style="font-size:0.75rem;margin-top:0.4rem">JPG, PNG, WebP — máx. 15 MB por foto. Se optimizan solas (WebP, máx. 1600px)</p>
         <input type="file" id="file-input" accept="image/*" multiple>
       </div>
       <div class="gallery-grid" id="gallery-grid"></div>
@@ -513,6 +518,88 @@
       </div>
     </div>
 
+    <!-- ── CONTENIDO WEB ──────────────────────────────────────────────── -->
+    <div class="page" id="page-contenido">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Contenido web</h1>
+          <p class="page-subtitle">Textos del hero, historia, contacto y horarios. Se publican al guardar.</p>
+        </div>
+      </div>
+      <form id="form-contenido">
+        <div class="card" style="margin-bottom:1.5rem">
+          <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Portada (hero)</h3>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Eyebrow (línea pequeña superior)</label>
+              <input type="text" id="site-hero-eyebrow" placeholder="Santa Fe, Granada · Desde siempre">
+            </div>
+            <div class="form-field">
+              <label>Título línea 1</label>
+              <input type="text" id="site-hero-titulo1" placeholder="Pizza">
+            </div>
+            <div class="form-field">
+              <label>Título línea 2 (en rojo)</label>
+              <input type="text" id="site-hero-titulo2" placeholder="auténtica.">
+            </div>
+            <div class="form-field full">
+              <label>Subtítulo</label>
+              <textarea id="site-hero-sub" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Sección "Nuestra historia"</h3>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Título</label>
+              <input type="text" id="site-hist-titulo">
+            </div>
+            <div class="form-field full">
+              <label>Párrafo 1</label>
+              <textarea id="site-hist-p1" rows="3"></textarea>
+            </div>
+            <div class="form-field full">
+              <label>Párrafo 2</label>
+              <textarea id="site-hist-p2" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:1.5rem">
+          <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Contacto y horarios</h3>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Dirección</label>
+              <input type="text" id="site-direccion">
+            </div>
+            <div class="form-field">
+              <label>Código postal y población</label>
+              <input type="text" id="site-poblacion">
+            </div>
+            <div class="form-field">
+              <label>Teléfono</label>
+              <input type="tel" id="site-telefono">
+            </div>
+            <div class="form-field">
+              <label>Email</label>
+              <input type="email" id="site-email">
+            </div>
+            <div class="form-field">
+              <label>WhatsApp (con prefijo, ej. 34600111222)</label>
+              <input type="tel" id="site-whatsapp" placeholder="Vacío = botón de llamada normal">
+            </div>
+            <div class="form-field">
+              <label>Horarios</label>
+              <textarea id="site-horarios" rows="2" placeholder="Mar–Dom 13:00–16:00 y 20:00–23:30"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-red">Guardar y publicar</button>
+        </div>
+      </form>
+    </div>
+
     <!-- ── RESEÑAS ────────────────────────────────────────────────────── -->
     <div class="page" id="page-resenas">
       <div class="page-header">
@@ -543,17 +630,16 @@
         <div class="notice notice-info">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <div>
-            Necesitas una <strong>Google Places API Key</strong> y el <strong>Place ID</strong> de tu negocio.<br>
-            Consigue la API key en <strong>console.cloud.google.com</strong> → APIs → Places API.<br>
-            El Place ID lo encuentras buscando tu negocio en <strong>developers.google.com/maps/documentation/places/web-service/place-id</strong>
+            La <strong>API Key</strong> es un secreto: se configura en el servidor (variable de entorno <strong>GOOGLE_API_KEY</strong> del archivo .env), no aquí.<br>
+            El <strong>Place ID</strong> lo encuentras buscando tu negocio en <strong>developers.google.com/maps/documentation/places/web-service/place-id</strong>
           </div>
+        </div>
+        <div id="cfg-apikey-status" class="notice notice-warn" style="display:none">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div>GOOGLE_API_KEY no está configurada en el servidor. Las reseñas no se mostrarán.</div>
         </div>
         <form id="form-config-google">
           <div class="form-grid">
-            <div class="form-field full">
-              <label>Google Places API Key</label>
-              <input type="text" id="cfg-api-key" placeholder="AIzaSy...">
-            </div>
             <div class="form-field full">
               <label>Google Place ID</label>
               <input type="text" id="cfg-place-id" placeholder="ChIJ...">
@@ -570,13 +656,17 @@
         <h3 style="font-size:1rem;font-weight:600;margin-bottom:1rem">Cambiar contraseña</h3>
         <form id="form-password">
           <div class="form-grid">
+            <div class="form-field full">
+              <label>Contraseña actual</label>
+              <input type="password" id="cfg-pwd0" autocomplete="current-password">
+            </div>
             <div class="form-field">
               <label>Nueva contraseña</label>
-              <input type="password" id="cfg-pwd1" placeholder="Mínimo 6 caracteres">
+              <input type="password" id="cfg-pwd1" placeholder="Mínimo 8 caracteres" autocomplete="new-password">
             </div>
             <div class="form-field">
               <label>Confirmar contraseña</label>
-              <input type="password" id="cfg-pwd2" placeholder="Repetir contraseña">
+              <input type="password" id="cfg-pwd2" placeholder="Repetir contraseña" autocomplete="new-password">
             </div>
           </div>
           <div class="form-actions">
@@ -619,6 +709,20 @@
           <label>Color del tag (hex)</label>
           <input type="text" id="pizza-color" placeholder="#C41E3A">
         </div>
+        <div class="form-field">
+          <label>Precio (€)</label>
+          <input type="number" id="pizza-precio" min="0" step="0.10" placeholder="Vacío = no se muestra">
+        </div>
+        <div class="form-field">
+          <label>Categoría</label>
+          <input type="text" id="pizza-categoria" placeholder="Pizzas, Calzones, Bebidas...">
+        </div>
+        <div class="form-field full">
+          <label>Alérgenos</label>
+          <div id="pizza-alergenos" style="display:flex;flex-wrap:wrap;gap:0.4rem 0.9rem;padding:0.4rem 0">
+            <!-- checkboxes generados por JS -->
+          </div>
+        </div>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
@@ -632,29 +736,21 @@
 <div id="toast"></div>
 
 <script>
-  // ── State ───────────────────────────────────────────────────────────────────
-  let TOKEN = localStorage.getItem('vv_admin_token') || '';
-
-  // ── API helper ──────────────────────────────────────────────────────────────
+  // ── API helper (sesión por cookie httpOnly; el navegador la envía sola) ─────
   async function api(method, path, body) {
-    const opts = {
-      method,
-      headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN }
-    };
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
     if (body !== undefined) opts.body = JSON.stringify(body);
     const r = await fetch(path, opts);
     const json = await r.json().catch(() => ({}));
+    if (r.status === 401 && path !== '/api/login') showLogin();
     if (!r.ok) throw new Error(json.error || r.statusText);
     return json;
   }
 
   async function apiUpload(formData) {
-    const r = await fetch('/api/galeria/upload', {
-      method: 'POST',
-      headers: { 'x-admin-token': TOKEN },
-      body: formData
-    });
+    const r = await fetch('/api/galeria/upload', { method: 'POST', body: formData });
     const json = await r.json().catch(() => ({}));
+    if (r.status === 401) showLogin();
     if (!r.ok) throw new Error(json.error || r.statusText);
     return json;
   }
@@ -674,24 +770,24 @@
     e.preventDefault();
     const pwd = document.getElementById('pwd').value;
     try {
-      const { token } = await api('POST', '/api/login', { password: pwd });
-      TOKEN = token;
-      localStorage.setItem('vv_admin_token', token);
+      await api('POST', '/api/login', { password: pwd });
+      document.getElementById('pwd').value = '';
       showApp();
     } catch (err) {
       document.getElementById('login-error').textContent = err.message;
     }
   });
 
-  async function checkToken() {
-    if (!TOKEN) return;
+  async function checkSession() {
     try {
-      await api('GET', '/api/config');
-      showApp();
-    } catch {
-      localStorage.removeItem('vv_admin_token');
-      TOKEN = '';
-    }
+      const { authenticated } = await api('GET', '/api/session');
+      if (authenticated) showApp();
+    } catch { /* servidor caído: se queda en login */ }
+  }
+
+  function showLogin() {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
   }
 
   // ── Mobile sidebar ──────────────────────────────────────────────────────────
@@ -710,12 +806,9 @@
 
   // ── Logout (both desktop and mobile buttons) ─────────────────────────────────
   async function doLogout() {
-    try { await api('POST', '/api/logout'); } catch {}
-    TOKEN = '';
-    localStorage.removeItem('vv_admin_token');
+    try { await api('POST', '/api/logout'); } catch { /* sesión ya caducada */ }
     closeSidebar();
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('login-screen').style.display = 'flex';
+    showLogin();
   }
   document.getElementById('btn-logout').addEventListener('click', doLogout);
   document.getElementById('btn-logout-mobile').addEventListener('click', doLogout);
@@ -737,59 +830,95 @@
   function navigate(page) {
     document.querySelectorAll('.nav-item').forEach(i => i.classList.toggle('active', i.dataset.page === page));
     document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === `page-${page}`));
-    if (page === 'carta')    loadCarta();
-    if (page === 'galeria')  loadGaleria();
-    if (page === 'pizzames') loadPizzaMes();
-    if (page === 'resenas')  loadResenas();
-    if (page === 'config')   loadConfig();
+    if (page === 'carta')     loadCarta();
+    if (page === 'galeria')   loadGaleria();
+    if (page === 'pizzames')  loadPizzaMes();
+    if (page === 'contenido') loadContenido();
+    if (page === 'resenas')   loadResenas();
+    if (page === 'config')    loadConfig();
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CARTA
   // ═══════════════════════════════════════════════════════════════════════════
+  const ALERGENOS = ['gluten','lácteos','huevo','pescado','marisco','frutos secos','soja','mostaza','sésamo','apio','sulfitos','altramuces','moluscos','cacahuetes'];
+  let CARTA = [];
+
   async function loadCarta() {
-    const pizzas = await api('GET', '/api/carta').catch(() => []);
-    const tbody  = document.getElementById('carta-tbody');
-    tbody.innerHTML = pizzas.map(p => `
+    CARTA = await api('GET', '/api/carta').catch(() => []);
+    const tbody = document.getElementById('carta-tbody');
+    tbody.innerHTML = CARTA.map((p, i) => `
       <tr>
         <td>
           <div style="display:flex;align-items:center;gap:0.6rem">
             <span style="font-size:1.4rem">${p.emoji || '🍕'}</span>
             <strong style="font-size:0.9rem">${esc(p.nombre)}</strong>
+            <span class="pill" style="color:${p.tagColor || '#C41E3A'};border-color:${p.tagColor || '#C41E3A'}">${esc(p.tag || '')}</span>
           </div>
         </td>
         <td data-label="Descripción" style="color:var(--muted);max-width:280px;font-size:0.82rem">${esc(p.descripcion || '')}</td>
-        <td data-label="Tag">
-          <span class="pill" style="color:${p.tagColor || '#C41E3A'};border-color:${p.tagColor || '#C41E3A'}">
-            ${esc(p.tag || '')}
-          </span>
-        </td>
+        <td data-label="Precio">${p.precio != null ? Number(p.precio).toFixed(2).replace('.', ',') + ' €' : '<span style="color:var(--orange)">sin precio</span>'}</td>
+        <td data-label="Alérgenos" style="color:var(--muted);font-size:0.78rem;max-width:160px">${(p.alergenos || []).map(esc).join(', ') || '—'}</td>
         <td data-label="Visible">
           <div class="toggle ${p.activa ? 'on' : ''}" onclick="togglePizza('${p.id}', this)"></div>
         </td>
         <td>
-          <button class="btn btn-ghost btn-sm" onclick='openEditPizza(${JSON.stringify(p)})'>Editar</button>
+          <button class="btn btn-ghost btn-sm" ${i === 0 ? 'disabled style="opacity:0.3"' : ''} onclick="movePizza(${i}, -1)" title="Subir">↑</button>
+          <button class="btn btn-ghost btn-sm" ${i === CARTA.length - 1 ? 'disabled style="opacity:0.3"' : ''} onclick="movePizza(${i}, 1)" title="Bajar">↓</button>
+          <button class="btn btn-ghost btn-sm" onclick="openEditPizzaById('${p.id}')">Editar</button>
           <button class="btn btn-danger btn-sm" onclick="deletePizza('${p.id}')">Borrar</button>
         </td>
       </tr>
     `).join('');
   }
 
+  async function movePizza(i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= CARTA.length) return;
+    [CARTA[i], CARTA[j]] = [CARTA[j], CARTA[i]];
+    try {
+      await api('PUT', '/api/carta/orden', { ids: CARTA.map(p => p.id) });
+      loadCarta();
+    } catch (err) { toast(err.message, 'err'); }
+  }
+
+  // Checkboxes de alérgenos (generados una vez)
+  document.getElementById('pizza-alergenos').innerHTML = ALERGENOS.map(a => `
+    <label style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;color:var(--text);cursor:pointer;text-transform:capitalize">
+      <input type="checkbox" value="${a}" name="alergeno"> ${a}
+    </label>
+  `).join('');
+
+  function setAlergenos(list) {
+    document.querySelectorAll('input[name=alergeno]').forEach(cb => {
+      cb.checked = (list || []).includes(cb.value);
+    });
+  }
+  function getAlergenos() {
+    return [...document.querySelectorAll('input[name=alergeno]:checked')].map(cb => cb.value);
+  }
+
   document.getElementById('btn-add-pizza').addEventListener('click', () => {
     document.getElementById('modal-pizza-title').textContent = 'Nueva pizza';
     document.getElementById('form-pizza').reset();
     document.getElementById('pizza-id').value = '';
+    setAlergenos([]);
     openModal();
   });
 
-  function openEditPizza(p) {
+  function openEditPizzaById(id) {
+    const p = CARTA.find(x => x.id === id);
+    if (!p) return;
     document.getElementById('modal-pizza-title').textContent = 'Editar pizza';
-    document.getElementById('pizza-id').value    = p.id;
-    document.getElementById('pizza-emoji').value = p.emoji  || '';
-    document.getElementById('pizza-nombre').value= p.nombre || '';
-    document.getElementById('pizza-desc').value  = p.descripcion || '';
-    document.getElementById('pizza-tag').value   = p.tag   || '';
-    document.getElementById('pizza-color').value = p.tagColor || '#C41E3A';
+    document.getElementById('pizza-id').value       = p.id;
+    document.getElementById('pizza-emoji').value    = p.emoji  || '';
+    document.getElementById('pizza-nombre').value   = p.nombre || '';
+    document.getElementById('pizza-desc').value     = p.descripcion || '';
+    document.getElementById('pizza-tag').value      = p.tag   || '';
+    document.getElementById('pizza-color').value    = p.tagColor || '#C41E3A';
+    document.getElementById('pizza-precio').value   = p.precio != null ? p.precio : '';
+    document.getElementById('pizza-categoria').value= p.categoria || '';
+    setAlergenos(p.alergenos);
     openModal();
   }
 
@@ -802,6 +931,9 @@
       descripcion: document.getElementById('pizza-desc').value,
       tag:         document.getElementById('pizza-tag').value,
       tagColor:    document.getElementById('pizza-color').value || '#C41E3A',
+      precio:      document.getElementById('pizza-precio').value,
+      categoria:   document.getElementById('pizza-categoria').value,
+      alergenos:   getAlergenos(),
     };
     try {
       if (id) await api('PUT', `/api/carta/${id}`, datos);
@@ -828,18 +960,33 @@
   // ═══════════════════════════════════════════════════════════════════════════
   // GALERÍA
   // ═══════════════════════════════════════════════════════════════════════════
+  let GALERIA = [];
+
   async function loadGaleria() {
-    const files = await api('GET', '/api/galeria').catch(() => []);
-    document.getElementById('gallery-count').textContent = `${files.length} foto${files.length !== 1 ? 's' : ''}`;
+    GALERIA = await api('GET', '/api/galeria').catch(() => []);
+    document.getElementById('gallery-count').textContent =
+      `${GALERIA.length} foto${GALERIA.length !== 1 ? 's' : ''} · la primera es la grande de la portada`;
     const grid = document.getElementById('gallery-grid');
-    grid.innerHTML = files.map(f => `
+    grid.innerHTML = GALERIA.map((f, i) => `
       <div class="gallery-item">
-        <img src="${f.url}" alt="${f.filename}" loading="lazy">
-        <div class="gallery-item-overlay">
+        <img src="${f.url}" alt="${esc(f.alt || f.filename)}" loading="lazy">
+        <div class="gallery-item-overlay" style="gap:0.4rem">
+          <button class="btn btn-ghost btn-sm" ${i === 0 ? 'disabled style="opacity:0.3"' : ''} onclick="movePhoto(${i}, -1)" title="Antes">←</button>
           <button class="btn btn-danger btn-sm" onclick="deletePhoto('${f.filename}')">Borrar</button>
+          <button class="btn btn-ghost btn-sm" ${i === GALERIA.length - 1 ? 'disabled style="opacity:0.3"' : ''} onclick="movePhoto(${i}, 1)" title="Después">→</button>
         </div>
       </div>
     `).join('');
+  }
+
+  async function movePhoto(i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= GALERIA.length) return;
+    [GALERIA[i], GALERIA[j]] = [GALERIA[j], GALERIA[i]];
+    try {
+      await api('PUT', '/api/galeria/orden', { filenames: GALERIA.map(f => f.filename) });
+      loadGaleria();
+    } catch (err) { toast(err.message, 'err'); }
   }
 
   async function deletePhoto(filename) {
@@ -964,15 +1111,15 @@
   // ═══════════════════════════════════════════════════════════════════════════
   async function loadConfig() {
     const cfg = await api('GET', '/api/config').catch(() => ({}));
-    document.getElementById('cfg-api-key').value  = cfg.googleApiKey  || '';
     document.getElementById('cfg-place-id').value = cfg.googlePlaceId || '';
+    document.getElementById('cfg-apikey-status').style.display =
+      cfg.googleApiKeyConfigured ? 'none' : 'flex';
   }
 
   document.getElementById('form-config-google').addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
       await api('PUT', '/api/config', {
-        googleApiKey:  document.getElementById('cfg-api-key').value.trim(),
         googlePlaceId: document.getElementById('cfg-place-id').value.trim(),
       });
       toast('Configuración de Google guardada ✓');
@@ -981,14 +1128,63 @@
 
   document.getElementById('form-password').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const p0 = document.getElementById('cfg-pwd0').value;
     const p1 = document.getElementById('cfg-pwd1').value;
     const p2 = document.getElementById('cfg-pwd2').value;
     if (p1 !== p2) return toast('Las contraseñas no coinciden', 'err');
-    if (p1.length < 6) return toast('Mínimo 6 caracteres', 'err');
+    if (p1.length < 8) return toast('Mínimo 8 caracteres', 'err');
     try {
-      await api('PUT', '/api/config', { newPassword: p1 });
+      await api('POST', '/api/password', { actual: p0, nueva: p1 });
       document.getElementById('form-password').reset();
       toast('Contraseña cambiada ✓');
+    } catch (err) { toast(err.message, 'err'); }
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CONTENIDO WEB
+  // ═══════════════════════════════════════════════════════════════════════════
+  async function loadContenido() {
+    const s = await api('GET', '/api/site').catch(() => ({}));
+    const h = s.hero || {}, hi = s.historia || {};
+    document.getElementById('site-hero-eyebrow').value = h.eyebrow || '';
+    document.getElementById('site-hero-titulo1').value = h.titulo1 || '';
+    document.getElementById('site-hero-titulo2').value = h.titulo2 || '';
+    document.getElementById('site-hero-sub').value     = h.sub || '';
+    document.getElementById('site-hist-titulo').value  = hi.titulo || '';
+    document.getElementById('site-hist-p1').value      = hi.parrafo1 || '';
+    document.getElementById('site-hist-p2').value      = hi.parrafo2 || '';
+    document.getElementById('site-direccion').value    = s.direccion || '';
+    document.getElementById('site-poblacion').value    = s.poblacion || '';
+    document.getElementById('site-telefono').value     = s.telefono || '';
+    document.getElementById('site-email').value        = s.email || '';
+    document.getElementById('site-whatsapp').value     = s.whatsapp || '';
+    document.getElementById('site-horarios').value     = s.horarios || '';
+  }
+
+  document.getElementById('form-contenido').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const datos = {
+      direccion: document.getElementById('site-direccion').value,
+      poblacion: document.getElementById('site-poblacion').value,
+      telefono:  document.getElementById('site-telefono').value,
+      email:     document.getElementById('site-email').value,
+      whatsapp:  document.getElementById('site-whatsapp').value.replace(/[^\d]/g, ''),
+      horarios:  document.getElementById('site-horarios').value,
+      hero: {
+        eyebrow: document.getElementById('site-hero-eyebrow').value,
+        titulo1: document.getElementById('site-hero-titulo1').value,
+        titulo2: document.getElementById('site-hero-titulo2').value,
+        sub:     document.getElementById('site-hero-sub').value,
+      },
+      historia: {
+        titulo:   document.getElementById('site-hist-titulo').value,
+        parrafo1: document.getElementById('site-hist-p1').value,
+        parrafo2: document.getElementById('site-hist-p2').value,
+      },
+    };
+    try {
+      await api('PUT', '/api/site', datos);
+      toast('Contenido publicado ✓ La web ya muestra los cambios');
     } catch (err) { toast(err.message, 'err'); }
   });
 
@@ -1007,7 +1203,7 @@
   }
 
   // ── Init ────────────────────────────────────────────────────────────────────
-  checkToken();
+  checkSession();
 </script>
 </body>
 </html>
