@@ -1,0 +1,74 @@
+[
+  {
+    "id": "1",
+    "emoji": "🍅",
+    "name": "Margarita",
+    "description": "La clásica italiana. Tomate artesanal, mozzarella fior di latte y albahaca fresca.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "active": true,
+    "category": "Pizzas",
+    "price": null,
+    "allergens": []
+  },
+  {
+    "id": "2",
+    "emoji": "⭐",
+    "name": "Speciale",
+    "description": "La especial de la casa. Ingredientes seleccionados combinados con maestría.",
+    "tag": "Especial",
+    "tagColor": "#C9A84C",
+    "active": true,
+    "category": "Pizzas",
+    "price": null,
+    "allergens": []
+  },
+  {
+    "id": "3",
+    "emoji": "🐟",
+    "name": "Tonno",
+    "description": "Tomate, mozzarella y atún de calidad. Una combinación sencilla e irresistible.",
+    "tag": "Del mar",
+    "tagColor": "#2980b9",
+    "active": true,
+    "category": "Pizzas",
+    "price": null,
+    "allergens": []
+  },
+  {
+    "id": "4",
+    "emoji": "🌿",
+    "name": "Rucola",
+    "description": "Mozzarella fresca, rúcula y tomates cherry. Fresca, ligera y llena de sabor.",
+    "tag": "Vegetariana",
+    "tagColor": "#27ae60",
+    "active": true,
+    "category": "Pizzas",
+    "price": null,
+    "allergens": []
+  },
+  {
+    "id": "5",
+    "emoji": "🥩",
+    "name": "Salami",
+    "description": "Tomate, mozzarella y salami italiano. Intensa, sabrosa y perfecta para los carnívoros.",
+    "tag": "Carne",
+    "tagColor": "#8e44ad",
+    "active": true,
+    "category": "Pizzas",
+    "price": null,
+    "allergens": []
+  },
+  {
+    "id": "6",
+    "emoji": "🫓",
+    "name": "Calzone",
+    "description": "Pizza cerrada rellena con los ingredientes de tu elección. Crujiente por fuera, jugosa por dentro.",
+    "tag": "A elegir",
+    "tagColor": "#e67e22",
+    "active": true,
+    "category": "Pizzas",
+    "price": null,
+    "allergens": []
+  }
+]

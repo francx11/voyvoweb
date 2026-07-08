@@ -15,7 +15,7 @@ const PROD = process.env.NODE_ENV === 'production';
 const ROOT = path.join(__dirname, '..');
 const PUBLIC_DIR = path.join(ROOT, 'public');
 const DATA_DIR = path.join(ROOT, 'data');
-const GALLERY = path.join(PUBLIC_DIR, 'assets', 'gallery');
+const GALLERY_DIR = path.join(PUBLIC_DIR, 'assets', 'gallery');
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use((_req, res, next) => {
@@ -25,9 +25,9 @@ app.use((_req, res, next) => {
   next();
 });
 app.use(express.json({ limit: '1mb' }));
-app.use(express.static(PUBLIC_DIR)); // solo public/ — nunca data/ ni src/
+app.use(express.static(PUBLIC_DIR)); // only public/ — never data/ or src/
 
-// ── Helpers JSON (escritura atómica: tmp + rename) ───────────────────────────
+// ── JSON helpers (atomic write: tmp + rename) ─────────────────────────────────
 const dataFile = (f) => path.join(DATA_DIR, f);
 const readJSON = (f, fallback) => {
   try {
@@ -44,10 +44,10 @@ const writeJSON = (f, d) => {
 };
 const sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');
 
-if (!fs.existsSync(GALLERY)) fs.mkdirSync(GALLERY, { recursive: true });
+if (!fs.existsSync(GALLERY_DIR)) fs.mkdirSync(GALLERY_DIR, { recursive: true });
 
-// ── Credenciales admin (data/auth.json, fuera de git) ─────────────────────────
-// Formatos soportados: { sha256: "<hex>" } (legado) o { scrypt: { salt, hash } }
+// ── Admin credentials (data/auth.json, outside git) ───────────────────────────
+// Supported formats: { sha256: "<hex>" } (legacy) or { scrypt: { salt, hash } }
 function initAuth() {
   let auth = readJSON('auth.json', null);
   if (auth && (auth.sha256 || auth.scrypt)) return auth;
@@ -58,8 +58,8 @@ function initAuth() {
   } else {
     auth = { sha256: sha256('admin1234') };
     console.log('');
-    console.log('  ⚠️  Contraseña por defecto: admin1234');
-    console.log('  👉  Cámbiala en el panel de admin → Configuración');
+    console.log('  ⚠️  Default password: admin1234');
+    console.log('  👉  Change it from the admin panel → Configuración');
     console.log('');
   }
   writeJSON('auth.json', auth);
@@ -83,8 +83,8 @@ function verifyPassword(password) {
 }
 initAuth();
 
-// ── Sesiones en memoria con expiración ────────────────────────────────────────
-const SESSION_TTL = 8 * 60 * 60 * 1000; // 8 h
+// ── In-memory sessions with expiry ────────────────────────────────────────────
+const SESSION_TTL = 8 * 60 * 60 * 1000; // 8h
 const sessions = new Map(); // token → expiresAt
 
 function createSession() {
@@ -92,13 +92,13 @@ function createSession() {
   sessions.set(token, Date.now() + SESSION_TTL);
   return token;
 }
-function validSession(token) {
+function isSessionValid(token) {
   if (!token || !sessions.has(token)) return false;
   if (Date.now() > sessions.get(token)) {
     sessions.delete(token);
     return false;
   }
-  sessions.set(token, Date.now() + SESSION_TTL); // expiración deslizante
+  sessions.set(token, Date.now() + SESSION_TTL); // sliding expiration
   return true;
 }
 setInterval(
@@ -130,18 +130,18 @@ function sessionCookie(token, maxAgeMs) {
 }
 
 function requireAuth(req, res, next) {
-  if (!validSession(getCookie(req, 'vv_sess'))) {
+  if (!isSessionValid(getCookie(req, 'vv_sess'))) {
     return res.status(401).json({ error: 'No autorizado' });
   }
   next();
 }
 
-// ── Rate limit de login (en memoria, por IP) ─────────────────────────────────
+// ── Login rate limiting (in-memory, per IP) ───────────────────────────────────
 const LOGIN_MAX_FAILS = 5;
 const LOGIN_WINDOW = 15 * 60 * 1000; // 15 min
 const loginFails = new Map(); // ip → { count, first }
 
-function loginLimited(ip) {
+function isLoginLimited(ip) {
   const rec = loginFails.get(ip);
   if (!rec) return false;
   if (Date.now() - rec.first > LOGIN_WINDOW) {
@@ -150,7 +150,7 @@ function loginLimited(ip) {
   }
   return rec.count >= LOGIN_MAX_FAILS;
 }
-function registerFail(ip) {
+function registerLoginFail(ip) {
   const rec = loginFails.get(ip);
   if (!rec || Date.now() - rec.first > LOGIN_WINDOW) {
     loginFails.set(ip, { count: 1, first: Date.now() });
@@ -159,7 +159,7 @@ function registerFail(ip) {
   }
 }
 
-// ── Multer: subida a memoria, sharp escribe el archivo final ─────────────────
+// ── Multer: upload to memory, sharp writes the final file ────────────────────
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 15 * 1024 * 1024, files: 30 },
@@ -175,7 +175,7 @@ const upload = multer({
 
 app.post('/api/login', (req, res) => {
   const ip = req.ip || req.socket.remoteAddress;
-  if (loginLimited(ip)) {
+  if (isLoginLimited(ip)) {
     return res.status(429).json({ error: 'Demasiados intentos. Espera 15 minutos.' });
   }
   const { password } = req.body || {};
@@ -186,7 +186,7 @@ app.post('/api/login', (req, res) => {
     res.setHeader('Set-Cookie', sessionCookie(token, SESSION_TTL));
     res.json({ ok: true });
   } else {
-    registerFail(ip);
+    registerLoginFail(ip);
     res.status(401).json({ error: 'Contraseña incorrecta' });
   }
 });
@@ -198,80 +198,80 @@ app.post('/api/logout', requireAuth, (req, res) => {
 });
 
 app.get('/api/session', (req, res) => {
-  res.json({ authenticated: validSession(getCookie(req, 'vv_sess')) });
+  res.json({ authenticated: isSessionValid(getCookie(req, 'vv_sess')) });
 });
 
 app.post('/api/password', requireAuth, (req, res) => {
-  const { actual, nueva } = req.body || {};
-  if (!actual || !verifyPassword(actual)) {
+  const { currentPassword, newPassword } = req.body || {};
+  if (!currentPassword || !verifyPassword(currentPassword)) {
     return res.status(401).json({ error: 'Contraseña actual incorrecta' });
   }
-  if (!nueva || nueva.length < 8) {
+  if (!newPassword || newPassword.length < 8) {
     return res.status(400).json({ error: 'La nueva contraseña debe tener al menos 8 caracteres' });
   }
-  writeJSON('auth.json', scryptRecord(nueva));
+  writeJSON('auth.json', scryptRecord(newPassword));
   res.json({ ok: true });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// CARTA
+// MENU
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const sanitizePizza = (p) => ({
+const sanitizeMenuItem = (p) => ({
   emoji: String(p.emoji || '🍕').slice(0, 8),
-  nombre: String(p.nombre || '').slice(0, 80),
-  descripcion: String(p.descripcion || '').slice(0, 500),
+  name: String(p.name || '').slice(0, 80),
+  description: String(p.description || '').slice(0, 500),
   tag: String(p.tag || '').slice(0, 40),
   tagColor: /^#[0-9a-fA-F]{6}$/.test(p.tagColor || '') ? p.tagColor : '#C41E3A',
-  categoria: String(p.categoria || '').slice(0, 40),
-  precio:
-    p.precio === null || p.precio === undefined || p.precio === ''
+  category: String(p.category || '').slice(0, 40),
+  price:
+    p.price === null || p.price === undefined || p.price === ''
       ? null
-      : Math.max(0, Number(p.precio) || 0),
-  alergenos: Array.isArray(p.alergenos) ? p.alergenos.map(String).slice(0, 14) : [],
-  activa: p.activa !== false,
+      : Math.max(0, Number(p.price) || 0),
+  allergens: Array.isArray(p.allergens) ? p.allergens.map(String).slice(0, 14) : [],
+  active: p.active !== false,
 });
 
-app.get('/api/carta', (_req, res) => {
-  res.json(readJSON('carta.json', []));
+app.get('/api/menu', (_req, res) => {
+  res.json(readJSON('menu.json', []));
 });
 
-app.post('/api/carta', requireAuth, (req, res) => {
-  if (!req.body.nombre) return res.status(400).json({ error: 'Nombre requerido' });
-  const carta = readJSON('carta.json', []);
-  const pizza = { id: Date.now().toString(), ...sanitizePizza(req.body) };
-  carta.push(pizza);
-  writeJSON('carta.json', carta);
-  res.json(pizza);
+app.post('/api/menu', requireAuth, (req, res) => {
+  if (!req.body.name) return res.status(400).json({ error: 'Nombre requerido' });
+  const menu = readJSON('menu.json', []);
+  const item = { id: Date.now().toString(), ...sanitizeMenuItem(req.body) };
+  menu.push(item);
+  writeJSON('menu.json', menu);
+  res.json(item);
 });
 
-app.put('/api/carta/orden', requireAuth, (req, res) => {
+app.put('/api/menu/order', requireAuth, (req, res) => {
   const { ids } = req.body || {};
   if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids[] esperado' });
-  const carta = readJSON('carta.json', []);
-  const byId = new Map(carta.map((p) => [p.id, p]));
+  const menu = readJSON('menu.json', []);
+  const byId = new Map(menu.map((p) => [p.id, p]));
   const sorted = ids.map((id) => byId.get(id)).filter(Boolean);
-  for (const p of carta) if (!ids.includes(p.id)) sorted.push(p);
-  writeJSON('carta.json', sorted);
+  for (const p of menu) if (!ids.includes(p.id)) sorted.push(p);
+  writeJSON('menu.json', sorted);
   res.json({ ok: true });
 });
 
-app.put('/api/carta/:id', requireAuth, (req, res) => {
-  const carta = readJSON('carta.json', []);
-  const idx = carta.findIndex((p) => p.id === req.params.id);
+app.put('/api/menu/:id', requireAuth, (req, res) => {
+  const menu = readJSON('menu.json', []);
+  const idx = menu.findIndex((p) => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'No encontrada' });
-  carta[idx] = { id: req.params.id, ...sanitizePizza({ ...carta[idx], ...req.body }) };
-  writeJSON('carta.json', carta);
-  res.json(carta[idx]);
+  menu[idx] = { id: req.params.id, ...sanitizeMenuItem({ ...menu[idx], ...req.body }) };
+  writeJSON('menu.json', menu);
+  res.json(menu[idx]);
 });
 
-app.delete('/api/carta/:id', requireAuth, (req, res) => {
-  const carta = readJSON('carta.json', []).filter((p) => p.id !== req.params.id);
-  writeJSON('carta.json', carta);
+app.delete('/api/menu/:id', requireAuth, (req, res) => {
+  const menu = readJSON('menu.json', []).filter((p) => p.id !== req.params.id);
+  writeJSON('menu.json', menu);
   res.json({ ok: true });
 });
 
-// ── Carta en PDF (el cliente suele cargarla así) ──────────────────────────────
+// ── Menu as PDF (the client usually loads it this way) ────────────────────────
 const uploadPdf = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 20 * 1024 * 1024, files: 1 },
@@ -281,39 +281,39 @@ const uploadPdf = multer({
   },
 });
 
-app.post('/api/carta/pdf', requireAuth, uploadPdf.single('carta'), (req, res) => {
+app.post('/api/menu/pdf', requireAuth, uploadPdf.single('menu'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Archivo PDF requerido' });
   const cfg = readJSON('config.json', {});
-  const anterior = cfg.site?.carta?.pdf;
-  const name = `carta-${Date.now()}.pdf`; // nombre versionado: evita caché obsoleta
+  const previous = cfg.site?.menu?.pdf;
+  const name = `menu-${Date.now()}.pdf`; // timestamp-versioned: avoids stale cache
   fs.writeFileSync(path.join(PUBLIC_DIR, 'assets', name), req.file.buffer);
-  if (anterior) {
-    const fpAnterior = path.join(PUBLIC_DIR, path.basename(anterior));
-    const fpAssets = path.join(PUBLIC_DIR, 'assets', path.basename(anterior));
-    if (fs.existsSync(fpAssets)) fs.unlinkSync(fpAssets);
-    else if (fs.existsSync(fpAnterior)) fs.unlinkSync(fpAnterior);
+  if (previous) {
+    const prevInAssets = path.join(PUBLIC_DIR, 'assets', path.basename(previous));
+    const prevInRoot = path.join(PUBLIC_DIR, path.basename(previous));
+    if (fs.existsSync(prevInAssets)) fs.unlinkSync(prevInAssets);
+    else if (fs.existsSync(prevInRoot)) fs.unlinkSync(prevInRoot);
   }
   cfg.site = cfg.site || {};
-  cfg.site.carta = { ...(cfg.site.carta || {}), pdf: `/assets/${name}` };
+  cfg.site.menu = { ...(cfg.site.menu || {}), pdf: `/assets/${name}` };
   writeJSON('config.json', cfg);
-  res.json({ ok: true, pdf: cfg.site.carta.pdf });
+  res.json({ ok: true, pdf: cfg.site.menu.pdf });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// PIZZA DEL MES
+// MONTHLY SPECIAL ("pizza del mes")
 // ═══════════════════════════════════════════════════════════════════════════════
 
-app.get('/api/pizzames', (_req, res) => {
-  res.json(readJSON('pizzames.json', { activa: false }));
+app.get('/api/monthly-special', (_req, res) => {
+  res.json(readJSON('monthly-special.json', { active: false }));
 });
 
-app.put('/api/pizzames', requireAuth, (req, res) => {
+app.put('/api/monthly-special', requireAuth, (req, res) => {
   const b = req.body || {};
-  writeJSON('pizzames.json', {
-    activa: b.activa === true,
+  writeJSON('monthly-special.json', {
+    active: b.active === true,
     emoji: String(b.emoji || '🔥').slice(0, 8),
-    nombre: String(b.nombre || '').slice(0, 80),
-    descripcion: String(b.descripcion || '').slice(0, 500),
+    name: String(b.name || '').slice(0, 80),
+    description: String(b.description || '').slice(0, 500),
     badge: String(b.badge || '').slice(0, 40),
     cta: String(b.cta || '').slice(0, 60),
   });
@@ -321,66 +321,66 @@ app.put('/api/pizzames', requireAuth, (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// GALERÍA (orden persistido en data/galeria.json, optimización con sharp)
+// GALLERY (order persisted in data/gallery.json, sharp-optimized on upload)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function galleryFilesOnDisk() {
-  return fs.readdirSync(GALLERY).filter((f) => /\.(jpe?g|png|webp|gif|avif)$/i.test(f));
+  return fs.readdirSync(GALLERY_DIR).filter((f) => /\.(jpe?g|png|webp|gif|avif)$/i.test(f));
 }
 
-// Reconcilia data/galeria.json con lo que hay en disco
+// Reconciles data/gallery.json with what's actually on disk
 function galleryList() {
   const onDisk = new Set(galleryFilesOnDisk());
-  const order = readJSON('galeria.json', []).filter((e) => onDisk.has(e.filename));
+  const order = readJSON('gallery.json', []).filter((e) => onDisk.has(e.filename));
   const known = new Set(order.map((e) => e.filename));
   for (const f of onDisk) if (!known.has(f)) order.push({ filename: f, alt: '' });
   return order;
 }
 
-app.get('/api/galeria', (_req, res) => {
+app.get('/api/gallery', (_req, res) => {
   res.json(galleryList().map((e) => ({ ...e, url: `/assets/gallery/${e.filename}` })));
 });
 
-app.post('/api/galeria/upload', requireAuth, upload.array('fotos', 30), async (req, res) => {
+app.post('/api/gallery/upload', requireAuth, upload.array('photos', 30), async (req, res) => {
   try {
     const saved = [];
     for (const file of req.files || []) {
       const name = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
       await sharp(file.buffer)
-        .rotate() // respeta orientación EXIF
+        .rotate() // respects EXIF orientation
         .resize({ width: 1600, height: 1600, fit: 'inside', withoutEnlargement: true })
         .webp({ quality: 80 })
-        .toFile(path.join(GALLERY, name));
+        .toFile(path.join(GALLERY_DIR, name));
       saved.push({ filename: name, url: `/assets/gallery/${name}` });
     }
-    writeJSON('galeria.json', galleryList()); // incorpora los nuevos al final
+    writeJSON('gallery.json', galleryList()); // folds new files in at the end
     res.json(saved);
   } catch (e) {
     res.status(400).json({ error: `Error procesando imagen: ${e.message}` });
   }
 });
 
-app.put('/api/galeria/orden', requireAuth, (req, res) => {
+app.put('/api/gallery/order', requireAuth, (req, res) => {
   const { filenames } = req.body || {};
   if (!Array.isArray(filenames)) return res.status(400).json({ error: 'filenames[] esperado' });
   const current = galleryList();
   const byName = new Map(current.map((e) => [e.filename, e]));
   const sorted = filenames.map((f) => byName.get(path.basename(f))).filter(Boolean);
   for (const e of current) if (!sorted.includes(e)) sorted.push(e);
-  writeJSON('galeria.json', sorted);
+  writeJSON('gallery.json', sorted);
   res.json({ ok: true });
 });
 
-app.delete('/api/galeria/:filename', requireAuth, (req, res) => {
-  const name = path.basename(req.params.filename); // evita path traversal
-  const fp = path.join(GALLERY, name);
+app.delete('/api/gallery/:filename', requireAuth, (req, res) => {
+  const name = path.basename(req.params.filename); // prevents path traversal
+  const fp = path.join(GALLERY_DIR, name);
   if (fs.existsSync(fp)) fs.unlinkSync(fp);
-  writeJSON('galeria.json', galleryList());
+  writeJSON('gallery.json', galleryList());
   res.json({ ok: true });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// CONTENIDO DEL SITIO (hero, contacto, horarios, textos)
+// SITE CONTENT (hero, contact, hours, editorial copy)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 app.get('/api/site', (_req, res) => {
@@ -390,18 +390,18 @@ app.get('/api/site', (_req, res) => {
 
 app.put('/api/site', requireAuth, (req, res) => {
   const cfg = readJSON('config.json', {});
-  const previa = cfg.site || {};
-  cfg.site = { ...previa, ...req.body };
-  if (req.body.carta) {
-    // merge profundo: el modo no debe pisar la ruta del PDF ya subido
-    cfg.site.carta = { ...(previa.carta || {}), ...req.body.carta };
+  const previous = cfg.site || {};
+  cfg.site = { ...previous, ...req.body };
+  if (req.body.menu) {
+    // deep merge: switching mode must not clobber an already-uploaded PDF path
+    cfg.site.menu = { ...(previous.menu || {}), ...req.body.menu };
   }
   writeJSON('config.json', cfg);
   res.json({ ok: true });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RESEÑAS GOOGLE (API key solo por variable de entorno)
+// GOOGLE REVIEWS (API key only via environment variable)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 app.get('/api/reviews', (_req, res) => {
@@ -444,7 +444,7 @@ app.get('/api/reviews', (_req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// CONFIGURACIÓN (solo datos no sensibles)
+// SETTINGS (non-sensitive data only)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 app.get('/api/config', requireAuth, (_req, res) => {
@@ -467,5 +467,5 @@ app.put('/api/config', requireAuth, (req, res) => {
 // ── Start ──────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`🍕  Voy Volando · http://localhost:${PORT}`);
-  console.log(`🔧  Panel admin  · http://localhost:${PORT}/admin.html`);
+  console.log(`🔧  Admin panel  · http://localhost:${PORT}/admin.html`);
 });

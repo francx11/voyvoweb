@@ -1,27 +1,27 @@
 {
   "googlePlaceId": "",
   "site": {
-    "nombre": "Voy Volando",
-    "direccion": "C. Cristóbal Colón, 7",
-    "poblacion": "18320 Santa Fe, Granada",
-    "telefono": "958 44 28 47",
+    "name": "Voy Volando",
+    "address": "C. Cristóbal Colón, 7",
+    "city": "18320 Santa Fe, Granada",
+    "phone": "958 44 28 47",
     "email": "info@voyvolandosantafe.com",
     "whatsapp": "",
-    "horarios": "PENDIENTE: horario real del local (no figura en el proyecto origen)",
+    "hours": "PENDIENTE: horario real del local (no figura en el proyecto origen)",
     "hero": {
       "eyebrow": "Santa Fe, Granada · Desde siempre",
-      "titulo1": "Pizza",
-      "titulo2": "auténtica.",
+      "title1": "Pizza",
+      "title2": "auténtica.",
       "sub": "Ingredientes frescos, recetas de siempre y el sabor que no se olvida."
     },
-    "historia": {
-      "titulo": "Pasión por la pizza auténtica",
-      "parrafo1": "En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.",
-      "parrafo2": "Nuestro secreto está en la masa: elaborada artesanalmente cada mañana, fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro."
+    "story": {
+      "title": "Pasión por la pizza auténtica",
+      "paragraph1": "En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.",
+      "paragraph2": "Nuestro secreto está en la masa: elaborada artesanalmente cada mañana, fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro."
     },
-    "carta": {
+    "menu": {
       "pdf": null,
-      "modo": "productos"
+      "mode": "products"
     }
   }
 }

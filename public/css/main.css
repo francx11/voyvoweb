@@ -1,7 +1,7 @@
 /* ─────────────────────────────────────────────────────────────
    Voy Volando · Santa Fe, Granada
-   Dirección: "trattoria editorial" — carta impresa, papel crema,
-   tinta caliente, un solo acento rojo tomate.
+   Direction: "editorial trattoria" — printed menu, cream paper,
+   warm ink, a single tomato-red accent.
    ───────────────────────────────────────────────────────────── */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -11,11 +11,11 @@
   --paper-2: #f3ecdf;
   --ink: #2b2620;
   --ink-soft: #5c544a;
-  --tomato: #a83226;       /* texto/acentos sobre --paper: AA en ambos temas */
+  --tomato: #a83226;       /* text/accents on --paper: AA in both themes */
   --tomato-dark: #87281f;
-  --tomato-btn: #a83226;   /* fondo de botones sólidos: calibrado con --on-tomato */
+  --tomato-btn: #a83226;   /* solid button fill: calibrated against --on-tomato */
   --tomato-btn-hover: #87281f;
-  --on-tomato: #fff;       /* texto sobre --tomato-btn: fijo, no depende del tema */
+  --on-tomato: #fff;       /* text on --tomato-btn: fixed, theme-independent */
   --line: rgba(43, 38, 32, 0.18);
   --line-strong: rgba(43, 38, 32, 0.55);
   --display: 'Fraunces', Georgia, serif;
@@ -23,11 +23,11 @@
   color-scheme: light;
 }
 
-/* Oscuro: sigue preferencia del sistema salvo que el usuario elija a mano.
-   --tomato-btn usa un rojo distinto de --tomato: el texto (e2664f) se calibró
-   para leerse sobre --paper oscuro, pero ese mismo tono da solo 3,4:1 con
-   texto blanco encima — insuficiente para AA (4.5:1). c2301d cumple ambos
-   frentes: ≥4.5:1 con blanco y ≥3:1 de distinción contra el fondo oscuro. */
+/* Dark: follows the system preference unless the user picks manually.
+   --tomato-btn uses a different red than --tomato: the text tone (e2664f)
+   was tuned to read on dark --paper, but that same hue only gives 3.4:1
+   with white text on top — short of AA (4.5:1). c2301d clears both bars:
+   ≥4.5:1 with white and ≥3:1 of distinction against the dark background. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #211c17;
@@ -72,7 +72,7 @@ body {
 
 img { max-width: 100%; display: block; }
 
-/* Foco visible (WCAG 2.4.7) */
+/* Visible focus (WCAG 2.4.7) */
 :focus { outline: none; }
 :focus-visible { outline: 2px solid var(--tomato); outline-offset: 3px; }
 :target { scroll-margin-top: 90px; }
@@ -91,7 +91,7 @@ img { max-width: 100%; display: block; }
   clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
-/* ── Tipografía utilitaria ── */
+/* ── Utility typography ── */
 .eyebrow {
   display: block;
   font-size: 0.72rem; font-weight: 700;
@@ -109,7 +109,7 @@ img { max-width: 100%; display: block; }
 }
 .section-intro { color: var(--ink-soft); max-width: 56ch; }
 
-/* Ornamento de separación tipo menú impreso */
+/* Printed-menu-style divider ornament */
 .ornament {
   display: flex; align-items: center; gap: 0.9rem;
   color: var(--tomato);
@@ -187,7 +187,7 @@ img { max-width: 100%; display: block; }
 }
 .site-nav .nav-cta:hover { background: var(--tomato-btn-hover); color: var(--on-tomato); }
 
-/* ── Botones ── */
+/* ── Buttons ── */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
   min-height: 48px;
@@ -234,25 +234,25 @@ img { max-width: 100%; display: block; }
   color: var(--ink-soft);
 }
 
-/* ── Secciones ── */
+/* ── Sections ── */
 .section { padding: clamp(3.5rem, 8vw, 6rem) 1.5rem; }
 .section-alt { background: var(--paper-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .container { max-width: 1100px; margin: 0 auto; }
 .container-narrow { max-width: 760px; margin: 0 auto; }
 
-/* ── Historia ── */
-.historia-grid {
+/* ── Story ── */
+.story-grid {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: clamp(2rem, 5vw, 5rem); align-items: center;
 }
-.historia-text p { color: var(--ink-soft); margin-bottom: 1rem; }
-.historia-text p:first-of-type::first-letter {
+.story-text p { color: var(--ink-soft); margin-bottom: 1rem; }
+.story-text p:first-of-type::first-letter {
   font-family: var(--display);
   font-size: 3.2em; float: left;
   line-height: 0.85; padding-right: 0.12em;
   color: var(--tomato);
 }
-.historia-card {
+.story-card {
   border: 1px solid var(--line-strong);
   outline: 1px solid var(--line);
   outline-offset: 5px;
@@ -260,34 +260,34 @@ img { max-width: 100%; display: block; }
   text-align: center;
   background: var(--paper);
 }
-.historia-card .big {
+.story-card .big {
   font-family: var(--display); font-weight: 600;
   font-size: clamp(3.4rem, 7vw, 5rem); line-height: 1;
   color: var(--tomato);
 }
-.historia-card .big-label {
+.story-card .big-label {
   font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--ink-soft); margin-top: 0.6rem;
 }
-.historia-card hr { border: none; border-top: 1px solid var(--line); margin: 1.5rem 0; }
-.historia-card address { font-style: normal; font-size: 0.92rem; color: var(--ink-soft); line-height: 1.7; }
-.historia-card address strong { color: var(--ink); font-weight: 700; }
+.story-card hr { border: none; border-top: 1px solid var(--line); margin: 1.5rem 0; }
+.story-card address { font-style: normal; font-size: 0.92rem; color: var(--ink-soft); line-height: 1.7; }
+.story-card address strong { color: var(--ink); font-weight: 700; }
 
-/* ── Carta (estilo menú impreso) ── */
-.carta-frame {
+/* ── Menu (printed-menu style) ── */
+.menu-frame {
   border: 1px solid var(--line-strong);
   outline: 1px solid var(--line);
   outline-offset: 5px;
   background: var(--paper);
   padding: clamp(1.6rem, 5vw, 3.5rem);
 }
-.carta-header { text-align: center; margin-bottom: 2.2rem; }
+.menu-header { text-align: center; margin-bottom: 2.2rem; }
 
-.filtros {
+.allergen-filters {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;
   margin: 0 0 2rem;
 }
-.filtros-label {
+.allergen-filters-label {
   width: 100%; text-align: center;
   font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--ink-soft); margin-bottom: 0.4rem;
@@ -334,12 +334,12 @@ img { max-width: 100%; display: block; }
 .menu-alerg strong { font-weight: 700; color: var(--ink); }
 .menu-empty { text-align: center; color: var(--ink-soft); padding: 2rem 0; }
 
-/* Carta en PDF */
-.carta-pdf { text-align: center; padding: 1.5rem 0 0.5rem; }
-.carta-pdf p { color: var(--ink-soft); margin-bottom: 1.4rem; }
+/* Menu as PDF */
+.menu-pdf { text-align: center; padding: 1.5rem 0 0.5rem; }
+.menu-pdf p { color: var(--ink-soft); margin-bottom: 1.4rem; }
 
-/* ── Pizza del mes ── */
-.pizzames-box {
+/* ── Monthly special ── */
+.monthly-special-box {
   display: grid; grid-template-columns: auto 1fr;
   gap: clamp(1.5rem, 4vw, 3rem); align-items: center;
   border: 1px solid var(--line-strong);
@@ -347,7 +347,7 @@ img { max-width: 100%; display: block; }
   background: var(--paper);
   padding: clamp(1.6rem, 4vw, 2.8rem);
 }
-.pizzames-stamp {
+.monthly-special-stamp {
   width: clamp(96px, 14vw, 130px); height: clamp(96px, 14vw, 130px);
   border: 2px solid var(--tomato); border-radius: 50%;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -355,60 +355,60 @@ img { max-width: 100%; display: block; }
   transform: rotate(-8deg);
   font-family: var(--display);
 }
-.pizzames-stamp .st-top { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; font-family: var(--body); font-weight: 700; }
-.pizzames-stamp .st-mid { font-size: 1.6rem; font-weight: 600; font-style: italic; line-height: 1.1; }
-.pizzames-text h3 { font-family: var(--display); font-weight: 600; font-size: clamp(1.4rem, 3vw, 2rem); margin-bottom: 0.6rem; }
-.pizzames-text .pm-badge {
+.monthly-special-stamp .st-top { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; font-family: var(--body); font-weight: 700; }
+.monthly-special-stamp .st-mid { font-size: 1.6rem; font-weight: 600; font-style: italic; line-height: 1.1; }
+.monthly-special-text h3 { font-family: var(--display); font-weight: 600; font-size: clamp(1.4rem, 3vw, 2rem); margin-bottom: 0.6rem; }
+.monthly-special-text .ms-badge {
   display: inline-block; font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--tomato); border: 1px solid currentColor;
   padding: 0.25rem 0.7rem; border-radius: 30px; margin-bottom: 0.8rem;
 }
-.pizzames-text p { color: var(--ink-soft); margin-bottom: 1.2rem; max-width: 58ch; }
+.monthly-special-text p { color: var(--ink-soft); margin-bottom: 1.2rem; max-width: 58ch; }
 
-/* ── Servicios ── */
-.servicios-grid {
+/* ── Services ── */
+.services-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
   gap: 2rem; margin-top: 2.5rem;
 }
-.servicio { border-top: 2px solid var(--ink); padding-top: 1.2rem; }
-.servicio .num {
+.service { border-top: 2px solid var(--ink); padding-top: 1.2rem; }
+.service .num {
   font-family: var(--display); font-style: italic;
   color: var(--tomato); font-size: 1rem;
 }
-.servicio h3 { font-family: var(--display); font-weight: 600; font-size: 1.3rem; margin: 0.3rem 0 0.5rem; }
-.servicio p { color: var(--ink-soft); font-size: 0.95rem; }
-.servicio a { color: var(--tomato); font-weight: 700; }
+.service h3 { font-family: var(--display); font-weight: 600; font-size: 1.3rem; margin: 0.3rem 0 0.5rem; }
+.service p { color: var(--ink-soft); font-size: 0.95rem; }
+.service a { color: var(--tomato); font-weight: 700; }
 
-/* ── Galería ── */
-.galeria-grid {
+/* ── Gallery ── */
+.gallery-grid {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 0.8rem; margin-top: 2.5rem;
 }
-.galeria-cell {
+.gallery-cell {
   aspect-ratio: 1; overflow: hidden;
   border: 1px solid var(--line);
   background: var(--paper-2);
 }
-.galeria-cell:first-child { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; min-height: 260px; }
-.galeria-cell img { width: 100%; height: 100%; object-fit: cover; }
-.galeria-empty { color: var(--ink-soft); text-align: center; padding: 2.5rem 1rem; border: 1px dashed var(--line-strong); margin-top: 2.5rem; }
+.gallery-cell:first-child { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; min-height: 260px; }
+.gallery-cell img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-empty { color: var(--ink-soft); text-align: center; padding: 2.5rem 1rem; border: 1px dashed var(--line-strong); margin-top: 2.5rem; }
 
-/* ── Reseñas ── */
-.resenas-head { display: flex; align-items: baseline; gap: 1.2rem; flex-wrap: wrap; margin: 2rem 0; }
-.resenas-head .nota { font-family: var(--display); font-weight: 600; font-size: 3rem; line-height: 1; }
-.resenas-head .estrellas { color: var(--tomato); font-size: 1.1rem; letter-spacing: 0.1em; }
-.resenas-head .total { color: var(--ink-soft); font-size: 0.88rem; }
-.resenas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
-.resena {
+/* ── Reviews ── */
+.reviews-head { display: flex; align-items: baseline; gap: 1.2rem; flex-wrap: wrap; margin: 2rem 0; }
+.reviews-head .score { font-family: var(--display); font-weight: 600; font-size: 3rem; line-height: 1; }
+.reviews-head .stars { color: var(--tomato); font-size: 1.1rem; letter-spacing: 0.1em; }
+.reviews-head .total { color: var(--ink-soft); font-size: 0.88rem; }
+.reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+.review {
   border: 1px solid var(--line); background: var(--paper);
   padding: 1.4rem;
 }
-.resena .r-head { display: flex; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.7rem; }
-.resena .r-nombre { font-weight: 700; font-size: 0.92rem; }
-.resena .r-fecha { color: var(--ink-soft); font-size: 0.78rem; }
-.resena .r-estrellas { color: var(--tomato); font-size: 0.85rem; white-space: nowrap; }
-.resena .r-texto { color: var(--ink-soft); font-size: 0.92rem; }
+.review .review-head { display: flex; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.7rem; }
+.review .review-name { font-weight: 700; font-size: 0.92rem; }
+.review .review-date { color: var(--ink-soft); font-size: 0.78rem; }
+.review .review-stars { color: var(--tomato); font-size: 0.85rem; white-space: nowrap; }
+.review .review-text { color: var(--ink-soft); font-size: 0.92rem; }
 
 /* ── FAQ ── */
 .faq-list { margin-top: 2rem; }
@@ -428,8 +428,8 @@ img { max-width: 100%; display: block; }
 .faq-list details[open] summary::after { content: '–'; }
 .faq-list details p { color: var(--ink-soft); padding-top: 0.5rem; max-width: 62ch; }
 
-/* ── Contacto ── */
-.contacto-grid {
+/* ── Contact ── */
+.contact-grid {
   display: grid; grid-template-columns: 1fr 1.2fr;
   gap: clamp(2rem, 5vw, 4.5rem); align-items: start;
 }
@@ -477,7 +477,7 @@ img { max-width: 100%; display: block; }
 .footer-inner a { text-decoration-color: var(--tomato); }
 .footer-inner a:hover { color: var(--tomato); }
 
-/* ── Reveals sutiles (IntersectionObserver) ── */
+/* ── Subtle reveals (IntersectionObserver) ── */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .reveal.in { opacity: 1; transform: none; }
 
@@ -504,13 +504,13 @@ img { max-width: 100%; display: block; }
   .site-nav a { display: block; padding: 0.9rem 0.5rem; font-size: 0.95rem; }
   .site-nav .nav-cta { text-align: center; margin-top: 0.5rem; }
 
-  .historia-grid, .contacto-grid { grid-template-columns: 1fr; }
-  .servicios-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-  .resenas-grid { grid-template-columns: 1fr; }
-  .galeria-grid { grid-template-columns: repeat(2, 1fr); }
-  .galeria-cell:first-child { grid-column: span 2; grid-row: span 1; min-height: 200px; }
-  .pizzames-box { grid-template-columns: 1fr; text-align: center; }
-  .pizzames-stamp { margin: 0 auto; }
+  .story-grid, .contact-grid { grid-template-columns: 1fr; }
+  .services-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .gallery-cell:first-child { grid-column: span 2; grid-row: span 1; min-height: 200px; }
+  .monthly-special-box { grid-template-columns: 1fr; text-align: center; }
+  .monthly-special-stamp { margin: 0 auto; }
 }
 
 @media (max-width: 520px) {
