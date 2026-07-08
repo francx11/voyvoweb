@@ -1,21 +1,21 @@
 require('dotenv').config();
 
 const express = require('express');
-const multer  = require('multer');
-const sharp   = require('sharp');
-const path    = require('path');
-const fs      = require('fs');
-const https   = require('https');
-const crypto  = require('crypto');
+const multer = require('multer');
+const sharp = require('sharp');
+const path = require('path');
+const fs = require('fs');
+const https = require('https');
+const crypto = require('crypto');
 
-const app  = express();
+const app = express();
 const PORT = process.env.PORT || 3000;
 const PROD = process.env.NODE_ENV === 'production';
 
-const ROOT       = path.join(__dirname, '..');
+const ROOT = path.join(__dirname, '..');
 const PUBLIC_DIR = path.join(ROOT, 'public');
-const DATA_DIR   = path.join(ROOT, 'data');
-const GALLERY    = path.join(PUBLIC_DIR, 'assets', 'gallery');
+const DATA_DIR = path.join(ROOT, 'data');
+const GALLERY = path.join(PUBLIC_DIR, 'assets', 'gallery');
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '1mb' }));
@@ -24,11 +24,14 @@ app.use(express.static(PUBLIC_DIR)); // solo public/ — nunca data/ ni src/
 // ── Helpers JSON (escritura atómica: tmp + rename) ───────────────────────────
 const dataFile = (f) => path.join(DATA_DIR, f);
 const readJSON = (f, fallback) => {
-  try { return JSON.parse(fs.readFileSync(dataFile(f), 'utf-8')); }
-  catch { return fallback; }
+  try {
+    return JSON.parse(fs.readFileSync(dataFile(f), 'utf-8'));
+  } catch {
+    return fallback;
+  }
 };
 const writeJSON = (f, d) => {
-  const fp  = dataFile(f);
+  const fp = dataFile(f);
   const tmp = fp + '.tmp';
   fs.writeFileSync(tmp, JSON.stringify(d, null, 2));
   fs.renameSync(tmp, fp);
@@ -85,14 +88,20 @@ function createSession() {
 }
 function validSession(token) {
   if (!token || !sessions.has(token)) return false;
-  if (Date.now() > sessions.get(token)) { sessions.delete(token); return false; }
+  if (Date.now() > sessions.get(token)) {
+    sessions.delete(token);
+    return false;
+  }
   sessions.set(token, Date.now() + SESSION_TTL); // expiración deslizante
   return true;
 }
-setInterval(() => {
-  const now = Date.now();
-  for (const [t, exp] of sessions) if (now > exp) sessions.delete(t);
-}, 10 * 60 * 1000).unref();
+setInterval(
+  () => {
+    const now = Date.now();
+    for (const [t, exp] of sessions) if (now > exp) sessions.delete(t);
+  },
+  10 * 60 * 1000
+).unref();
 
 function getCookie(req, name) {
   const raw = req.headers.cookie || '';
@@ -123,13 +132,16 @@ function requireAuth(req, res, next) {
 
 // ── Rate limit de login (en memoria, por IP) ─────────────────────────────────
 const LOGIN_MAX_FAILS = 5;
-const LOGIN_WINDOW    = 15 * 60 * 1000; // 15 min
+const LOGIN_WINDOW = 15 * 60 * 1000; // 15 min
 const loginFails = new Map(); // ip → { count, first }
 
 function loginLimited(ip) {
   const rec = loginFails.get(ip);
   if (!rec) return false;
-  if (Date.now() - rec.first > LOGIN_WINDOW) { loginFails.delete(ip); return false; }
+  if (Date.now() - rec.first > LOGIN_WINDOW) {
+    loginFails.delete(ip);
+    return false;
+  }
   return rec.count >= LOGIN_MAX_FAILS;
 }
 function registerFail(ip) {
@@ -200,16 +212,18 @@ app.post('/api/password', requireAuth, (req, res) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const sanitizePizza = (p) => ({
-  emoji:       String(p.emoji || '🍕').slice(0, 8),
-  nombre:      String(p.nombre || '').slice(0, 80),
+  emoji: String(p.emoji || '🍕').slice(0, 8),
+  nombre: String(p.nombre || '').slice(0, 80),
   descripcion: String(p.descripcion || '').slice(0, 500),
-  tag:         String(p.tag || '').slice(0, 40),
-  tagColor:    /^#[0-9a-fA-F]{6}$/.test(p.tagColor || '') ? p.tagColor : '#C41E3A',
-  categoria:   String(p.categoria || '').slice(0, 40),
-  precio:      p.precio === null || p.precio === undefined || p.precio === ''
-                 ? null : Math.max(0, Number(p.precio) || 0),
-  alergenos:   Array.isArray(p.alergenos) ? p.alergenos.map(String).slice(0, 14) : [],
-  activa:      p.activa !== false,
+  tag: String(p.tag || '').slice(0, 40),
+  tagColor: /^#[0-9a-fA-F]{6}$/.test(p.tagColor || '') ? p.tagColor : '#C41E3A',
+  categoria: String(p.categoria || '').slice(0, 40),
+  precio:
+    p.precio === null || p.precio === undefined || p.precio === ''
+      ? null
+      : Math.max(0, Number(p.precio) || 0),
+  alergenos: Array.isArray(p.alergenos) ? p.alergenos.map(String).slice(0, 14) : [],
+  activa: p.activa !== false,
 });
 
 app.get('/api/carta', (_req, res) => {
@@ -228,8 +242,8 @@ app.post('/api/carta', requireAuth, (req, res) => {
 app.put('/api/carta/orden', requireAuth, (req, res) => {
   const { ids } = req.body || {};
   if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids[] esperado' });
-  const carta  = readJSON('carta.json', []);
-  const byId   = new Map(carta.map((p) => [p.id, p]));
+  const carta = readJSON('carta.json', []);
+  const byId = new Map(carta.map((p) => [p.id, p]));
   const sorted = ids.map((id) => byId.get(id)).filter(Boolean);
   for (const p of carta) if (!ids.includes(p.id)) sorted.push(p);
   writeJSON('carta.json', sorted);
@@ -238,7 +252,7 @@ app.put('/api/carta/orden', requireAuth, (req, res) => {
 
 app.put('/api/carta/:id', requireAuth, (req, res) => {
   const carta = readJSON('carta.json', []);
-  const idx   = carta.findIndex((p) => p.id === req.params.id);
+  const idx = carta.findIndex((p) => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'No encontrada' });
   carta[idx] = { id: req.params.id, ...sanitizePizza({ ...carta[idx], ...req.body }) };
   writeJSON('carta.json', carta);
@@ -262,12 +276,12 @@ app.get('/api/pizzames', (_req, res) => {
 app.put('/api/pizzames', requireAuth, (req, res) => {
   const b = req.body || {};
   writeJSON('pizzames.json', {
-    activa:      b.activa === true,
-    emoji:       String(b.emoji || '🔥').slice(0, 8),
-    nombre:      String(b.nombre || '').slice(0, 80),
+    activa: b.activa === true,
+    emoji: String(b.emoji || '🔥').slice(0, 8),
+    nombre: String(b.nombre || '').slice(0, 80),
     descripcion: String(b.descripcion || '').slice(0, 500),
-    badge:       String(b.badge || '').slice(0, 40),
-    cta:         String(b.cta || '').slice(0, 60),
+    badge: String(b.badge || '').slice(0, 40),
+    cta: String(b.cta || '').slice(0, 60),
   });
   res.json({ ok: true });
 });
@@ -283,8 +297,8 @@ function galleryFilesOnDisk() {
 // Reconcilia data/galeria.json con lo que hay en disco
 function galleryList() {
   const onDisk = new Set(galleryFilesOnDisk());
-  const order  = readJSON('galeria.json', []).filter((e) => onDisk.has(e.filename));
-  const known  = new Set(order.map((e) => e.filename));
+  const order = readJSON('galeria.json', []).filter((e) => onDisk.has(e.filename));
+  const known = new Set(order.map((e) => e.filename));
   for (const f of onDisk) if (!known.has(f)) order.push({ filename: f, alt: '' });
   return order;
 }
@@ -316,8 +330,8 @@ app.put('/api/galeria/orden', requireAuth, (req, res) => {
   const { filenames } = req.body || {};
   if (!Array.isArray(filenames)) return res.status(400).json({ error: 'filenames[] esperado' });
   const current = galleryList();
-  const byName  = new Map(current.map((e) => [e.filename, e]));
-  const sorted  = filenames.map((f) => byName.get(path.basename(f))).filter(Boolean);
+  const byName = new Map(current.map((e) => [e.filename, e]));
+  const sorted = filenames.map((f) => byName.get(path.basename(f))).filter(Boolean);
   for (const e of current) if (!sorted.includes(e)) sorted.push(e);
   writeJSON('galeria.json', sorted);
   res.json({ ok: true });
@@ -325,7 +339,7 @@ app.put('/api/galeria/orden', requireAuth, (req, res) => {
 
 app.delete('/api/galeria/:filename', requireAuth, (req, res) => {
   const name = path.basename(req.params.filename); // evita path traversal
-  const fp   = path.join(GALLERY, name);
+  const fp = path.join(GALLERY, name);
   if (fs.existsSync(fp)) fs.unlinkSync(fp);
   writeJSON('galeria.json', galleryList());
   res.json({ ok: true });
@@ -352,37 +366,42 @@ app.put('/api/site', requireAuth, (req, res) => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 app.get('/api/reviews', (_req, res) => {
-  const apiKey  = process.env.GOOGLE_API_KEY || '';
+  const apiKey = process.env.GOOGLE_API_KEY || '';
   const placeId = readJSON('config.json', {}).googlePlaceId || '';
   if (!apiKey || !placeId) {
     return res.json({ configured: false, reviews: [] });
   }
-  const url = 'https://maps.googleapis.com/maps/api/place/details/json'
-    + `?place_id=${encodeURIComponent(placeId)}`
-    + '&fields=reviews,rating,user_ratings_total'
-    + '&language=es'
-    + `&key=${encodeURIComponent(apiKey)}`;
+  const url =
+    'https://maps.googleapis.com/maps/api/place/details/json' +
+    `?place_id=${encodeURIComponent(placeId)}` +
+    '&fields=reviews,rating,user_ratings_total' +
+    '&language=es' +
+    `&key=${encodeURIComponent(apiKey)}`;
 
-  https.get(url, (apiRes) => {
-    let raw = '';
-    apiRes.on('data', (c) => (raw += c));
-    apiRes.on('end', () => {
-      try {
-        const json = JSON.parse(raw);
-        if (json.status !== 'OK') {
-          return res.status(502).json({ error: `Google: ${json.status}`, details: json.error_message });
+  https
+    .get(url, (apiRes) => {
+      let raw = '';
+      apiRes.on('data', (c) => (raw += c));
+      apiRes.on('end', () => {
+        try {
+          const json = JSON.parse(raw);
+          if (json.status !== 'OK') {
+            return res
+              .status(502)
+              .json({ error: `Google: ${json.status}`, details: json.error_message });
+          }
+          res.json({
+            configured: true,
+            rating: json.result?.rating,
+            total: json.result?.user_ratings_total,
+            reviews: json.result?.reviews || [],
+          });
+        } catch {
+          res.status(500).json({ error: 'Respuesta inválida de Google' });
         }
-        res.json({
-          configured: true,
-          rating:  json.result?.rating,
-          total:   json.result?.user_ratings_total,
-          reviews: json.result?.reviews || [],
-        });
-      } catch {
-        res.status(500).json({ error: 'Respuesta inválida de Google' });
-      }
-    });
-  }).on('error', (e) => res.status(500).json({ error: e.message }));
+      });
+    })
+    .on('error', (e) => res.status(500).json({ error: e.message }));
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════

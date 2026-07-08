@@ -1,0 +1,6 @@
+# Los HTML llevan CSS/JS inline con formato manual cuidado — no reformatear
+public/
+node_modules/
+pnpm-lock.yaml
+backups/
+data/

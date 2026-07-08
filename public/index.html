@@ -354,6 +354,21 @@
       letter-spacing: 0.03em; line-height: 1.5;
     }
     .pizza-alergenos strong { color: rgba(245,240,232,0.7); font-weight: 500; }
+    .filtro-alergenos {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .filtro-label { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-right: 0.3rem; }
+    .filtro-chip {
+      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.05em;
+      padding: 0.4rem 1rem; border-radius: 2rem; cursor: pointer;
+      background: transparent; color: var(--muted);
+      border: 1px solid rgba(245,240,232,0.15);
+      font-family: var(--body);
+      transition: border-color 0.2s, color 0.2s, background 0.2s;
+    }
+    .filtro-chip:hover { color: var(--text); border-color: rgba(245,240,232,0.4); }
+    .filtro-chip.on { background: var(--red); border-color: var(--red); color: #fff; }
 
     /* ── SERVICIOS ────────────────────────────── */
     #servicios { background: var(--bg); }
@@ -662,6 +677,10 @@
           <p class="section-sub reveal">Clásicas y gourmet. Todas con ingredientes frescos, masa artesanal y elaboradas al momento.</p>
         </div>
         <a href="tel:958442847" class="btn btn-ghost reveal js-order" id="carta-cta">Pedir por teléfono</a>
+      </div>
+      <div class="filtro-alergenos" id="filtro-alergenos" style="display:none">
+        <span class="filtro-label">Filtrar:</span>
+        <!-- chips generados por JS solo si hay datos de alérgenos -->
       </div>
       <div class="pizza-grid" id="pizza-grid">
         <!-- Cargado dinámicamente desde /api/carta -->
@@ -1052,13 +1071,54 @@
     }
 
     /* ── DYNAMIC DATA LOADING ────────── */
+    let excluirAlergenos = new Set();
+
     async function loadCarta() {
       try {
         const pizzas = await fetch('/api/carta').then(r => r.json());
-        const grid = document.getElementById('pizza-grid');
         if (!pizzas.length) return;
+        initFiltroAlergenos(pizzas);
+        renderCarta(pizzas);
+        const names = pizzas.map(p=>p.nombre);
+        const doubled = [...names,...names];
+        document.getElementById('marquee').innerHTML = doubled.map(n =>
+          `<span class="marquee-item">${esc(n)} <span class="marquee-dot">·</span></span>`
+        ).join('');
+      } catch { /* API no disponible */ }
+    }
+
+    /* Chips de filtro: solo si alguna pizza tiene alérgenos cargados */
+    function initFiltroAlergenos(pizzas) {
+      const todos = [...new Set(pizzas.flatMap(p => p.alergenos || []))];
+      if (!todos.length) return;
+      const box = document.getElementById('filtro-alergenos');
+      box.querySelectorAll('.filtro-chip').forEach(c => c.remove());
+      todos.forEach(a => {
+        const chip = document.createElement('button');
+        chip.className = 'filtro-chip';
+        chip.textContent = `Sin ${a}`;
+        chip.addEventListener('click', () => {
+          chip.classList.toggle('on');
+          if (chip.classList.contains('on')) excluirAlergenos.add(a);
+          else excluirAlergenos.delete(a);
+          renderCarta(pizzas);
+        });
+        box.appendChild(chip);
+      });
+      box.style.display = 'flex';
+    }
+
+    function renderCarta(pizzas) {
+        const grid = document.getElementById('pizza-grid');
         const precioFmt = (n) => Number(n).toFixed(2).replace('.', ',') + ' €';
-        grid.innerHTML = pizzas.filter(p => p.activa !== false).map(p => `
+        const visibles = pizzas.filter(p => p.activa !== false)
+          .filter(p => ![...excluirAlergenos].some(a => (p.alergenos || []).includes(a)));
+        if (!visibles.length) {
+          grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-size:0.9rem">
+            Ninguna pizza de la carta cumple ese filtro. Llámanos y te preparamos una a medida.</div>`;
+          return;
+        }
+        grid.innerHTML = visibles.map(p => `
           <div class="pizza-card">
             <div class="pizza-card-head">
               <div class="pizza-icon" style="background:${hexToAlpha(p.tagColor||'#C41E3A',0.15)}">${p.emoji||'🍕'}</div>
@@ -1077,12 +1137,6 @@
             delay: (i%3)*0.08
           });
         });
-        const names = pizzas.map(p=>p.nombre);
-        const doubled = [...names,...names];
-        document.getElementById('marquee').innerHTML = doubled.map(n =>
-          `<span class="marquee-item">${esc(n)} <span class="marquee-dot">·</span></span>`
-        ).join('');
-      } catch { /* API no disponible */ }
     }
 
     async function loadGaleria() {
