@@ -5,17 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — Voy Volando</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fraunces:wght@600;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --red: #C41E3A; --red-d: #9b1830;
-      --gold: #C9A84C;
+      /* Misma marca que la web pública (public/css/main.css): tomate sobre
+         fondo oscuro. --red/--red-d calibrados para AA con texto blanco
+         encima y con este fondo (~0d0d0d), no reutilizan --tomato-btn tal
+         cual porque ese valor se calibró contra un fondo menos oscuro. */
+      --red: #c2301d; --red-d: #d13a24;
       --bg: #0d0d0d; --bg2: #161616; --bg3: #1e1e1e; --bg4: #252525;
       --border: rgba(255,255,255,0.08);
       --text: #f0ece4; --muted: rgba(240,236,228,0.5);
       --green: #22c55e; --orange: #f59e0b;
       --font: 'Inter', system-ui, sans-serif;
+      --display: 'Fraunces', Georgia, serif;
     }
     body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
 
@@ -29,7 +33,7 @@
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 1rem; text-align: center;
     }
-    .login-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; margin-bottom: 0.4rem; }
+    .login-logo { font-family: var(--display); font-size: 1.8rem; font-weight: 900; margin-bottom: 0.4rem; }
     .login-logo em { font-style: italic; color: var(--red); }
     .login-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 2rem; letter-spacing: 0.05em; }
     .login-box input {
@@ -50,7 +54,7 @@
     }
     .sidebar-logo {
       padding: 1.5rem 1.2rem 1rem;
-      font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900;
+      font-family: var(--display); font-size: 1.1rem; font-weight: 900;
       border-bottom: 1px solid var(--border); color: var(--text);
     }
     .sidebar-logo em { font-style: italic; color: var(--red); }
@@ -63,7 +67,7 @@
       transition: color 0.2s, background 0.2s; border-radius: 0;
     }
     .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-    .nav-item.active { color: var(--text); background: rgba(196,30,58,0.12); border-right: 2px solid var(--red); }
+    .nav-item.active { color: var(--text); background: rgba(194,48,29,0.12); border-right: 2px solid var(--red); }
     .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
     .sidebar-bottom { padding: 1rem 1.2rem; border-top: 1px solid var(--border); }
     .btn-logout {
@@ -80,7 +84,7 @@
 
     /* ── TOP BAR ─────────────────────────── */
     .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-    .page-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; }
+    .page-title { font-family: var(--display); font-size: 1.6rem; font-weight: 900; }
     .page-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
 
     /* ── BUTTONS ─────────────────────────── */
@@ -157,7 +161,7 @@
       max-height: 90vh; overflow-y: auto;
     }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 900; }
+    .modal-title { font-family: var(--display); font-size: 1.2rem; font-weight: 900; }
     .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.4rem; line-height: 1; padding: 0.2rem; }
     .modal-close:hover { color: var(--text); }
 
@@ -167,7 +171,7 @@
       padding: 2.5rem; text-align: center; cursor: pointer;
       transition: border-color 0.2s, background 0.2s; margin-bottom: 1.5rem;
     }
-    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--red); background: rgba(196,30,58,0.05); }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--red); background: rgba(194,48,29,0.05); }
     .upload-zone svg { width: 36px; height: 36px; stroke: var(--muted); margin-bottom: 0.8rem; }
     .upload-zone p { font-size: 0.88rem; color: var(--muted); }
     .upload-zone strong { color: var(--text); }
@@ -240,7 +244,7 @@
       height: 56px; background: var(--bg2); border-bottom: 1px solid var(--border);
       align-items: center; justify-content: space-between; padding: 0 1rem;
     }
-    .mobile-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900; }
+    .mobile-logo { font-family: var(--display); font-size: 1.1rem; font-weight: 900; }
     .mobile-logo em { font-style: italic; color: var(--red); }
     .btn-icon {
       background: none; border: none; color: var(--text); cursor: pointer;
