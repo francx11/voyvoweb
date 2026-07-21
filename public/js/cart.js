@@ -339,7 +339,10 @@
   }
 
   function checkoutFooterHtml() {
+    var cancelMin = orderingConfig.cancelWindowMinutes || 5;
     return '<div class="cart-total-row"><span>Total</span><span id="vv-c-total">' + formatPrice(cartSubtotal()) + '</span></div>' +
+      '<p class="cart-cancel-notice">Puedes cancelar tu pedido gratis durante los primeros ' + cancelMin +
+        ' minutos desde la confirmación. Pasado ese tiempo, llámanos si necesitas ayuda.</p>' +
       '<p class="cart-error" id="vv-c-error" hidden></p>' +
       '<button type="submit" form="vv-checkout-form" class="btn btn-primary cart-submit" id="vv-c-submit">Confirmar pedido</button>';
   }

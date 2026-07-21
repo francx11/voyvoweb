@@ -41,6 +41,69 @@
     return type === 'delivery' ? 'A domicilio' : 'Recogida en el local';
   }
 
+  var countdownTimer = null;
+
+  function stopCountdown() {
+    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+  }
+
+  function formatCountdown(ms) {
+    var s = Math.max(0, Math.ceil(ms / 1000));
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  }
+
+  function cancelSectionHtml(order) {
+    if (!order.cancellable) return '';
+    return '<div class="order-cancel" id="order-cancel-box">' +
+      '<p class="order-cancel-countdown" id="order-cancel-countdown"></p>' +
+      '<button type="button" class="btn btn-outline order-cancel-btn" id="order-cancel-btn">Cancelar pedido</button>' +
+      '<p class="cart-error" id="order-cancel-error" hidden></p>' +
+    '</div>';
+  }
+
+  function wireCancel(order, id, token) {
+    stopCountdown();
+    var box = document.getElementById('order-cancel-box');
+    if (!box) return;
+    var countdownEl = document.getElementById('order-cancel-countdown');
+    var btn = document.getElementById('order-cancel-btn');
+    var errEl = document.getElementById('order-cancel-error');
+    var deadline = Date.parse(order.cancelDeadline);
+
+    function tick() {
+      var left = deadline - Date.now();
+      if (left <= 0) { stopCountdown(); poll(id, token); return; }
+      countdownEl.textContent = 'Puedes cancelar durante ' + formatCountdown(left) + ' más';
+    }
+    tick();
+    countdownTimer = setInterval(tick, 1000);
+
+    btn.addEventListener('click', function () {
+      if (!window.confirm('¿Seguro que quieres cancelar este pedido?')) return;
+      btn.disabled = true;
+      errEl.hidden = true;
+      fetch('/api/orders/' + encodeURIComponent(id) + '/cancel?t=' + encodeURIComponent(token), {
+        method: 'POST',
+      })
+        .then(function (r) { return r.json().then(function (j) { return { status: r.status, json: j }; }); })
+        .then(function (res) {
+          if (res.status >= 400) {
+            errEl.textContent = (res.json && res.json.error) || 'No se pudo cancelar el pedido';
+            errEl.hidden = false;
+            btn.disabled = false;
+            return;
+          }
+          stopCountdown();
+          poll(id, token);
+        })
+        .catch(function () {
+          errEl.textContent = 'No se pudo cancelar el pedido, inténtalo de nuevo';
+          errEl.hidden = false;
+          btn.disabled = false;
+        });
+    });
+  }
+
   function itemLineHtml(item) {
     var mods = (item.modifiers || []).map(function (m) {
       return esc(m.label) + (m.price ? ' (+' + formatPrice(m.price) + ')' : '');
@@ -56,7 +119,8 @@
     '</li>';
   }
 
-  function renderOrder(order) {
+  function renderOrder(order, id, token) {
+    stopCountdown();
     var box = document.getElementById('order-box');
     box.innerHTML =
       '<p class="order-code">' + esc(order.code) + '</p>' +
@@ -67,11 +131,13 @@
         (order.paymentMethod === 'stripe' ? 'Pagado con tarjeta' : 'Pago al recibir') +
       '</p>' +
       '<ul class="order-items">' + order.items.map(itemLineHtml).join('') + '</ul>' +
-      '<div class="cart-total-row order-total-row"><span>Total</span><span>' + formatPrice(order.total) + '</span></div>';
+      '<div class="cart-total-row order-total-row"><span>Total</span><span>' + formatPrice(order.total) + '</span></div>' +
+      cancelSectionHtml(order);
 
     if (POST_PAYMENT_STATUSES.indexOf(order.status) !== -1) {
       try { localStorage.removeItem(CART_KEY); } catch (e) { /* storage blocked */ }
     }
+    wireCancel(order, id, token);
   }
 
   function renderNotFound() {
@@ -98,7 +164,7 @@
       })
       .then(function (order) {
         if (!order) return;
-        renderOrder(order);
+        renderOrder(order, id, token);
         if (order.status === 'pending_payment') setTimeout(function () { poll(id, token); }, POLL_MS);
       })
       .catch(renderError);
