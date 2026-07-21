@@ -127,6 +127,9 @@
       '<p class="order-status-line ' + statusClass(order.status) + '">' +
         esc(STATUS_LABELS[order.status] || order.status) +
       '</p>' +
+      (order.cancelReason
+        ? '<p class="order-meta">Motivo: ' + esc(order.cancelReason) + '</p>'
+        : '') +
       '<p class="order-meta">' + esc(fulfillmentLabel(order.fulfillmentType)) + ' · ' +
         (order.paymentMethod === 'stripe' ? 'Pagado con tarjeta' : 'Pago al recibir') +
       '</p>' +

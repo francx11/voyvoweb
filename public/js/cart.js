@@ -312,6 +312,9 @@
         '<input type="text" id="vv-c-name" name="name" autocomplete="name" autocapitalize="words" required></div>' +
       '<div class="field"><label for="vv-c-phone">Teléfono</label>' +
         '<input type="tel" id="vv-c-phone" name="phone" autocomplete="tel" required></div>' +
+      '<div class="field"><label for="vv-c-email">Email (opcional)</label>' +
+        '<input type="email" id="vv-c-email" name="email" autocomplete="email">' +
+        '<p class="cart-delivery-note">Para avisarte si hay algún problema con tu pedido.</p></div>' +
       '<fieldset class="cart-fulfillment"><legend>¿Cómo lo quieres?</legend>' +
         '<label class="cart-radio"><input type="radio" name="fulfillment" value="pickup" checked> Recogida</label>' +
         '<label class="cart-radio"><input type="radio" name="fulfillment" value="delivery"> Domicilio</label>' +
@@ -418,7 +421,11 @@
       return out;
     });
     var body = {
-      customer: { name: $('#vv-c-name').value.trim(), phone: $('#vv-c-phone').value.trim() },
+      customer: {
+        name: $('#vv-c-name').value.trim(),
+        phone: $('#vv-c-phone').value.trim(),
+        email: $('#vv-c-email').value.trim(),
+      },
       fulfillment: fulfillment,
       paymentMethod: paymentMethod,
       items: items,

@@ -858,9 +858,13 @@
       delivered: 'entregado',
       cancelled: 'cancelado',
     };
-    if (status === 'cancelled' && !confirm('¿Cancelar este pedido?')) return;
+    let reason;
+    if (status === 'cancelled') {
+      reason = prompt('¿Cancelar este pedido? Motivo (opcional, se lo enviamos al cliente):');
+      if (reason === null) return;
+    }
     try {
-      await api('PUT', `/api/orders/${id}/status`, { status });
+      await api('PUT', `/api/orders/${id}/status`, { status, reason });
       toast(`Pedido marcado como ${labels[status] || status} ✓`);
       refreshOrdersList();
     } catch (err) {
