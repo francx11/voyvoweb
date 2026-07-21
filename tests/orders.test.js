@@ -204,6 +204,30 @@ test('delivery: minimum enforced, fee added, zone validated', async () => {
   assert.equal(ok.json.total, 12.7); // 11.70 + 1 delivery fee
 });
 
+test('customer email is optional but validated when given', async () => {
+  const bad = await api(
+    'POST',
+    '/api/orders',
+    order({ customer: { name: 'Ana', phone: '600123456', email: 'not-an-email' } }),
+    { auth: false }
+  );
+  assert.equal(bad.status, 400);
+
+  const withoutEmail = await api('POST', '/api/orders', order(), { auth: false });
+  assert.equal(withoutEmail.status, 201);
+
+  const withEmail = await api(
+    'POST',
+    '/api/orders',
+    order({ customer: { name: 'Ana', phone: '600123456', email: 'ana@example.com' } }),
+    { auth: false }
+  );
+  assert.equal(withEmail.status, 201);
+  const list = await api('GET', '/api/orders');
+  const stored = list.json.orders.find((o) => o.id === withEmail.json.orderId);
+  assert.equal(stored.customer.email, 'ana@example.com');
+});
+
 test('validation rejections: sizes, modifiers, quantities, availability', async () => {
   const cases = [
     order({ items: [{ itemId: ids['Margarita'], sizeId: 'xxl', qty: 1 }] }),
@@ -314,6 +338,33 @@ test('order cancellation: within window ok, wrong token 404, late/expired 409', 
     { auth: false }
   );
   assert.equal(expired.status, 409);
+});
+
+test('admin cancellation: reason stored, idempotent on repeat, no refund needed for cash', async () => {
+  const created = await api('POST', '/api/orders', order(), { auth: false });
+  const { orderId } = created.json;
+
+  const cancelled = await api('PUT', `/api/orders/${orderId}/status`, {
+    status: 'cancelled',
+    reason: 'Sin ingredientes para esta pizza',
+  });
+  assert.equal(cancelled.status, 200);
+  assert.equal(cancelled.json.status, 'cancelled');
+  assert.equal(cancelled.json.cancelReason, 'Sin ingredientes para esta pizza');
+  assert.equal(cancelled.json.payment.status, 'on_receipt'); // nothing to refund
+
+  // Repeat cancel: idempotent, no error even though refund logic is skipped.
+  const again = await api('PUT', `/api/orders/${orderId}/status`, { status: 'cancelled' });
+  assert.equal(again.status, 200);
+  assert.equal(again.json.status, 'cancelled');
+
+  const status = await api(
+    'GET',
+    `/api/orders/${orderId}/status?t=${created.json.token}`,
+    undefined,
+    { auth: false }
+  );
+  assert.equal(status.json.cancelReason, 'Sin ingredientes para esta pizza');
 });
 
 test('admin endpoints require the session', async () => {
