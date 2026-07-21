@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { Router } = require('express');
-const { ASSETS_DIR, PUBLIC_DIR } = require('../config');
+const { ASSETS_DIR, PUBLIC_DIR, ORDERING_FILE } = require('../config');
 const { readJSON, writeJSON } = require('../lib/json-store');
 const requireAuth = require('../middleware/require-auth');
 const { pdfUpload } = require('../middleware/uploads');
@@ -9,22 +9,58 @@ const { pdfUpload } = require('../middleware/uploads');
 const MENU_FILE = 'menu.json';
 const CONFIG_FILE = 'config.json';
 
+const sanitizePrice = (v) =>
+  v === null || v === undefined || v === '' ? null : Math.max(0, Number(v) || 0);
+
+// Pricing modes: absent/fixed → single `price`; sizes → per-item variants;
+// tier → shared pizza price table in ordering.json. Invalid input falls back
+// to fixed so a bad payload can never leave an item in an unpriceable state.
+function sanitizePricing(p, ordering) {
+  const pricing = p.pricing || {};
+  if (pricing.mode === 'tier' && (ordering.tiers || {})[pricing.tierId]) {
+    return { mode: 'tier', tierId: String(pricing.tierId) };
+  }
+  if (pricing.mode === 'sizes' && Array.isArray(pricing.sizes)) {
+    const sizes = pricing.sizes
+      .slice(0, 8)
+      .map((s, i) => ({
+        id: String(s.id || i + 1).slice(0, 24),
+        label: String(s.label || '').slice(0, 40),
+        price: sanitizePrice(s.price) ?? 0,
+        ...(s.fulfillment === 'pickup' || s.fulfillment === 'delivery'
+          ? { fulfillment: s.fulfillment }
+          : {}),
+      }))
+      .filter((s) => s.label);
+    if (sizes.length) return { mode: 'sizes', sizes };
+  }
+  return undefined; // fixed pricing via `price`
+}
+
 // Every field is length-capped and type-coerced: the payload comes from the
 // admin panel but the session cookie could be riding a hijacked browser.
-const sanitizeMenuItem = (p) => ({
-  emoji: String(p.emoji || '🍕').slice(0, 8),
-  name: String(p.name || '').slice(0, 80),
-  description: String(p.description || '').slice(0, 500),
-  tag: String(p.tag || '').slice(0, 40),
-  tagColor: /^#[0-9a-fA-F]{6}$/.test(p.tagColor || '') ? p.tagColor : '#C41E3A',
-  category: String(p.category || '').slice(0, 40),
-  price:
-    p.price === null || p.price === undefined || p.price === ''
-      ? null
-      : Math.max(0, Number(p.price) || 0),
-  allergens: Array.isArray(p.allergens) ? p.allergens.map(String).slice(0, 14) : [],
-  active: p.active !== false,
-});
+const sanitizeMenuItem = (p) => {
+  const ordering = readJSON(ORDERING_FILE, {});
+  const pricing = sanitizePricing(p, ordering);
+  const modifierGroupIds = (Array.isArray(p.modifierGroupIds) ? p.modifierGroupIds : [])
+    .map(String)
+    .filter((gid) => (ordering.modifierGroups || {})[gid])
+    .slice(0, 5);
+  return {
+    emoji: String(p.emoji || '🍕').slice(0, 8),
+    name: String(p.name || '').slice(0, 80),
+    description: String(p.description || '').slice(0, 500),
+    tag: String(p.tag || '').slice(0, 40),
+    tagColor: /^#[0-9a-fA-F]{6}$/.test(p.tagColor || '') ? p.tagColor : '#C41E3A',
+    category: String(p.category || '').slice(0, 40),
+    price: sanitizePrice(p.price),
+    allergens: Array.isArray(p.allergens) ? p.allergens.map(String).slice(0, 14) : [],
+    active: p.active !== false,
+    ...(pricing ? { pricing } : {}),
+    ...(modifierGroupIds.length ? { modifierGroupIds } : {}),
+    ...(p.fulfillment === 'pickup_only' ? { fulfillment: 'pickup_only' } : {}),
+  };
+};
 
 const router = Router();
 
