@@ -47,6 +47,7 @@ function todayWindows(cfg, now = new Date()) {
 
 function isOpenNow(cfg, now = new Date()) {
   if (!cfg || cfg.enabled === false) return false;
+  if (cfg.forceOpen) return true; // admin override: ignore the weekly schedule
   const { minutes } = madridParts(now);
   return todayWindows(cfg, now).some(([start, end]) => {
     const s = toMinutes(start);

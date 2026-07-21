@@ -1024,6 +1024,7 @@
     const cfg = await api('GET', '/api/ordering/settings').catch(() => ({}));
     ORDERING_DRAFT = {
       enabled: cfg.enabled !== false,
+      forceOpen: cfg.forceOpen === true,
       tiers: cfg.tiers || {},
       modifierGroups: cfg.modifierGroups || {},
       delivery: cfg.delivery || { fee: 0, minimum: 0, zones: [] },
@@ -1032,6 +1033,7 @@
       closedDates: cfg.closedDates || [],
     };
     $('toggle-ordering-enabled').classList.toggle('on', ORDERING_DRAFT.enabled);
+    $('toggle-force-open').classList.toggle('on', ORDERING_DRAFT.forceOpen);
     $('delivery-fee').value = ORDERING_DRAFT.delivery.fee;
     $('delivery-minimum').value = ORDERING_DRAFT.delivery.minimum;
     $('delivery-zones').value = (ORDERING_DRAFT.delivery.zones || []).join('\n');
@@ -1051,6 +1053,11 @@
     this.classList.toggle('on');
   });
   $('toggle-ordering-enabled-label').addEventListener('click', () => $('toggle-ordering-enabled').click());
+
+  $('toggle-force-open').addEventListener('click', function () {
+    this.classList.toggle('on');
+  });
+  $('toggle-force-open-label').addEventListener('click', () => $('toggle-force-open').click());
 
   // ── Tiers (pizza size/price tables) ───────────────────────────────────────
   function renderTiers() {
@@ -1320,6 +1327,7 @@
   // ── Save ───────────────────────────────────────────────────────────────
   $('btn-save-ordering-config').addEventListener('click', async () => {
     ORDERING_DRAFT.enabled = $('toggle-ordering-enabled').classList.contains('on');
+    ORDERING_DRAFT.forceOpen = $('toggle-force-open').classList.contains('on');
     ORDERING_DRAFT.delivery = {
       fee: Number($('delivery-fee').value) || 0,
       minimum: Number($('delivery-minimum').value) || 0,
