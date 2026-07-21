@@ -9,6 +9,8 @@ con escritura atómica, sin frontend framework. Detalle completo en [README.md](
 - **pnpm siempre.** Nunca `npm install` ni `npm run` en este repo (rompe el lockfile).
 - Tras cualquier cambio de código: `pnpm check` (lint + format + tests).
 - Nunca commitear `.env`, `data/auth.json` ni secretos — ya están en `.gitignore`.
+- **Cada feature o fix va en su propia rama** creada desde `main` (nunca commits directos a
+  `main`). Nombre de rama descriptivo (`feat/...`, `fix/...`).
 
 @.claude/rules/conventions.md
 @.claude/rules/security-baseline.md
