@@ -9,6 +9,7 @@ const { isOpenNow, madridParts } = require('../services/ordering-schedule');
 const orders = require('../services/orders-store');
 const orderLimiter = require('../services/order-limiter');
 const stripeClient = require('../services/stripe-client');
+const mailer = require('../services/mailer');
 
 const router = Router();
 
@@ -28,6 +29,31 @@ function isCancellable(order) {
   );
 }
 
+// Shared by the customer and admin cancel routes. Refunds (or expires the
+// Checkout session) BEFORE any order mutation happens — network-before-mutate,
+// same rule as everywhere else in this file. Throws 502 on a failed refund
+// so the order is left untouched rather than "cancelled" with money still owed.
+async function refundOrExpire(order) {
+  if (order.payment.method !== 'stripe') return false;
+  if (order.payment.status === 'paid' && order.payment.stripePaymentIntentId) {
+    try {
+      await stripeClient.refundPayment(order.payment.stripePaymentIntentId);
+      return true;
+    } catch (e) {
+      console.error('Stripe refund failed:', e.message);
+      throw bad(502, 'No se pudo procesar el reembolso');
+    }
+  }
+  if (order.payment.stripeSessionId) {
+    try {
+      await stripeClient.expireCheckoutSession(order.payment.stripeSessionId);
+    } catch {
+      /* best-effort: link may already be paid/expired */
+    }
+  }
+  return false;
+}
+
 function sanitizeCustomer(body, zones) {
   const c = body.customer || {};
   const name = String(c.name || '')
@@ -39,6 +65,10 @@ function sanitizeCustomer(body, zones) {
     .slice(0, 20);
   if (name.length < 2) throw bad(400, 'Nombre requerido');
   if (phone.replace(/\D/g, '').length < 9) throw bad(400, 'Teléfono no válido');
+  const email = String(c.email || '')
+    .trim()
+    .slice(0, 120);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw bad(400, 'Email no válido');
 
   const f = body.fulfillment || {};
   const type = f.type === 'delivery' ? 'delivery' : f.type === 'pickup' ? 'pickup' : null;
@@ -52,7 +82,7 @@ function sanitizeCustomer(body, zones) {
       .slice(0, 200);
     if (fulfillment.address.length < 5) throw bad(400, 'Dirección requerida');
   }
-  return { customer: { name, phone }, fulfillment };
+  return { customer: { name, phone, email }, fulfillment };
 }
 
 // Public: create an order. Persists before any Stripe call so a crash can
@@ -156,15 +186,14 @@ router.get('/:id/status', async (req, res, next) => {
       createdAt: order.createdAt,
       cancellable: isCancellable(order),
       cancelDeadline: new Date(Date.parse(order.createdAt) + ORDER_CANCEL_WINDOW).toISOString(),
+      ...(order.cancelReason ? { cancelReason: order.cancelReason } : {}),
     });
   } catch (err) {
     next(err);
   }
 });
 
-// Public: customer self-cancel within the no-questions-asked window. Refunds
-// (or expires the Checkout session) BEFORE touching order state — same
-// network-before-mutate rule as everywhere else in this file.
+// Public: customer self-cancel within the no-questions-asked window.
 router.post('/:id/cancel', async (req, res, next) => {
   try {
     const order = orders.getOrder(req.params.id);
@@ -173,41 +202,50 @@ router.post('/:id/cancel', async (req, res, next) => {
       throw bad(409, 'Ya no se puede cancelar este pedido, llámanos si necesitas ayuda');
     }
 
-    let refunded = false;
-    if (order.payment.method === 'stripe') {
-      if (order.payment.status === 'paid' && order.payment.stripePaymentIntentId) {
-        try {
-          await stripeClient.refundPayment(order.payment.stripePaymentIntentId);
-          refunded = true;
-        } catch (e) {
-          console.error('Stripe refund failed:', e.message);
-          throw bad(502, 'No se pudo procesar el reembolso, llámanos para cancelarlo');
-        }
-      } else if (order.payment.stripeSessionId) {
-        try {
-          await stripeClient.expireCheckoutSession(order.payment.stripeSessionId);
-        } catch {
-          /* best-effort: link may already be paid/expired */
-        }
-      }
-    }
-
+    const refunded = await refundOrExpire(order);
     const updated = orders.applyTransition(order.id, 'cancelled', (o) => {
       if (refunded) o.payment.status = 'refunded';
     });
+    mailer
+      .sendCancellationEmail(updated, { refunded })
+      .catch((e) => console.error('Cancellation email failed:', e.message));
     res.json({ status: updated.status, paymentStatus: updated.payment.status });
   } catch (err) {
     next(err);
   }
 });
 
-// Admin: validated state change (409 on an illegal transition).
-router.put('/:id/status', requireAuth, (req, res, next) => {
+// Admin: validated state change (409 on an illegal transition). Cancelling a
+// paid order refunds it and emails the customer; `reason` (e.g. "sin stock")
+// is optional but stored and included in that email.
+router.put('/:id/status', requireAuth, async (req, res, next) => {
   try {
     const status = String(req.body.status || '');
     if (!orders.ADMIN_STATUSES.includes(status)) throw bad(400, 'Estado no válido');
-    const order = orders.applyTransition(req.params.id, status);
+    const reason = String(req.body.reason || '')
+      .trim()
+      .slice(0, 200);
+
+    let refunded = false;
+    let wasAlreadyCancelled = false;
+    if (status === 'cancelled') {
+      const existing = orders.getOrder(req.params.id);
+      if (!existing) throw bad(404, 'Pedido no encontrado');
+      wasAlreadyCancelled = existing.status === 'cancelled';
+      if (!wasAlreadyCancelled) refunded = await refundOrExpire(existing);
+    }
+
+    const order = orders.applyTransition(req.params.id, status, (o) => {
+      if (refunded) o.payment.status = 'refunded';
+      if (status === 'cancelled' && reason) o.cancelReason = reason;
+    });
     if (!order) throw bad(404, 'Pedido no encontrado');
+
+    if (status === 'cancelled' && !wasAlreadyCancelled) {
+      mailer
+        .sendCancellationEmail(order, { refunded, reason })
+        .catch((e) => console.error('Cancellation email failed:', e.message));
+    }
     res.json(order);
   } catch (err) {
     next(err);
