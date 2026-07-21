@@ -1,7 +1,7 @@
 // Ordering configuration: a public read (what the cart needs to render)
 // and the authenticated admin editor for ordering.json.
 const { Router } = require('express');
-const { ORDERING_FILE } = require('../config');
+const { ORDERING_FILE, ORDER_CANCEL_WINDOW } = require('../config');
 const { readJSON, writeJSON } = require('../lib/json-store');
 const requireAuth = require('../middleware/require-auth');
 const { isOpenNow, todayWindows } = require('../services/ordering-schedule');
@@ -118,6 +118,7 @@ router.get('/config', (_req, res) => {
       zones: (cfg.delivery && cfg.delivery.zones) || [],
     },
     stripeEnabled: stripeClient.isConfigured(),
+    cancelWindowMinutes: Math.round(ORDER_CANCEL_WINDOW / 60000),
   });
 });
 

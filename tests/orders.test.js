@@ -204,6 +204,30 @@ test('delivery: minimum enforced, fee added, zone validated', async () => {
   assert.equal(ok.json.total, 12.7); // 11.70 + 1 delivery fee
 });
 
+test('customer email is optional but validated when given', async () => {
+  const bad = await api(
+    'POST',
+    '/api/orders',
+    order({ customer: { name: 'Ana', phone: '600123456', email: 'not-an-email' } }),
+    { auth: false }
+  );
+  assert.equal(bad.status, 400);
+
+  const withoutEmail = await api('POST', '/api/orders', order(), { auth: false });
+  assert.equal(withoutEmail.status, 201);
+
+  const withEmail = await api(
+    'POST',
+    '/api/orders',
+    order({ customer: { name: 'Ana', phone: '600123456', email: 'ana@example.com' } }),
+    { auth: false }
+  );
+  assert.equal(withEmail.status, 201);
+  const list = await api('GET', '/api/orders');
+  const stored = list.json.orders.find((o) => o.id === withEmail.json.orderId);
+  assert.equal(stored.customer.email, 'ana@example.com');
+});
+
 test('validation rejections: sizes, modifiers, quantities, availability', async () => {
   const cases = [
     order({ items: [{ itemId: ids['Margarita'], sizeId: 'xxl', qty: 1 }] }),
@@ -261,6 +285,86 @@ test('public status needs the right token', async () => {
   assert.equal(good.json.status, 'confirmed'); // on_receipt orders are born confirmed
   assert.equal(good.json.publicToken, undefined);
   assert.equal(good.json.customer, undefined);
+});
+
+test('order cancellation: within window ok, wrong token 404, late/expired 409', async () => {
+  const created = await api('POST', '/api/orders', order(), { auth: false });
+  assert.equal(created.status, 201);
+  const { orderId, token } = created.json;
+
+  const before = await api('GET', `/api/orders/${orderId}/status?t=${token}`, undefined, {
+    auth: false,
+  });
+  assert.equal(before.json.cancellable, true);
+
+  const wrongToken = await api('POST', `/api/orders/${orderId}/cancel?t=wrong`, undefined, {
+    auth: false,
+  });
+  assert.equal(wrongToken.status, 404);
+
+  const ok = await api('POST', `/api/orders/${orderId}/cancel?t=${token}`, undefined, {
+    auth: false,
+  });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.json.status, 'cancelled');
+
+  const again = await api('POST', `/api/orders/${orderId}/cancel?t=${token}`, undefined, {
+    auth: false,
+  });
+  assert.equal(again.status, 409); // already cancelled
+
+  // Past "preparing": too late to self-cancel even inside the time window.
+  const prepping = await api('POST', '/api/orders', order(), { auth: false });
+  await api('PUT', `/api/orders/${prepping.json.orderId}/status`, { status: 'preparing' });
+  const lateStatus = await api(
+    'POST',
+    `/api/orders/${prepping.json.orderId}/cancel?t=${prepping.json.token}`,
+    undefined,
+    { auth: false }
+  );
+  assert.equal(lateStatus.status, 409);
+
+  // Outside the 5-minute time window, even though the status alone would qualify.
+  const stale = await api('POST', '/api/orders', order(), { auth: false });
+  const ordersFile = path.join(process.env.DATA_DIR, 'orders.json');
+  const db = JSON.parse(fs.readFileSync(ordersFile, 'utf-8'));
+  const rec = db.orders.find((o) => o.id === stale.json.orderId);
+  rec.createdAt = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  fs.writeFileSync(ordersFile, JSON.stringify(db));
+  const expired = await api(
+    'POST',
+    `/api/orders/${stale.json.orderId}/cancel?t=${stale.json.token}`,
+    undefined,
+    { auth: false }
+  );
+  assert.equal(expired.status, 409);
+});
+
+test('admin cancellation: reason stored, idempotent on repeat, no refund needed for cash', async () => {
+  const created = await api('POST', '/api/orders', order(), { auth: false });
+  const { orderId } = created.json;
+
+  const cancelled = await api('PUT', `/api/orders/${orderId}/status`, {
+    status: 'cancelled',
+    reason: 'Sin ingredientes para esta pizza',
+  });
+  assert.equal(cancelled.status, 200);
+  assert.equal(cancelled.json.status, 'cancelled');
+  assert.equal(cancelled.json.cancelReason, 'Sin ingredientes para esta pizza');
+  assert.equal(cancelled.json.payment.status, 'on_receipt'); // nothing to refund
+
+  // Repeat cancel: idempotent, no error even though refund logic is skipped.
+  const again = await api('PUT', `/api/orders/${orderId}/status`, { status: 'cancelled' });
+  assert.equal(again.status, 200);
+  assert.equal(again.json.status, 'cancelled');
+
+  const status = await api(
+    'GET',
+    `/api/orders/${orderId}/status?t=${created.json.token}`,
+    undefined,
+    { auth: false }
+  );
+  assert.equal(status.json.cancelReason, 'Sin ingredientes para esta pizza');
 });
 
 test('admin endpoints require the session', async () => {

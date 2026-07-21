@@ -1,7 +1,7 @@
 // Online orders: public creation/status plus the admin list and state
 // changes. Prices are never taken from the client (see order-pricing.js).
 const { Router } = require('express');
-const { ORDERING_FILE } = require('../config');
+const { ORDERING_FILE, ORDER_CANCEL_WINDOW } = require('../config');
 const { readJSON } = require('../lib/json-store');
 const requireAuth = require('../middleware/require-auth');
 const { priceOrder } = require('../services/order-pricing');
@@ -9,6 +9,7 @@ const { isOpenNow, madridParts } = require('../services/ordering-schedule');
 const orders = require('../services/orders-store');
 const orderLimiter = require('../services/order-limiter');
 const stripeClient = require('../services/stripe-client');
+const mailer = require('../services/mailer');
 
 const router = Router();
 
@@ -18,6 +19,40 @@ const bad = (status, message) => {
   err.expose = true; // customer-readable by construction
   return err;
 };
+
+const CANCELLABLE_STATUSES = ['pending_payment', 'confirmed'];
+
+function isCancellable(order) {
+  return (
+    CANCELLABLE_STATUSES.includes(order.status) &&
+    Date.now() - Date.parse(order.createdAt) <= ORDER_CANCEL_WINDOW
+  );
+}
+
+// Shared by the customer and admin cancel routes. Refunds (or expires the
+// Checkout session) BEFORE any order mutation happens — network-before-mutate,
+// same rule as everywhere else in this file. Throws 502 on a failed refund
+// so the order is left untouched rather than "cancelled" with money still owed.
+async function refundOrExpire(order) {
+  if (order.payment.method !== 'stripe') return false;
+  if (order.payment.status === 'paid' && order.payment.stripePaymentIntentId) {
+    try {
+      await stripeClient.refundPayment(order.payment.stripePaymentIntentId);
+      return true;
+    } catch (e) {
+      console.error('Stripe refund failed:', e.message);
+      throw bad(502, 'No se pudo procesar el reembolso');
+    }
+  }
+  if (order.payment.stripeSessionId) {
+    try {
+      await stripeClient.expireCheckoutSession(order.payment.stripeSessionId);
+    } catch {
+      /* best-effort: link may already be paid/expired */
+    }
+  }
+  return false;
+}
 
 function sanitizeCustomer(body, zones) {
   const c = body.customer || {};
@@ -30,6 +65,10 @@ function sanitizeCustomer(body, zones) {
     .slice(0, 20);
   if (name.length < 2) throw bad(400, 'Nombre requerido');
   if (phone.replace(/\D/g, '').length < 9) throw bad(400, 'Teléfono no válido');
+  const email = String(c.email || '')
+    .trim()
+    .slice(0, 120);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw bad(400, 'Email no válido');
 
   const f = body.fulfillment || {};
   const type = f.type === 'delivery' ? 'delivery' : f.type === 'pickup' ? 'pickup' : null;
@@ -43,7 +82,7 @@ function sanitizeCustomer(body, zones) {
       .slice(0, 200);
     if (fulfillment.address.length < 5) throw bad(400, 'Dirección requerida');
   }
-  return { customer: { name, phone }, fulfillment };
+  return { customer: { name, phone, email }, fulfillment };
 }
 
 // Public: create an order. Persists before any Stripe call so a crash can
@@ -145,19 +184,68 @@ router.get('/:id/status', async (req, res, next) => {
       fulfillmentType: order.fulfillment.type,
       items: order.items,
       createdAt: order.createdAt,
+      cancellable: isCancellable(order),
+      cancelDeadline: new Date(Date.parse(order.createdAt) + ORDER_CANCEL_WINDOW).toISOString(),
+      ...(order.cancelReason ? { cancelReason: order.cancelReason } : {}),
     });
   } catch (err) {
     next(err);
   }
 });
 
-// Admin: validated state change (409 on an illegal transition).
-router.put('/:id/status', requireAuth, (req, res, next) => {
+// Public: customer self-cancel within the no-questions-asked window.
+router.post('/:id/cancel', async (req, res, next) => {
+  try {
+    const order = orders.getOrder(req.params.id);
+    if (!order || order.publicToken !== req.query.t) throw bad(404, 'Pedido no encontrado');
+    if (!isCancellable(order)) {
+      throw bad(409, 'Ya no se puede cancelar este pedido, llámanos si necesitas ayuda');
+    }
+
+    const refunded = await refundOrExpire(order);
+    const updated = orders.applyTransition(order.id, 'cancelled', (o) => {
+      if (refunded) o.payment.status = 'refunded';
+    });
+    mailer
+      .sendCancellationEmail(updated, { refunded })
+      .catch((e) => console.error('Cancellation email failed:', e.message));
+    res.json({ status: updated.status, paymentStatus: updated.payment.status });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Admin: validated state change (409 on an illegal transition). Cancelling a
+// paid order refunds it and emails the customer; `reason` (e.g. "sin stock")
+// is optional but stored and included in that email.
+router.put('/:id/status', requireAuth, async (req, res, next) => {
   try {
     const status = String(req.body.status || '');
     if (!orders.ADMIN_STATUSES.includes(status)) throw bad(400, 'Estado no válido');
-    const order = orders.applyTransition(req.params.id, status);
+    const reason = String(req.body.reason || '')
+      .trim()
+      .slice(0, 200);
+
+    let refunded = false;
+    let wasAlreadyCancelled = false;
+    if (status === 'cancelled') {
+      const existing = orders.getOrder(req.params.id);
+      if (!existing) throw bad(404, 'Pedido no encontrado');
+      wasAlreadyCancelled = existing.status === 'cancelled';
+      if (!wasAlreadyCancelled) refunded = await refundOrExpire(existing);
+    }
+
+    const order = orders.applyTransition(req.params.id, status, (o) => {
+      if (refunded) o.payment.status = 'refunded';
+      if (status === 'cancelled' && reason) o.cancelReason = reason;
+    });
     if (!order) throw bad(404, 'Pedido no encontrado');
+
+    if (status === 'cancelled' && !wasAlreadyCancelled) {
+      mailer
+        .sendCancellationEmail(order, { refunded, reason })
+        .catch((e) => console.error('Cancellation email failed:', e.message));
+    }
     res.json(order);
   } catch (err) {
     next(err);

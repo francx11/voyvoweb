@@ -312,6 +312,9 @@
         '<input type="text" id="vv-c-name" name="name" autocomplete="name" autocapitalize="words" required></div>' +
       '<div class="field"><label for="vv-c-phone">Teléfono</label>' +
         '<input type="tel" id="vv-c-phone" name="phone" autocomplete="tel" required></div>' +
+      '<div class="field"><label for="vv-c-email">Email (opcional)</label>' +
+        '<input type="email" id="vv-c-email" name="email" autocomplete="email">' +
+        '<p class="cart-delivery-note">Para avisarte si hay algún problema con tu pedido.</p></div>' +
       '<fieldset class="cart-fulfillment"><legend>¿Cómo lo quieres?</legend>' +
         '<label class="cart-radio"><input type="radio" name="fulfillment" value="pickup" checked> Recogida</label>' +
         '<label class="cart-radio"><input type="radio" name="fulfillment" value="delivery"> Domicilio</label>' +
@@ -339,7 +342,10 @@
   }
 
   function checkoutFooterHtml() {
+    var cancelMin = orderingConfig.cancelWindowMinutes || 5;
     return '<div class="cart-total-row"><span>Total</span><span id="vv-c-total">' + formatPrice(cartSubtotal()) + '</span></div>' +
+      '<p class="cart-cancel-notice">Puedes cancelar tu pedido gratis durante los primeros ' + cancelMin +
+        ' minutos desde la confirmación. Pasado ese tiempo, llámanos si necesitas ayuda.</p>' +
       '<p class="cart-error" id="vv-c-error" hidden></p>' +
       '<button type="submit" form="vv-checkout-form" class="btn btn-primary cart-submit" id="vv-c-submit">Confirmar pedido</button>';
   }
@@ -415,7 +421,11 @@
       return out;
     });
     var body = {
-      customer: { name: $('#vv-c-name').value.trim(), phone: $('#vv-c-phone').value.trim() },
+      customer: {
+        name: $('#vv-c-name').value.trim(),
+        phone: $('#vv-c-phone').value.trim(),
+        email: $('#vv-c-email').value.trim(),
+      },
       fulfillment: fulfillment,
       paymentMethod: paymentMethod,
       items: items,
