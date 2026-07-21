@@ -245,6 +245,20 @@ test('orders outside opening hours are rejected server-side', async () => {
   writeOrdering(ORDERING);
 });
 
+test('forceOpen bypasses the schedule (and closedDates), but not the enabled flag', async () => {
+  writeOrdering({ ...ORDERING, schedule: {}, forceOpen: true });
+  const openConfig = await api('GET', '/api/ordering/config', undefined, { auth: false });
+  assert.equal(openConfig.json.open, true);
+  const r = await api('POST', '/api/orders', order(), { auth: false });
+  assert.equal(r.status, 201);
+
+  writeOrdering({ ...ORDERING, schedule: {}, forceOpen: true, enabled: false });
+  const off = await api('POST', '/api/orders', order(), { auth: false });
+  assert.equal(off.status, 503); // enabled: false still wins over forceOpen
+
+  writeOrdering(ORDERING);
+});
+
 test('stripe payment without configured keys → 503, no order stored', async () => {
   const r = await api('POST', '/api/orders', order({ paymentMethod: 'stripe' }), { auth: false });
   assert.equal(r.status, 503);

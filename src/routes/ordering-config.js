@@ -35,6 +35,7 @@ function sanitizeSizes(sizes) {
 function sanitizeOrderingConfig(body, current) {
   const cfg = { ...current };
   if (typeof body.enabled === 'boolean') cfg.enabled = body.enabled;
+  if (typeof body.forceOpen === 'boolean') cfg.forceOpen = body.forceOpen;
 
   if (body.tiers && typeof body.tiers === 'object') {
     const tiers = {};
