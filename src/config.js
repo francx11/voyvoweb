@@ -26,6 +26,17 @@ module.exports = {
 
   REVIEWS_CACHE_TTL: 10 * 60 * 1000,
 
+  // Online ordering
+  ORDERS_FILE: 'orders.json',
+  ORDERING_FILE: 'ordering.json',
+  ORDER_PENDING_TTL: 60 * 60 * 1000, // unpaid Stripe orders expire after 1h
+  ORDER_MAX_QTY: 20,
+  ORDER_MAX_ITEMS: 30,
+  ORDER_RETENTION_DAYS: 90,
+  ORDER_MAX_FAILS: 10, // orders per IP per window
+  ORDER_WINDOW: 15 * 60 * 1000,
+  PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL || 'http://localhost:3000',
+
   UPLOAD_IMAGE_MAX_BYTES: 15 * 1024 * 1024,
   UPLOAD_IMAGE_MAX_FILES: 30,
   UPLOAD_PDF_MAX_BYTES: 20 * 1024 * 1024,
