@@ -20,7 +20,10 @@ module.exports = function errorHandler(err, _req, res, next) {
   if (err.type === 'entity.too.large') {
     return res.status(413).json({ error: 'Cuerpo de la petición demasiado grande' });
   }
-  if (err.status && err.status < 500) {
+  // Expected errors carry err.status. 5xx ones (e.g. 503 payments disabled,
+  // 502 Stripe unreachable) must opt in with err.expose so an accidental
+  // status on an internal error never leaks its message.
+  if (err.status && (err.status < 500 || err.expose === true)) {
     return res.status(err.status).json({ error: err.message });
   }
 

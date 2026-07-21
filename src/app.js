@@ -16,6 +16,9 @@ function createApp() {
   if (PROD) app.set('trust proxy', 1);
 
   app.use(securityHeaders);
+  // Stripe verifies webhook signatures against the raw body, so this route
+  // must be mounted before express.json consumes/reparses the stream.
+  app.use('/api/stripe/webhook', require('./routes/stripe-webhook'));
   app.use(express.json({ limit: '1mb' }));
 
   // Clean URL for the admin panel: registered before static so
@@ -33,6 +36,8 @@ function createApp() {
   app.use('/api/site', require('./routes/site'));
   app.use('/api/reviews', require('./routes/reviews'));
   app.use('/api/config', require('./routes/settings'));
+  app.use('/api/orders', require('./routes/orders'));
+  app.use('/api/ordering', require('./routes/ordering-config'));
 
   app.use(errorHandler);
   return app;
