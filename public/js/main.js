@@ -39,7 +39,14 @@
   }
   function formatPrice(n) { return Number(n).toFixed(2).replace('.', ',') + ' €'; }
 
+  // Shared with cart.js: helpers + the menu/ordering data it fetches once
+  // here rather than re-fetching. Kept to the minimum surface cart.js needs.
+  var VV = window.VV = window.VV || {};
+  VV.esc = esc;
+  VV.formatPrice = formatPrice;
+
   var SITE = {}; // editable content loaded from /api/site
+  var orderingConfig = null; // /api/ordering/config, needed to price/render orderable items
 
   /* ── Accessible mobile nav ──────────────────────────── */
   var navToggle = $('#nav-toggle');
@@ -121,6 +128,89 @@
   /* ── Menu: products or PDF ──────────────────────────── */
   var excludedAllergens = new Set();
 
+  // A size label like "Pequeña 30cm" reads better in a price line abbreviated
+  // to just "Pequeña" — the cm is redundant next to the price.
+  function shortSizeLabel(label) {
+    var stripped = String(label || '').replace(/\s*\d+(?:[.,]\d+)?\s*cm\.?\s*$/i, '').trim();
+    return stripped || label;
+  }
+  function priceNum(n) { return Number(n).toFixed(2).replace('.', ','); }
+
+  // Non-breaking spaces glue each size to its price so, when the line wraps
+  // on narrow screens, breaks only happen between sizes (at the " · ").
+  function sizesPriceLine(sizes) {
+    return sizes.map(function (s) {
+      var suffix = s.fulfillment === 'pickup' ? ' (solo recoger)' :
+        s.fulfillment === 'delivery' ? ' (solo domicilio)' : '';
+      return esc(shortSizeLabel(s.label)) + esc(suffix) + ' ' + priceNum(s.price);
+    }).join(' · ') + ' €';
+  }
+
+  // Resolves what price text to show, using ordering.json for tier/sizes
+  // pricing (the item itself only stores a tierId or a sizes array).
+  function priceDisplay(p) {
+    var pricing = p.pricing || {};
+    if (pricing.mode === 'tier') {
+      var tier = orderingConfig && orderingConfig.tiers && orderingConfig.tiers[pricing.tierId];
+      if (tier && tier.sizes && tier.sizes.length) return sizesPriceLine(tier.sizes);
+      return '';
+    }
+    if (pricing.mode === 'sizes' && Array.isArray(pricing.sizes) && pricing.sizes.length) {
+      return sizesPriceLine(pricing.sizes);
+    }
+    return p.price != null ? formatPrice(p.price) : '';
+  }
+
+  function isOrderable(p) {
+    var pricing = p.pricing || {};
+    if (pricing.mode === 'tier') {
+      var tier = orderingConfig && orderingConfig.tiers && orderingConfig.tiers[pricing.tierId];
+      return !!(tier && tier.sizes && tier.sizes.length);
+    }
+    if (pricing.mode === 'sizes') return Array.isArray(pricing.sizes) && pricing.sizes.length > 0;
+    return p.price != null;
+  }
+
+  // Groups items by category, keeping the order categories first appear in.
+  function groupByCategory(items) {
+    var order = [];
+    var byCategory = {};
+    items.forEach(function (p) {
+      var cat = p.category || '';
+      if (!Object.prototype.hasOwnProperty.call(byCategory, cat)) {
+        byCategory[cat] = [];
+        order.push(cat);
+      }
+      byCategory[cat].push(p);
+    });
+    return order.map(function (cat) { return { category: cat, items: byCategory[cat] }; });
+  }
+
+  function renderMenuItem(p) {
+    var priceStr = priceDisplay(p);
+    var canOrder = orderingConfig && orderingConfig.enabled && isOrderable(p);
+    return '<li class="menu-item">' +
+      '<div class="menu-line">' +
+        '<span class="menu-name">' + esc(p.name) + '</span>' +
+        (p.tag ? '<span class="menu-tag">' + esc(p.tag) + '</span>' : '') +
+        '<span class="menu-dots" aria-hidden="true"></span>' +
+        (priceStr
+          ? '<span class="menu-price' +
+            (priceStr.indexOf('·') !== -1 ? ' menu-price--multi' : '') +
+            '">' + priceStr + '</span>'
+          : '') +
+      '</div>' +
+      (p.description ? '<p class="menu-desc">' + esc(p.description) + '</p>' : '') +
+      ((p.allergens && p.allergens.length)
+        ? '<p class="menu-alerg"><strong>Alérgenos:</strong> ' + p.allergens.map(esc).join(', ') + '</p>'
+        : '') +
+      (canOrder
+        ? '<div class="menu-item-actions"><button type="button" class="btn btn-outline btn-add-item" ' +
+          'data-item-id="' + esc(p.id) + '">Añadir</button></div>'
+        : '') +
+    '</li>';
+  }
+
   function renderMenu(items) {
     var list = $('#menu-list');
     var visible = items.filter(function (p) { return p.active !== false; })
@@ -134,19 +224,11 @@
         'Llámanos y te la preparamos a medida.</li>';
       return;
     }
-    list.innerHTML = visible.map(function (p) {
-      return '<li class="menu-item">' +
-        '<div class="menu-line">' +
-          '<span class="menu-name">' + esc(p.name) + '</span>' +
-          (p.tag ? '<span class="menu-tag">' + esc(p.tag) + '</span>' : '') +
-          '<span class="menu-dots" aria-hidden="true"></span>' +
-          (p.price != null ? '<span class="menu-price">' + formatPrice(p.price) + '</span>' : '') +
-        '</div>' +
-        (p.description ? '<p class="menu-desc">' + esc(p.description) + '</p>' : '') +
-        ((p.allergens && p.allergens.length)
-          ? '<p class="menu-alerg"><strong>Alérgenos:</strong> ' + p.allergens.map(esc).join(', ') + '</p>'
-          : '') +
-      '</li>';
+    list.innerHTML = groupByCategory(visible).map(function (group) {
+      return (group.category
+        ? '<li class="menu-category"><h3 class="menu-category-title">' + esc(group.category) + '</h3></li>'
+        : '') +
+        group.items.map(renderMenuItem).join('');
     }).join('');
   }
 
@@ -187,8 +269,10 @@
       .then(function (r) { return r.json(); })
       .then(function (items) {
         if (!items.length) return;
+        VV.menuItems = items;
         initAllergenFilters(items);
         renderMenu(items);
+        document.dispatchEvent(new CustomEvent('vv:menu-ready'));
       })
       .catch(function () { /* API unavailable: section keeps its default message */ });
   }
@@ -279,15 +363,24 @@
     }
   });
 
-  /* ── Init ───────────────────────────────────────────── */
-  fetch('/api/site')
+  /* ── Init ─────────────────────────────────────────────
+     /api/ordering/config is requested up front, alongside /api/site,
+     rather than chained after it — the menu render needs both before
+     it can decide what's orderable, but neither fetch depends on the
+     other so there is no reason to serialize them. ── */
+  var sitePromise = fetch('/api/site').then(function (r) { return r.json(); }).catch(function () { return {}; });
+  var orderingConfigPromise = fetch('/api/ordering/config')
     .then(function (r) { return r.json(); })
-    .then(applySite)
-    .catch(function () {})
-    .then(function () {
-      loadMenu();
-      loadMonthlySpecial();
-      loadGallery();
-      loadReviews();
-    });
+    .catch(function () { return null; });
+
+  sitePromise.then(applySite);
+
+  Promise.all([sitePromise, orderingConfigPromise]).then(function (results) {
+    orderingConfig = results[1];
+    VV.orderingConfig = orderingConfig;
+    loadMenu();
+    loadMonthlySpecial();
+    loadGallery();
+    loadReviews();
+  });
 })();

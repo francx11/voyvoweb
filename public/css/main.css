@@ -326,6 +326,9 @@ img { max-width: 100%; display: block; }
   font-family: var(--display); font-weight: 600;
   font-size: 1.15rem; white-space: nowrap;
 }
+/* Multi-size price lines are long: let them wrap (nbsp inside each size keeps
+   the breaks at the "·" separators) instead of overflowing the viewport. */
+.menu-price--multi { white-space: normal; text-align: right; min-width: 0; }
 .menu-desc { color: var(--ink-soft); font-size: 0.94rem; max-width: 60ch; margin-top: 0.25rem; }
 .menu-alerg {
   font-size: 0.76rem; color: var(--ink-soft);
@@ -333,6 +336,16 @@ img { max-width: 100%; display: block; }
 }
 .menu-alerg strong { font-weight: 700; color: var(--ink); }
 .menu-empty { text-align: center; color: var(--ink-soft); padding: 2rem 0; }
+
+.menu-category { padding: 1.4rem 0 0.2rem; }
+.menu-category:first-child { padding-top: 0; }
+.menu-category-title {
+  font-family: var(--display); font-weight: 600;
+  font-size: 0.95rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--tomato);
+}
+.menu-item-actions { margin-top: 0.7rem; text-align: right; }
+.btn-add-item { min-height: 40px; padding: 0.5rem 1.2rem; font-size: 0.8rem; }
 
 /* Menu as PDF */
 .menu-pdf { text-align: center; padding: 1.5rem 0 0.5rem; }
@@ -465,6 +478,189 @@ img { max-width: 100%; display: block; }
   outline: 2px solid var(--tomato); outline-offset: 1px;
 }
 .form-note { font-size: 0.82rem; color: var(--ink-soft); }
+
+/* ── Online ordering: cart FAB, drawer, item modal ──
+   Reuses .field/.btn from the contact form and .chip's radius language;
+   all injected at runtime by cart.js (index.html only loads the script).
+   MOBILE-FIRST block: base rules target phones; @media (min-width: 861px)
+   scales up. The rest of this sheet is desktop-first (max-width) — the two
+   strategies don't collide because this block's selectors are self-contained. */
+body.cart-scroll-lock { overflow: hidden; }
+
+.cart-fab {
+  position: fixed; z-index: 150;
+  right: calc(1rem + env(safe-area-inset-right, 0px));
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--tomato-btn); color: var(--on-tomato); border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: background 0.2s, transform 0.2s;
+}
+.cart-fab:hover { background: var(--tomato-btn-hover); transform: translateY(-2px); }
+.cart-fab-badge {
+  position: absolute; top: -4px; right: -4px;
+  min-width: 22px; height: 22px; padding: 0 5px;
+  border-radius: 999px; background: var(--ink); color: var(--paper);
+  font-family: var(--body); font-size: 0.72rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--paper);
+}
+
+/* Generic overlay/modal (also used by the item-customization modal) */
+.modal-overlay, .cart-drawer-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(20, 16, 12, 0.55);
+  display: none; align-items: flex-end; justify-content: center;
+  padding: 0;
+}
+.modal-overlay.open, .cart-drawer-overlay.open { display: flex; }
+.modal {
+  background: var(--paper); border: 1px solid var(--line-strong);
+  width: 100%; max-height: 92vh; max-height: 92dvh;
+  display: flex; flex-direction: column;
+  border-radius: 1rem 1rem 0 0; overflow: hidden;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem clamp(0.9rem, 4vw, 1.4rem); border-bottom: 1px solid var(--line);
+}
+.modal-title { font-family: var(--display); font-weight: 600; font-size: 1.2rem; }
+.modal-close {
+  background: none; border: none; color: var(--ink-soft); cursor: pointer;
+  font-size: 1.6rem; line-height: 1; padding: 0.6rem;
+  margin: -0.6rem; display: inline-flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { color: var(--tomato); }
+.modal-body {
+  padding: 1.2rem clamp(0.9rem, 4vw, 1.4rem); overflow-y: auto; display: grid; gap: 1.1rem;
+  overscroll-behavior: contain;
+}
+.modal-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  padding: 1.1rem clamp(0.9rem, 4vw, 1.4rem); border-top: 1px solid var(--line);
+}
+.modal-footer .btn { flex: 1 1 auto; }
+.cart-modal-price { font-family: var(--display); font-weight: 600; font-size: 1.2rem; }
+.cart-modal-desc { color: var(--ink-soft); font-size: 0.92rem; }
+
+.cart-modal-sizes, .cart-modal-mods { border: none; display: grid; gap: 0.5rem; }
+.cart-modal-sizes legend, .cart-modal-mods legend, .cart-fulfillment legend, .cart-payment legend {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-soft); padding: 0 0 0.4rem; margin: 0;
+}
+.cart-modal-invalid legend { color: var(--tomato); }
+.cart-radio {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.94rem; cursor: pointer; min-height: 44px;
+}
+.cart-radio input { width: 18px; height: 18px; accent-color: var(--tomato-btn); flex-shrink: 0; }
+.cart-radio input:disabled + * { opacity: 0.5; }
+.cart-radio:has(input:disabled) { opacity: 0.5; cursor: not-allowed; }
+
+.cart-modal-qty-row, .cart-total-row, .cart-subtotal-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
+.cart-total-row { font-family: var(--display); font-weight: 600; font-size: 1.15rem; padding-top: 0.4rem; }
+.cart-qty { display: flex; align-items: center; gap: 0.7rem; }
+.cart-qty-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--line-strong); background: transparent; color: var(--ink);
+  font-size: 1.1rem; line-height: 1; cursor: pointer;
+}
+.cart-qty-btn:hover { border-color: var(--tomato); color: var(--tomato); }
+.cart-qty-val { min-width: 1.4rem; text-align: center; font-weight: 700; }
+
+/* Drawer */
+.cart-drawer {
+  background: var(--paper); width: 100%; height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column; border-left: none;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+.cart-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem clamp(0.9rem, 4vw, 1.4rem); border-bottom: 1px solid var(--line);
+}
+.cart-drawer-header h2 { font-family: var(--display); font-weight: 600; font-size: 1.3rem; }
+.cart-drawer-body {
+  padding: 1.2rem clamp(0.9rem, 4vw, 1.4rem); overflow-y: auto; flex: 1;
+  overscroll-behavior: contain;
+}
+.cart-drawer-footer {
+  border-top: 1px solid var(--line-strong); background: var(--paper);
+  display: grid; gap: 0.6rem;
+  padding: 0.9rem clamp(0.9rem, 4vw, 1.4rem) calc(0.9rem + env(safe-area-inset-bottom, 0px));
+}
+.cart-empty { color: var(--ink-soft); text-align: center; padding: 2.5rem 0; }
+
+.cart-lines { list-style: none; display: grid; gap: 1rem; }
+.cart-line { padding-bottom: 1rem; border-bottom: 1px dashed var(--line); }
+.cart-line-main { display: flex; justify-content: space-between; gap: 0.8rem; font-weight: 700; flex-wrap: wrap; }
+.cart-line-name { overflow-wrap: anywhere; }
+.cart-line-mods, .cart-line-notes { font-size: 0.86rem; color: var(--ink-soft); margin-top: 0.2rem; }
+.cart-line-warning { font-size: 0.82rem; font-weight: 700; color: var(--tomato); margin-top: 0.3rem; }
+.cart-line-blocked .cart-line-name { color: var(--tomato); }
+.cart-line-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 0.6rem;
+}
+.cart-line-remove {
+  background: none; border: none; color: var(--ink-soft);
+  font-size: 0.82rem; text-decoration: underline; cursor: pointer;
+  padding: 0.6rem 0.3rem; margin: -0.6rem -0.3rem;
+}
+.cart-line-remove:hover { color: var(--tomato); }
+
+.cart-subtotal-row {
+  margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line-strong);
+  font-weight: 700;
+}
+
+.cart-checkout { display: grid; gap: 1.1rem; margin-top: 1.6rem; }
+.cart-fulfillment, .cart-payment { border: none; display: grid; gap: 0.3rem; padding: 0; }
+.cart-delivery-fields { display: grid; gap: 1.1rem; }
+.cart-delivery-note { font-size: 0.86rem; color: var(--ink-soft); }
+.cart-banner {
+  font-size: 0.9rem; font-weight: 700; padding: 0.8rem 1rem;
+  border-radius: 0.4rem; border: 1px solid currentColor;
+}
+.cart-banner-closed { color: var(--tomato); background: color-mix(in srgb, var(--tomato) 10%, transparent); }
+.cart-error { color: var(--tomato); font-size: 0.88rem; font-weight: 700; }
+.cart-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (min-width: 861px) {
+  .cart-fab { width: 60px; height: 60px; right: 1.2rem; bottom: 1.2rem; }
+  .modal-overlay { align-items: center; padding: 1rem; }
+  .modal { max-width: 480px; max-height: 88vh; max-height: 88dvh; border-radius: 0.6rem; }
+  .cart-drawer-overlay { justify-content: flex-end; }
+  .cart-drawer { max-width: 420px; border-left: 1px solid var(--line-strong); }
+}
+
+@media (max-height: 520px) {
+  .modal-header, .cart-drawer-header { padding-top: 0.7rem; padding-bottom: 0.7rem; }
+  .modal-footer, .cart-drawer-footer { padding-top: 0.6rem; padding-bottom: 0.6rem; }
+  .modal { max-height: 100vh; max-height: 100dvh; border-radius: 0; }
+}
+
+/* ── Order confirmation page (pedido.html) ── */
+.order-code {
+  font-family: var(--display); font-weight: 600; text-align: center;
+  font-size: clamp(2.2rem, 6vw, 3.2rem); letter-spacing: 0.02em;
+}
+.order-status-line { text-align: center; font-weight: 700; font-size: 1.15rem; margin: 0.6rem 0 1.2rem; }
+.order-status-pending { color: var(--ink-soft); }
+.order-status-active { color: var(--tomato); }
+.order-status-done { color: var(--ink); }
+.order-status-muted { color: var(--ink-soft); opacity: 0.75; }
+.order-meta { text-align: center; color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 1.8rem; }
+.order-items { list-style: none; display: grid; gap: 1rem; }
+.order-item { padding-bottom: 1rem; border-bottom: 1px dashed var(--line); }
+.order-item-main { display: flex; justify-content: space-between; gap: 0.8rem; font-weight: 700; flex-wrap: wrap; }
+.order-item-main .order-item-name { overflow-wrap: anywhere; }
+.order-item-mods, .order-item-notes { font-size: 0.86rem; color: var(--ink-soft); margin-top: 0.2rem; }
+.order-total-row { margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--line-strong); }
 
 /* ── Footer ── */
 .site-footer {
