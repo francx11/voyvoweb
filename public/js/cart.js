@@ -109,14 +109,16 @@
   // cart, drop that line silently rather than let it crash the pricing.
   function sanitizeCartAgainstMenu() {
     var before = cart.length;
+    var halfDropped = false;
     cart = cart.filter(function (line) {
       var item = getItem(line.itemId);
       if (!item) return false;
       var sizes = itemSizes(item);
       if (sizes && !findSize(item, line.sizeId)) return false;
+      if (line.halfItemId && !getItem(line.halfItemId)) { delete line.halfItemId; halfDropped = true; }
       return true;
     });
-    if (cart.length !== before) saveCart();
+    if (cart.length !== before || halfDropped) saveCart();
   }
 
   /* ── Scroll lock while a drawer/modal is open ───────────────────────── */
@@ -267,6 +269,9 @@
       (mods.length
         ? '<p class="cart-line-mods">' + mods.map(function (m) { return esc(m.label); }).join(', ') + '</p>'
         : '') +
+      (line.halfItemId && getItem(line.halfItemId)
+        ? '<p class="cart-line-mods">🍕 Mitad: ' + esc(getItem(line.halfItemId).name) + '</p>'
+        : '') +
       (line.notes ? '<p class="cart-line-notes">«' + esc(line.notes) + '»</p>' : '') +
       (blockedLabel ? '<p class="cart-line-warning">' + esc(blockedLabel) + '</p>' : '') +
       '<div class="cart-line-actions">' +
@@ -326,7 +331,13 @@
             zones.map(function (z) { return '<option value="' + esc(z) + '">' + esc(z) + '</option>'; }).join('') +
           '</select></div>' +
         '<div class="field"><label for="vv-c-address">Dirección</label>' +
-          '<input type="text" id="vv-c-address" name="address" autocomplete="street-address"></div>' +
+          '<div class="cart-address-wrap">' +
+            '<input type="text" id="vv-c-address" name="address" autocomplete="off">' +
+            '<ul class="cart-address-suggestions" id="vv-c-address-suggestions" hidden></ul>' +
+          '</div>' +
+        '</div>' +
+        '<label class="cart-radio" id="vv-c-terminal-wrap" hidden>' +
+          '<input type="checkbox" id="vv-c-terminal"> Necesito datáfono para pagar con tarjeta al recibir</label>' +
         '<p class="cart-delivery-note" id="vv-c-delivery-note"></p>' +
       '</div>' +
       '<div class="field"><label for="vv-c-notes">Notas del pedido</label>' +
@@ -357,6 +368,8 @@
     checkoutBuilt = true;
     $('#vv-checkout-form').addEventListener('submit', onSubmitOrder);
     $$('input[name="fulfillment"]').forEach(function (r) { r.addEventListener('change', onFulfillmentChange); });
+    $$('input[name="paymentMethod"]').forEach(function (r) { r.addEventListener('change', updateTerminalVisibility); });
+    wireAddressAutocomplete();
     onFulfillmentChange();
   }
 
@@ -364,8 +377,72 @@
     var type = getSelectedFulfillmentType();
     var deliveryFields = $('#vv-c-delivery-fields');
     if (deliveryFields) deliveryFields.hidden = type !== 'delivery';
+    updateTerminalVisibility();
     renderLines(); // re-highlight lines blocked for the newly chosen type
     updateCheckoutDerived();
+  }
+
+  // Datáfono only matters when the courier will collect payment in person:
+  // a delivery order paid on receipt. Prepaid-by-card or pickup orders hide it.
+  function updateTerminalVisibility() {
+    var wrap = $('#vv-c-terminal-wrap');
+    if (!wrap) return;
+    var type = getSelectedFulfillmentType();
+    var payMethod = (document.querySelector('input[name="paymentMethod"]:checked') || {}).value || 'on_receipt';
+    var show = type === 'delivery' && payMethod === 'on_receipt';
+    wrap.hidden = !show;
+    if (!show) { var box = $('#vv-c-terminal'); if (box) box.checked = false; }
+  }
+
+  /* ── Address autocomplete (server-proxied Google Places; degrades to a
+     plain text field when unconfigured or offline) ─────────────────── */
+  var addressDebounceTimer = null;
+  var addressAbortController = null;
+
+  function wireAddressAutocomplete() {
+    var input = $('#vv-c-address');
+    var list = $('#vv-c-address-suggestions');
+    if (!input || !list) return;
+
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      clearTimeout(addressDebounceTimer);
+      if (q.length < 3) { hideAddressSuggestions(); return; }
+      addressDebounceTimer = setTimeout(function () { fetchAddressSuggestions(q); }, 300);
+    });
+    // Delay the hide so a click on a suggestion registers before it disappears.
+    input.addEventListener('blur', function () { setTimeout(hideAddressSuggestions, 150); });
+    list.addEventListener('click', function (e) {
+      var li = e.target.closest && e.target.closest('li[data-desc]');
+      if (!li) return;
+      input.value = li.getAttribute('data-desc');
+      hideAddressSuggestions();
+    });
+  }
+
+  function hideAddressSuggestions() {
+    var list = $('#vv-c-address-suggestions');
+    if (list) { list.hidden = true; list.innerHTML = ''; }
+  }
+
+  function fetchAddressSuggestions(q) {
+    if (addressAbortController) addressAbortController.abort();
+    addressAbortController = ('AbortController' in window) ? new AbortController() : null;
+    fetch('/api/places/autocomplete?input=' + encodeURIComponent(q), {
+      signal: addressAbortController ? addressAbortController.signal : undefined,
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var list = $('#vv-c-address-suggestions');
+        if (!list) return;
+        var preds = (data && data.predictions) || [];
+        if (!preds.length) { hideAddressSuggestions(); return; }
+        list.innerHTML = preds.map(function (p) {
+          return '<li data-desc="' + esc(p.description) + '">' + esc(p.description) + '</li>';
+        }).join('');
+        list.hidden = false;
+      })
+      .catch(function () { /* offline/unconfigured: field still works as plain text */ });
   }
 
   function updateCheckoutDerived() {
@@ -413,11 +490,13 @@
     if (type === 'delivery') {
       fulfillment.zone = ($('#vv-c-zone') || {}).value || '';
       fulfillment.address = (($('#vv-c-address') || {}).value || '').trim();
+      fulfillment.needsCardTerminal = !!($('#vv-c-terminal') || {}).checked;
     }
     var paymentMethod = (document.querySelector('input[name="paymentMethod"]:checked') || {}).value || 'on_receipt';
     var items = cart.map(function (line) {
       var out = { itemId: line.itemId, modifierIds: line.modifierIds || [], qty: line.qty, notes: line.notes || '' };
       if (line.sizeId) out.sizeId = line.sizeId;
+      if (line.halfItemId) out.halfItemId = line.halfItemId;
       return out;
     });
     var body = {
@@ -473,6 +552,7 @@
   var modalItem = null;
   var modalSizeId = null;
   var modalModifiers = {}; // gid -> array of selected option ids
+  var modalHalfId = null; // id of the pizza chosen for the other half, if any
   var modalQty = 1;
 
   function groupsForItem(item) {
@@ -481,12 +561,41 @@
       .filter(function (g) { return g.group; });
   }
 
+  // "Mitad y mitad" is just a modifier option (+price); it doesn't by itself
+  // say which pizza the other half should be. When an item offers it, show
+  // a picker limited to the other pizzas that also offer it.
+  function itemOffersHalf(item) {
+    return groupsForItem(item).some(function (g) {
+      return (g.group.options || []).some(function (o) { return o.id === 'mitad'; });
+    });
+  }
+  function halfPizzaOptions(excludeId) {
+    return menuItems.filter(function (m) {
+      return m.id !== excludeId && m.active !== false && itemOffersHalf(m);
+    });
+  }
+  function modalHasMitadSelected() {
+    return Object.keys(modalModifiers).some(function (gid) { return modalModifiers[gid].indexOf('mitad') !== -1; });
+  }
+  function updateHalfFieldVisibility() {
+    var field = $('#vv-half-field');
+    if (!field) return;
+    var show = modalHasMitadSelected();
+    field.hidden = !show;
+    if (!show) {
+      modalHalfId = null;
+      var sel = $('#vv-half-select');
+      if (sel) sel.value = '';
+    }
+  }
+
   function openItemModal(itemId) {
     var item = getItem(itemId);
     if (!item) return;
     modalItem = item;
     modalQty = 1;
     modalModifiers = {};
+    modalHalfId = null;
     var sizes = itemSizes(item);
     modalSizeId = sizes && sizes.length ? sizes[0].id : null;
 
@@ -498,6 +607,7 @@
     itemTitleEl.textContent = item.name;
     itemBodyEl.innerHTML = itemModalBodyHtml(item, sizes);
     attachItemModalListeners(item);
+    updateHalfFieldVisibility();
     updateItemModalPrice();
     itemOverlayEl.classList.add('open');
     lockScroll();
@@ -529,6 +639,14 @@
         }).join('') +
       '</fieldset>';
     });
+    if (itemOffersHalf(item)) {
+      var halfOpts = halfPizzaOptions(item.id);
+      html += '<div class="field cart-modal-half" id="vv-half-field" hidden>' +
+        '<label for="vv-half-select">¿Con qué pizza quieres la otra mitad?</label>' +
+        '<select id="vv-half-select"><option value="">Selecciona una pizza</option>' +
+        halfOpts.map(function (m) { return '<option value="' + esc(m.id) + '">' + esc(m.name) + '</option>'; }).join('') +
+        '</select></div>';
+    }
     html += '<div class="cart-modal-qty-row"><span>Cantidad</span><div class="cart-qty">' +
       '<button type="button" class="cart-qty-btn" id="vv-item-qty-dec" aria-label="Menos">–</button>' +
       '<span class="cart-qty-val" id="vv-item-qty-val">1</span>' +
@@ -552,6 +670,13 @@
     var inc = $('#vv-item-qty-inc');
     if (dec) dec.addEventListener('click', function () { setModalQty(modalQty - 1); });
     if (inc) inc.addEventListener('click', function () { setModalQty(modalQty + 1); });
+
+    var halfSelect = $('#vv-half-select');
+    if (halfSelect) halfSelect.addEventListener('change', function () {
+      modalHalfId = halfSelect.value || null;
+      var field = $('#vv-half-field');
+      if (field) field.classList.remove('cart-modal-invalid');
+    });
   }
 
   function onModifierChange(g) {
@@ -568,6 +693,7 @@
     }
     var fs = itemBodyEl.querySelector('fieldset[data-gid="' + g.gid + '"]');
     if (fs) fs.classList.remove('cart-modal-invalid');
+    updateHalfFieldVisibility();
     updateItemModalPrice();
   }
 
@@ -606,6 +732,12 @@
       if (fs) { fs.classList.add('cart-modal-invalid'); fs.scrollIntoView({ block: 'center' }); }
       return;
     }
+    var halfField = $('#vv-half-field');
+    if (halfField && !halfField.hidden && !modalHalfId) {
+      halfField.classList.add('cart-modal-invalid');
+      halfField.scrollIntoView({ block: 'center' });
+      return;
+    }
     var allSelectedIds = Object.keys(modalModifiers).reduce(function (acc, gid) {
       return acc.concat(modalModifiers[gid]);
     }, []);
@@ -617,6 +749,7 @@
       notes: notesEl ? notesEl.value.trim().slice(0, 200) : '',
     };
     if (modalSizeId) line.sizeId = modalSizeId;
+    if (modalHalfId) line.halfItemId = modalHalfId;
     cart.push(line);
     saveCart();
     updateBadge();

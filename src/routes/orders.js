@@ -81,6 +81,7 @@ function sanitizeCustomer(body, zones) {
       .trim()
       .slice(0, 200);
     if (fulfillment.address.length < 5) throw bad(400, 'Dirección requerida');
+    fulfillment.needsCardTerminal = Boolean(f.needsCardTerminal);
   }
   return { customer: { name, phone, email }, fulfillment };
 }

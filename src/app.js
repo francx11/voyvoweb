@@ -35,6 +35,7 @@ function createApp() {
   app.use('/api/gallery', require('./routes/gallery'));
   app.use('/api/site', require('./routes/site'));
   app.use('/api/reviews', require('./routes/reviews'));
+  app.use('/api/places', require('./routes/places'));
   app.use('/api/config', require('./routes/settings'));
   app.use('/api/orders', require('./routes/orders'));
   app.use('/api/ordering', require('./routes/ordering-config'));

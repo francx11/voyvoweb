@@ -32,4 +32,11 @@ setInterval(
   10 * 60 * 1000
 ).unref();
 
-module.exports = { isLimited, register };
+// Test-only escape hatch: the counter is in-memory and keyed by IP, so a
+// test file that creates more than ORDER_MAX_FAILS orders from 127.0.0.1
+// would otherwise bleed rate-limiting into unrelated later tests.
+function _resetForTests() {
+  hits.clear();
+}
+
+module.exports = { isLimited, register, _resetForTests };

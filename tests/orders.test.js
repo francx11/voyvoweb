@@ -16,6 +16,7 @@ delete process.env.STRIPE_WEBHOOK_SECRET;
 fs.mkdirSync(process.env.DATA_DIR, { recursive: true });
 
 const { createApp } = require('../src/app');
+const orderLimiter = require('../src/services/order-limiter');
 
 let server;
 let base;
@@ -96,6 +97,11 @@ before(async () => {
   const seed = [
     {
       name: 'Margarita',
+      pricing: { mode: 'tier', tierId: 'clasica' },
+      modifierGroupIds: ['pizza-mods'],
+    },
+    {
+      name: 'Prosciutto',
       pricing: { mode: 'tier', tierId: 'clasica' },
       modifierGroupIds: ['pizza-mods'],
     },
@@ -202,6 +208,119 @@ test('delivery: minimum enforced, fee added, zone validated', async () => {
   );
   assert.equal(ok.status, 201);
   assert.equal(ok.json.total, 12.7); // 11.70 + 1 delivery fee
+});
+
+test('mitad y mitad: half pizza is required, validated, and priced without extra cost', async () => {
+  const missing = await api(
+    'POST',
+    '/api/orders',
+    order({
+      items: [{ itemId: ids['Margarita'], sizeId: 'fam', qty: 1, modifierIds: ['mitad'] }],
+    }),
+    { auth: false }
+  );
+  assert.equal(missing.status, 422); // 'mitad' selected but no halfItemId
+
+  const sameItem = await api(
+    'POST',
+    '/api/orders',
+    order({
+      items: [
+        {
+          itemId: ids['Margarita'],
+          sizeId: 'fam',
+          qty: 1,
+          modifierIds: ['mitad'],
+          halfItemId: ids['Margarita'],
+        },
+      ],
+    }),
+    { auth: false }
+  );
+  assert.equal(sameItem.status, 422); // can't be half of itself
+
+  const notHalvable = await api(
+    'POST',
+    '/api/orders',
+    order({
+      items: [
+        {
+          itemId: ids['Margarita'],
+          sizeId: 'fam',
+          qty: 1,
+          modifierIds: ['mitad'],
+          halfItemId: ids['Ensalada'], // no pizza-mods group at all
+        },
+      ],
+    }),
+    { auth: false }
+  );
+  assert.equal(notHalvable.status, 422);
+
+  const ok = await api(
+    'POST',
+    '/api/orders',
+    order({
+      items: [
+        {
+          itemId: ids['Margarita'],
+          sizeId: 'fam',
+          qty: 1,
+          modifierIds: ['mitad'],
+          halfItemId: ids['Prosciutto'],
+        },
+      ],
+    }),
+    { auth: false }
+  );
+  assert.equal(ok.status, 201);
+  assert.equal(ok.json.total, 12.7); // 11.70 + 1 (mitad supplement); the half itself is free
+  const stored = (await api('GET', '/api/orders')).json.orders.find(
+    (o) => o.id === ok.json.orderId
+  );
+  assert.deepEqual(stored.items[0].half, { itemId: ids['Prosciutto'], name: 'Prosciutto' });
+});
+
+test('delivery: needsCardTerminal is sanitized to a boolean and stored', async () => {
+  const withTerminal = await api(
+    'POST',
+    '/api/orders',
+    order({
+      fulfillment: {
+        type: 'delivery',
+        zone: 'Santa Fe',
+        address: 'C/ Real 1',
+        needsCardTerminal: 'yes',
+      },
+    }),
+    { auth: false }
+  );
+  assert.equal(withTerminal.status, 201);
+  let stored = (await api('GET', '/api/orders')).json.orders.find(
+    (o) => o.id === withTerminal.json.orderId
+  );
+  assert.equal(stored.fulfillment.needsCardTerminal, true);
+
+  const withoutTerminal = await api(
+    'POST',
+    '/api/orders',
+    order({ fulfillment: { type: 'delivery', zone: 'Santa Fe', address: 'C/ Real 1' } }),
+    { auth: false }
+  );
+  stored = (await api('GET', '/api/orders')).json.orders.find(
+    (o) => o.id === withoutTerminal.json.orderId
+  );
+  assert.equal(stored.fulfillment.needsCardTerminal, false);
+
+  const pickup = await api('POST', '/api/orders', order(), { auth: false }); // fulfillment.type: pickup
+  stored = (await api('GET', '/api/orders')).json.orders.find((o) => o.id === pickup.json.orderId);
+  assert.equal(stored.fulfillment.needsCardTerminal, undefined);
+
+  // This test and the one above create a handful of extra orders from the
+  // same IP the rest of the file also orders from; the later tests are
+  // tuned tight against ORDER_MAX_FAILS, so reset the shared counter rather
+  // than let it bleed into their expectations.
+  orderLimiter._resetForTests();
 });
 
 test('customer email is optional but validated when given', async () => {

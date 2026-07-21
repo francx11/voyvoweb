@@ -115,6 +115,7 @@
         '<span class="order-item-price">' + formatPrice(item.lineTotal) + '</span>' +
       '</div>' +
       (mods.length ? '<p class="order-item-mods">' + mods.join(', ') + '</p>' : '') +
+      (item.half ? '<p class="order-item-mods">🍕 Mitad: ' + esc(item.half.name) + '</p>' : '') +
       (item.notes ? '<p class="order-item-notes">«' + esc(item.notes) + '»</p>' : '') +
     '</li>';
   }

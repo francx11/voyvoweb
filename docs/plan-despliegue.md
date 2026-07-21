@@ -28,7 +28,7 @@
 4. [ ] Variables de entorno en Railway:
    - `NODE_ENV=production` (activa cookie `Secure`)
    - `ADMIN_PASSWORD=<contraseña fuerte inicial>` (solo se usa en el primer arranque)
-   - `GOOGLE_API_KEY=<key de Places>` (opcional, para reseñas)
+   - `GOOGLE_API_KEY=<key de Places>` (opcional, para reseñas y autocompletado de dirección)
 5. [ ] Comando de build: `pnpm install --prod`. Comando de start: `pnpm start`.
 6. [ ] Comprobar el deploy en la URL `*.up.railway.app`: home, carta, admin login, subir una foto.
 
