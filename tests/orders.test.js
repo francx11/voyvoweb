@@ -263,6 +263,59 @@ test('public status needs the right token', async () => {
   assert.equal(good.json.customer, undefined);
 });
 
+test('order cancellation: within window ok, wrong token 404, late/expired 409', async () => {
+  const created = await api('POST', '/api/orders', order(), { auth: false });
+  assert.equal(created.status, 201);
+  const { orderId, token } = created.json;
+
+  const before = await api('GET', `/api/orders/${orderId}/status?t=${token}`, undefined, {
+    auth: false,
+  });
+  assert.equal(before.json.cancellable, true);
+
+  const wrongToken = await api('POST', `/api/orders/${orderId}/cancel?t=wrong`, undefined, {
+    auth: false,
+  });
+  assert.equal(wrongToken.status, 404);
+
+  const ok = await api('POST', `/api/orders/${orderId}/cancel?t=${token}`, undefined, {
+    auth: false,
+  });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.json.status, 'cancelled');
+
+  const again = await api('POST', `/api/orders/${orderId}/cancel?t=${token}`, undefined, {
+    auth: false,
+  });
+  assert.equal(again.status, 409); // already cancelled
+
+  // Past "preparing": too late to self-cancel even inside the time window.
+  const prepping = await api('POST', '/api/orders', order(), { auth: false });
+  await api('PUT', `/api/orders/${prepping.json.orderId}/status`, { status: 'preparing' });
+  const lateStatus = await api(
+    'POST',
+    `/api/orders/${prepping.json.orderId}/cancel?t=${prepping.json.token}`,
+    undefined,
+    { auth: false }
+  );
+  assert.equal(lateStatus.status, 409);
+
+  // Outside the 5-minute time window, even though the status alone would qualify.
+  const stale = await api('POST', '/api/orders', order(), { auth: false });
+  const ordersFile = path.join(process.env.DATA_DIR, 'orders.json');
+  const db = JSON.parse(fs.readFileSync(ordersFile, 'utf-8'));
+  const rec = db.orders.find((o) => o.id === stale.json.orderId);
+  rec.createdAt = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  fs.writeFileSync(ordersFile, JSON.stringify(db));
+  const expired = await api(
+    'POST',
+    `/api/orders/${stale.json.orderId}/cancel?t=${stale.json.token}`,
+    undefined,
+    { auth: false }
+  );
+  assert.equal(expired.status, 409);
+});
+
 test('admin endpoints require the session', async () => {
   assert.equal((await api('GET', '/api/orders', undefined, { auth: false })).status, 401);
   assert.equal(
