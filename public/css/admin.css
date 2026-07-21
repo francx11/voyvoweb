@@ -61,6 +61,16 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
 .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
 .nav-item.active { color: var(--text); background: rgba(194,48,29,0.12); border-right: 2px solid var(--red); }
 .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: var(--red); color: #fff;
+  font-size: 0.68rem; font-weight: 700; padding: 0.1rem 0.45rem;
+  border-radius: 1rem; line-height: 1.4;
+}
+.nav-badge.pulsing { animation: badge-pulse 1s infinite; }
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.15); }
+}
 .sidebar-bottom { padding: 1rem 1.2rem; border-top: 1px solid var(--border); }
 .btn-logout {
   width: 100%; padding: 0.65rem; background: transparent;
@@ -209,6 +219,63 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .review-text { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
 .review-stars { color: #fbbf24; font-size: 0.85rem; margin-left: auto; }
 
+/* ── FILTER BAR (orders) ─────────────── */
+.filter-bar { display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.filter-bar select, .filter-bar input[type="date"] {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 0.5rem;
+  padding: 0.55rem 0.8rem; color: var(--text); font-family: var(--font); font-size: 0.82rem; outline: none;
+}
+.filter-bar select:focus, .filter-bar input:focus { border-color: var(--red); }
+
+/* ── ORDERS ──────────────────────────── */
+.order-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.2rem 1.4rem; margin-bottom: 1rem; }
+.order-card-head { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+.order-code { font-family: var(--display); font-weight: 900; font-size: 1.05rem; }
+.order-time { color: var(--muted); font-size: 0.8rem; margin-left: 0.5rem; }
+.status-badge { display: inline-block; padding: 0.25rem 0.7rem; border-radius: 2rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; }
+.status-pending_payment { background: rgba(148,163,184,0.15); color: #cbd5e1; }
+.status-confirmed       { background: rgba(59,130,246,0.15);  color: #93c5fd; }
+.status-preparing       { background: rgba(245,158,11,0.15);  color: #fcd34d; }
+.status-ready           { background: rgba(34,197,94,0.15);   color: #86efac; }
+.status-out_for_delivery{ background: rgba(168,85,247,0.15);  color: #d8b4fe; }
+.status-delivered       { background: rgba(34,197,94,0.25);   color: #4ade80; }
+.status-expired         { background: rgba(148,163,184,0.1);  color: var(--muted); }
+.status-cancelled       { background: rgba(239,68,68,0.15);   color: #f87171; }
+.order-meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; font-size: 0.83rem; color: var(--text); margin-bottom: 0.6rem; }
+.order-meta-row a { color: inherit; }
+.order-payment-warn { color: var(--orange); font-weight: 600; }
+.order-payment-ok { color: var(--green); font-weight: 600; }
+.order-items { list-style: none; margin: 0.6rem 0; padding: 0.7rem 0.9rem; background: var(--bg3); border-radius: 0.5rem; font-size: 0.82rem; }
+.order-items li { padding: 0.2rem 0; }
+.order-items em { color: var(--muted); font-style: italic; }
+.order-card-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.6rem; }
+.order-total { font-weight: 700; font-size: 0.95rem; }
+.order-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* ── ORDERING CONFIG (mini tables / rows) ─ */
+.mini-table { width: 100%; border-collapse: collapse; margin-bottom: 0.8rem; }
+.mini-table th { text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
+.mini-table td { padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); }
+.mini-table tr:last-child td { border-bottom: none; }
+.mini-input {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 0.4rem;
+  padding: 0.4rem 0.6rem; color: var(--text); font-family: var(--font); font-size: 0.82rem; outline: none;
+}
+.mini-input:focus { border-color: var(--red); }
+.mod-group-block { border: 1px solid var(--border); border-radius: 0.6rem; padding: 1rem; margin-bottom: 1rem; }
+.schedule-day-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.8rem; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+.schedule-day-row:last-child { border-bottom: none; }
+.schedule-day-label { width: 90px; flex-shrink: 0; padding-top: 0.5rem; font-size: 0.85rem; font-weight: 600; }
+.schedule-window-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.4rem; }
+.date-chip {
+  display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.6rem;
+  border-radius: 2rem; font-size: 0.75rem; border: 1px solid var(--border); color: var(--text);
+}
+.date-chip button {
+  background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0;
+}
+.date-chip button:hover { color: #f87171; }
+
 /* ── NOTICE ──────────────────────────── */
 .notice {
   display: flex; align-items: flex-start; gap: 0.75rem;
@@ -349,6 +416,14 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
   /* Config cards */
   .card { padding: 1.2rem; }
+
+  /* Orders: filters and cards stack cleanly */
+  .filter-bar { width: 100%; }
+  .filter-bar select, .filter-bar input[type="date"] { flex: 1; min-width: 130px; }
+  .order-card-foot { flex-direction: column; align-items: stretch; }
+  .order-actions { justify-content: flex-start; }
+  .schedule-day-row { flex-direction: column; }
+  .schedule-day-label { width: auto; padding-top: 0; }
 }
 
 @media (max-width: 420px) {

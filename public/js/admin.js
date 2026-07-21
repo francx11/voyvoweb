@@ -75,6 +75,7 @@
     $('login-screen').style.display = 'none';
     $('app').style.display = 'block';
     navigate('menu');
+    startGlobalOrdersPoll();
   }
 
   // ── Mobile sidebar ───────────────────────────────────────────────────────
@@ -122,6 +123,8 @@
     content: loadContent,
     reviews: loadReviews,
     settings: loadSettings,
+    orders: loadOrdersPage,
+    'ordering-config': loadOrderingConfigPage,
   };
 
   function navigate(page) {
@@ -143,6 +146,20 @@
   ];
   let MENU = [];
 
+  // Pricing mode is optional: tier/sizes take priority over the fixed `price`.
+  function priceCellHtml(p) {
+    if (p.pricing?.mode === 'sizes') {
+      const n = p.pricing.sizes.length;
+      return `${n} tamaño${n !== 1 ? 's' : ''}`;
+    }
+    if (p.pricing?.mode === 'tier') {
+      return `Tarifa (${esc(p.pricing.tierId)})`;
+    }
+    return p.price != null
+      ? Number(p.price).toFixed(2).replace('.', ',') + ' €'
+      : '<span style="color:var(--orange)">sin precio</span>';
+  }
+
   async function loadMenu() {
     MENU = await api('GET', '/api/menu').catch(() => []);
     $('menu-tbody').innerHTML = MENU.map((p, i) => `
@@ -155,7 +172,7 @@
           </div>
         </td>
         <td data-label="Descripción" style="color:var(--muted);max-width:280px;font-size:0.82rem">${esc(p.description || '')}</td>
-        <td data-label="Precio">${p.price != null ? Number(p.price).toFixed(2).replace('.', ',') + ' €' : '<span style="color:var(--orange)">sin precio</span>'}</td>
+        <td data-label="Precio">${priceCellHtml(p)}</td>
         <td data-label="Alérgenos" style="color:var(--muted);font-size:0.78rem;max-width:160px">${(p.allergens || []).map(esc).join(', ') || '—'}</td>
         <td data-label="Visible">
           <div class="toggle ${p.active ? 'on' : ''}" data-action="toggle" data-id="${p.id}"></div>
@@ -270,6 +287,86 @@
     return [...document.querySelectorAll('input[name=allergen]:checked')].map((cb) => cb.value);
   }
 
+  // ── Pricing editor (fixed / per-size / pizza tier) + modifier groups ──────
+  // Cached ordering.json (tiers + modifierGroups); shared with the ordering
+  // config page so a save there refreshes what this modal offers.
+  let ORDERING_CFG_CACHE = null;
+  async function loadOrderingConfigCache(force) {
+    if (ORDERING_CFG_CACHE && !force) return ORDERING_CFG_CACHE;
+    ORDERING_CFG_CACHE = await api('GET', '/api/ordering/settings').catch(() => ({}));
+    return ORDERING_CFG_CACHE;
+  }
+
+  function pricingModeChanged() {
+    const mode = $('item-pricing-mode').value;
+    $('item-price-fixed-wrap').style.display = mode === 'fixed' ? '' : 'none';
+    $('item-price-tier-wrap').style.display = mode === 'tier' ? '' : 'none';
+    $('item-price-sizes-wrap').style.display = mode === 'sizes' ? '' : 'none';
+  }
+  $('item-pricing-mode').addEventListener('change', pricingModeChanged);
+
+  function sizeRowHtml(s) {
+    s = s || {};
+    return `
+      <div class="size-row" style="display:flex;gap:0.5rem;margin-bottom:0.5rem;align-items:center">
+        <input type="text" class="size-label mini-input" placeholder="Etiqueta (ej. Familiar 40cm)" value="${esc(s.label || '')}" style="flex:2">
+        <input type="number" class="size-price mini-input" placeholder="Precio" min="0" step="0.10" value="${s.price != null ? s.price : ''}" style="flex:1">
+        <select class="size-fulfillment mini-input" style="flex:1">
+          <option value="">Recogida y domicilio</option>
+          <option value="pickup" ${s.fulfillment === 'pickup' ? 'selected' : ''}>Solo recogida</option>
+          <option value="delivery" ${s.fulfillment === 'delivery' ? 'selected' : ''}>Solo domicilio</option>
+        </select>
+        <button type="button" class="btn btn-danger btn-sm" data-action="remove-size-row">×</button>
+      </div>
+    `;
+  }
+  function addSizeRow(s) {
+    $('item-sizes-rows').insertAdjacentHTML('beforeend', sizeRowHtml(s));
+  }
+  $('btn-add-size-row').addEventListener('click', () => addSizeRow());
+  $('item-sizes-rows').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action="remove-size-row"]');
+    if (el) el.closest('.size-row').remove();
+  });
+  function getSizesFromForm() {
+    return [...$('item-sizes-rows').querySelectorAll('.size-row')]
+      .map((row) => ({
+        label: row.querySelector('.size-label').value.trim(),
+        price: row.querySelector('.size-price').value,
+        fulfillment: row.querySelector('.size-fulfillment').value || undefined,
+      }))
+      .filter((s) => s.label);
+  }
+
+  function renderTierSelectOptions(tiers) {
+    $('item-tier-select').innerHTML = Object.entries(tiers || {})
+      .map(([id, t]) => `<option value="${esc(id)}">${esc(t.label || id)}</option>`)
+      .join('');
+  }
+
+  function renderModifierGroupCheckboxes(groups) {
+    const entries = Object.entries(groups || {});
+    $('item-modifier-groups').innerHTML =
+      entries
+        .map(
+          ([id, g]) => `
+      <label style="display:inline-flex;align-items:center;gap:0.45rem;font-size:0.82rem;cursor:pointer">
+        <input type="checkbox" value="${esc(id)}" name="modifier-group"> ${esc(g.label || id)}
+      </label>
+    `
+        )
+        .join('') ||
+      '<span style="font-size:0.8rem;color:var(--muted)">No hay grupos de extras configurados</span>';
+  }
+  function setModifierGroups(ids) {
+    document.querySelectorAll('input[name=modifier-group]').forEach((cb) => {
+      cb.checked = (ids || []).includes(cb.value);
+    });
+  }
+  function getModifierGroups() {
+    return [...document.querySelectorAll('input[name=modifier-group]:checked')].map((cb) => cb.value);
+  }
+
   function openModal() {
     $('modal-item').classList.add('open');
   }
@@ -283,15 +380,21 @@
     if (e.target === e.currentTarget) closeModal();
   });
 
-  $('btn-add-item').addEventListener('click', () => {
+  $('btn-add-item').addEventListener('click', async () => {
     $('modal-item-title').textContent = 'Nueva pizza';
     $('form-item').reset();
     $('item-id').value = '';
     setAllergens([]);
+    $('item-sizes-rows').innerHTML = '';
+    $('item-pricing-mode').value = 'fixed';
+    pricingModeChanged();
+    const cfg = await loadOrderingConfigCache();
+    renderTierSelectOptions(cfg.tiers);
+    renderModifierGroupCheckboxes(cfg.modifierGroups);
     openModal();
   });
 
-  function openEditItemById(id) {
+  async function openEditItemById(id) {
     const p = MENU.find((x) => x.id === id);
     if (!p) return;
     $('modal-item-title').textContent = 'Editar pizza';
@@ -303,13 +406,32 @@
     $('item-color').value = p.tagColor || '#C41E3A';
     $('item-price').value = p.price != null ? p.price : '';
     $('item-category').value = p.category || '';
+    $('item-pickup-only').checked = p.fulfillment === 'pickup_only';
     setAllergens(p.allergens);
+
+    const cfg = await loadOrderingConfigCache();
+    renderTierSelectOptions(cfg.tiers);
+    renderModifierGroupCheckboxes(cfg.modifierGroups);
+    setModifierGroups(p.modifierGroupIds);
+
+    $('item-sizes-rows').innerHTML = '';
+    const mode = p.pricing?.mode === 'tier' ? 'tier' : p.pricing?.mode === 'sizes' ? 'sizes' : 'fixed';
+    $('item-pricing-mode').value = mode;
+    if (mode === 'tier') $('item-tier-select').value = p.pricing.tierId;
+    if (mode === 'sizes') (p.pricing.sizes || []).forEach(addSizeRow);
+    pricingModeChanged();
+
     openModal();
   }
 
   $('form-item').addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = $('item-id').value;
+    const mode = $('item-pricing-mode').value;
+    let pricing;
+    if (mode === 'tier') pricing = { mode: 'tier', tierId: $('item-tier-select').value };
+    else if (mode === 'sizes') pricing = { mode: 'sizes', sizes: getSizesFromForm() };
+    else pricing = null; // clears any previous sizes/tier pricing, falls back to fixed `price`
     const data = {
       emoji: $('item-emoji').value,
       name: $('item-name').value,
@@ -319,6 +441,9 @@
       price: $('item-price').value,
       category: $('item-category').value,
       allergens: getAllergens(),
+      pricing,
+      modifierGroupIds: getModifierGroups(),
+      fulfillment: $('item-pickup-only').checked ? 'pickup_only' : null,
     };
     try {
       if (id) await api('PUT', `/api/menu/${id}`, data);
@@ -576,6 +701,633 @@
     try {
       await api('PUT', '/api/site', data);
       toast('Contenido publicado ✓ La web ya muestra los cambios');
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  });
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // ORDERS
+  // ═════════════════════════════════════════════════════════════════════════
+  const ORDER_STATUS_LABELS = {
+    pending_payment: 'Pago pendiente',
+    confirmed: 'Confirmado',
+    preparing: 'En preparación',
+    ready: 'Listo',
+    out_for_delivery: 'En reparto',
+    delivered: 'Entregado',
+    expired: 'Expirado',
+    cancelled: 'Cancelado',
+  };
+  // Non-final statuses that mean "kitchen has work to do" — used for the
+  // nav badge count. pending_payment is excluded: it isn't a placed order yet.
+  const ORDER_ACTIVE_STATUSES = ['confirmed', 'preparing', 'ready', 'out_for_delivery'];
+  const ORDER_TRANSITIONS = {
+    confirmed: [
+      ['preparing', 'En preparación'],
+      ['ready', 'Listo'],
+      ['out_for_delivery', 'En reparto'],
+      ['delivered', 'Entregado'],
+      ['cancelled', 'Cancelar'],
+    ],
+    preparing: [
+      ['ready', 'Listo'],
+      ['out_for_delivery', 'En reparto'],
+      ['delivered', 'Entregado'],
+      ['cancelled', 'Cancelar'],
+    ],
+    ready: [
+      ['delivered', 'Entregado'],
+      ['cancelled', 'Cancelar'],
+    ],
+    out_for_delivery: [
+      ['delivered', 'Entregado'],
+      ['cancelled', 'Cancelar'],
+    ],
+  };
+
+  let ordersPageTimer = null;
+
+  function todayISO() {
+    const d = new Date();
+    const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
+  }
+
+  function isOrdersPageActive() {
+    const nav = document.querySelector('.nav-item[data-page="orders"]');
+    return !!nav && nav.classList.contains('active');
+  }
+
+  async function loadOrdersPage() {
+    if (!$('orders-filter-date').value) $('orders-filter-date').value = todayISO();
+    await refreshOrdersList();
+    await markOrdersSeenAndStopAlert();
+    clearInterval(ordersPageTimer);
+    ordersPageTimer = setInterval(() => {
+      if (document.visibilityState === 'visible' && isOrdersPageActive()) refreshOrdersList();
+    }, 15000);
+  }
+
+  async function refreshOrdersList() {
+    const date = $('orders-filter-date').value || todayISO();
+    let orders;
+    try {
+      ({ orders } = await api('GET', `/api/orders?date=${date}`));
+    } catch (err) {
+      $('orders-list').innerHTML = `<div class="notice notice-warn">${esc(err.message)}</div>`;
+      return;
+    }
+    const filter = $('orders-filter-status').value;
+    let filtered = orders;
+    if (filter === 'active') filtered = orders.filter((o) => ORDER_ACTIVE_STATUSES.includes(o.status));
+    else if (filter !== 'all') filtered = orders.filter((o) => o.status === filter);
+    filtered = [...filtered].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    $('orders-subtitle').textContent = `${filtered.length} pedido${filtered.length !== 1 ? 's' : ''} · ${date}`;
+    $('orders-list').innerHTML = filtered.length
+      ? filtered.map(renderOrderCard).join('')
+      : '<p style="color:var(--muted);font-size:0.85rem">No hay pedidos para este filtro.</p>';
+  }
+
+  function renderOrderCard(o) {
+    const time = new Date(o.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    const payLabel = o.payment.method === 'stripe' ? 'Tarjeta' : 'Pago al recibir';
+    const payOk = o.payment.status === 'paid';
+    const fulfIcon = o.fulfillment.type === 'delivery' ? '🏠' : '🛍️';
+    const fulfText =
+      o.fulfillment.type === 'delivery'
+        ? `Domicilio · ${esc(o.fulfillment.zone || '')} · ${esc(o.fulfillment.address || '')}`
+        : 'Recogida en local';
+
+    const itemsHtml = (o.items || [])
+      .map((it) => {
+        const parts = [`${it.qty}× ${esc(it.name)}`];
+        if (it.sizeLabel) parts.push(esc(it.sizeLabel));
+        if (it.modifiers && it.modifiers.length) parts.push(it.modifiers.map((m) => esc(m.label)).join(', '));
+        let line = parts.join(' — ');
+        if (it.notes) line += ` — <em>${esc(it.notes)}</em>`;
+        return `<li>${line}</li>`;
+      })
+      .join('');
+
+    const actions =
+      (ORDER_TRANSITIONS[o.status] || [])
+        .map(
+          ([status, label]) => `
+      <button class="btn ${status === 'cancelled' ? 'btn-danger' : 'btn-ghost'} btn-sm" data-action="set-status" data-id="${o.id}" data-status="${status}">${label}</button>
+    `
+        )
+        .join('') || '<span style="color:var(--muted);font-size:0.8rem">Sin acciones disponibles</span>';
+
+    return `
+      <div class="order-card">
+        <div class="order-card-head">
+          <div>
+            <span class="order-code">${esc(o.code)}</span>
+            <span class="order-time">${time}</span>
+          </div>
+          <span class="status-badge status-${o.status}">${ORDER_STATUS_LABELS[o.status] || o.status}</span>
+        </div>
+        <div class="order-meta-row">
+          <span><strong>${esc(o.customer.name)}</strong> · <a href="tel:${esc(o.customer.phone)}">${esc(o.customer.phone)}</a></span>
+          <span>${fulfIcon} ${fulfText}</span>
+          <span>${esc(payLabel)} — ${payOk ? '<span class="order-payment-ok">Pagado ✓</span>' : '<span class="order-payment-warn">⚠️ Pago al recibir</span>'}</span>
+        </div>
+        ${o.fulfillment.notes ? `<p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.4rem"><em>${esc(o.fulfillment.notes)}</em></p>` : ''}
+        <ul class="order-items">${itemsHtml}</ul>
+        <div class="order-card-foot">
+          <span class="order-total">Total: ${Number(o.total).toFixed(2).replace('.', ',')} €</span>
+          <div class="order-actions">${actions}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  $('orders-list').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action="set-status"]');
+    if (!el) return;
+    setOrderStatus(el.dataset.id, el.dataset.status);
+  });
+
+  async function setOrderStatus(id, status) {
+    const labels = {
+      preparing: 'en preparación',
+      ready: 'listo',
+      out_for_delivery: 'en reparto',
+      delivered: 'entregado',
+      cancelled: 'cancelado',
+    };
+    if (status === 'cancelled' && !confirm('¿Cancelar este pedido?')) return;
+    try {
+      await api('PUT', `/api/orders/${id}/status`, { status });
+      toast(`Pedido marcado como ${labels[status] || status} ✓`);
+      refreshOrdersList();
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  }
+
+  $('orders-filter-status').addEventListener('change', refreshOrdersList);
+  $('orders-filter-date').addEventListener('change', refreshOrdersList);
+  $('btn-orders-refresh').addEventListener('click', refreshOrdersList);
+
+  // ── Notifications + sound alert for new confirmed orders (global) ────────
+  const SEEN_ORDERS_KEY = 'vv_seen_orders';
+
+  function getSeenOrderIds() {
+    try {
+      const list = JSON.parse(localStorage.getItem(SEEN_ORDERS_KEY) || '[]');
+      return Array.isArray(list) ? list : [];
+    } catch {
+      return [];
+    }
+  }
+  function addSeenOrderIds(ids) {
+    if (!ids.length) return;
+    const merged = [...new Set([...getSeenOrderIds(), ...ids])].slice(-200);
+    localStorage.setItem(SEEN_ORDERS_KEY, JSON.stringify(merged));
+  }
+
+  async function markOrdersSeenAndStopAlert() {
+    stopOrderAlert();
+    try {
+      const { orders } = await api('GET', '/api/orders');
+      addSeenOrderIds(orders.map((o) => o.id));
+    } catch {
+      /* offline/logged out: nothing to mark */
+    }
+  }
+
+  // WebAudio needs a user gesture before it can play (autoplay policy): the
+  // context is created/resumed lazily on the first click anywhere in the app.
+  let audioCtx = null;
+  function ensureAudioContext() {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    if (!audioCtx) audioCtx = new Ctx();
+    else if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  document.addEventListener('click', () => ensureAudioContext(), { once: true });
+
+  function playOrderBeeps() {
+    const ctx = ensureAudioContext();
+    if (!ctx) return;
+    for (let i = 0; i < 3; i++) {
+      const t0 = ctx.currentTime + i * 0.35;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(0.3, t0 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.28);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + 0.3);
+    }
+  }
+
+  let orderAlertTimer = null;
+  function startOrderAlert() {
+    setNavBadgePulsing(true);
+    if (orderAlertTimer) return;
+    playOrderBeeps();
+    orderAlertTimer = setInterval(playOrderBeeps, 10000);
+  }
+  function stopOrderAlert() {
+    clearInterval(orderAlertTimer);
+    orderAlertTimer = null;
+    setNavBadgePulsing(false);
+  }
+  function setNavBadgePulsing(on) {
+    $('nav-orders-badge').classList.toggle('pulsing', on);
+  }
+
+  const notifiedOrderIds = new Set();
+  function notifyNewOrder(o) {
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+    try {
+      new Notification('Nuevo pedido ' + o.code, {
+        body: `${o.customer.name} · ${Number(o.total).toFixed(2).replace('.', ',')} €`,
+        tag: 'vv-order-' + o.id,
+      });
+    } catch {
+      /* Notification unsupported/blocked: the beep + badge still alert */
+    }
+  }
+
+  $('btn-enable-notifications').addEventListener('click', async () => {
+    if (typeof Notification === 'undefined') return toast('Este navegador no soporta avisos', 'err');
+    const perm = await Notification.requestPermission();
+    toast(perm === 'granted' ? 'Avisos activados ✓' : 'Avisos no activados', perm === 'granted' ? 'ok' : 'err');
+  });
+
+  let globalOrdersTimer = null;
+
+  // Runs continuously from login, on every admin page: badges the nav item
+  // with the active-order count and sounds/notifies for unseen confirmed
+  // orders until the Pedidos page is visited.
+  async function pollOrdersGlobal() {
+    let orders;
+    try {
+      ({ orders } = await api('GET', '/api/orders'));
+    } catch {
+      return;
+    }
+
+    const activeCount = orders.filter((o) => ORDER_ACTIVE_STATUSES.includes(o.status)).length;
+    const badge = $('nav-orders-badge');
+    badge.textContent = activeCount;
+    badge.style.display = activeCount > 0 ? 'inline-block' : 'none';
+
+    const seen = getSeenOrderIds();
+    const unseenConfirmed = orders.filter((o) => o.status === 'confirmed' && !seen.includes(o.id));
+    if (!unseenConfirmed.length) {
+      stopOrderAlert();
+      return;
+    }
+    if (isOrdersPageActive()) {
+      // Already looking at the list: no need to alert, just mark as seen.
+      addSeenOrderIds(unseenConfirmed.map((o) => o.id));
+      return;
+    }
+    startOrderAlert();
+    for (const o of unseenConfirmed) {
+      if (!notifiedOrderIds.has(o.id)) {
+        notifyNewOrder(o);
+        notifiedOrderIds.add(o.id);
+      }
+    }
+  }
+
+  function startGlobalOrdersPoll() {
+    if (globalOrdersTimer) return;
+    pollOrdersGlobal();
+    globalOrdersTimer = setInterval(pollOrdersGlobal, 15000);
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // ORDERING CONFIG (online ordering settings)
+  // ═════════════════════════════════════════════════════════════════════════
+  const DAY_LABELS = { mon: 'Lunes', tue: 'Martes', wed: 'Miércoles', thu: 'Jueves', fri: 'Viernes', sat: 'Sábado', sun: 'Domingo' };
+  const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+  let ORDERING_DRAFT = {};
+
+  async function loadOrderingConfigPage() {
+    const cfg = await api('GET', '/api/ordering/settings').catch(() => ({}));
+    ORDERING_DRAFT = {
+      enabled: cfg.enabled !== false,
+      tiers: cfg.tiers || {},
+      modifierGroups: cfg.modifierGroups || {},
+      delivery: cfg.delivery || { fee: 0, minimum: 0, zones: [] },
+      schedule: cfg.schedule || {},
+      holidayDates: cfg.holidayDates || [],
+      closedDates: cfg.closedDates || [],
+    };
+    $('toggle-ordering-enabled').classList.toggle('on', ORDERING_DRAFT.enabled);
+    $('delivery-fee').value = ORDERING_DRAFT.delivery.fee;
+    $('delivery-minimum').value = ORDERING_DRAFT.delivery.minimum;
+    $('delivery-zones').value = (ORDERING_DRAFT.delivery.zones || []).join('\n');
+    renderTiers();
+    renderModifierGroups();
+    renderSchedule();
+    renderHolidayDates();
+    renderClosedDates();
+
+    const stripe = cfg.stripe || { configured: false, mode: 'test' };
+    $('stripe-status-notice').innerHTML = stripe.configured
+      ? `<div class="notice notice-success"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><div>Stripe configurado (modo ${esc(stripe.mode)})</div></div>`
+      : `<div class="notice notice-warn"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div>No configurado — añade STRIPE_SECRET_KEY al .env</div></div>`;
+  }
+
+  $('toggle-ordering-enabled').addEventListener('click', function () {
+    this.classList.toggle('on');
+  });
+  $('toggle-ordering-enabled-label').addEventListener('click', () => $('toggle-ordering-enabled').click());
+
+  // ── Tiers (pizza size/price tables) ───────────────────────────────────────
+  function renderTiers() {
+    const tiers = ORDERING_DRAFT.tiers || {};
+    $('tiers-container').innerHTML =
+      Object.entries(tiers)
+        .map(
+          ([key, t]) => `
+      <div class="tier-block" style="margin-bottom:1.2rem">
+        <div class="form-field" style="margin-bottom:0.6rem;max-width:320px">
+          <label>Nombre (${esc(key)})</label>
+          <input type="text" class="mini-input" data-tier="${esc(key)}" data-field="label" value="${esc(t.label || '')}">
+        </div>
+        <table class="mini-table">
+          <thead><tr><th>Tamaño</th><th style="width:120px">Precio (€)</th></tr></thead>
+          <tbody>
+            ${(t.sizes || [])
+              .map(
+                (s, i) => `
+              <tr>
+                <td><input type="text" class="mini-input" data-tier="${esc(key)}" data-size-index="${i}" data-field="label" value="${esc(s.label || '')}"></td>
+                <td><input type="number" class="mini-input" min="0" step="0.10" data-tier="${esc(key)}" data-size-index="${i}" data-field="price" value="${s.price != null ? s.price : 0}"></td>
+              </tr>
+            `
+              )
+              .join('')}
+          </tbody>
+        </table>
+      </div>
+    `
+        )
+        .join('') || '<p style="color:var(--muted);font-size:0.85rem">No hay tarifas configuradas</p>';
+  }
+
+  $('tiers-container').addEventListener('input', (e) => {
+    const el = e.target;
+    const tierKey = el.dataset.tier;
+    if (!tierKey) return;
+    const tier = ORDERING_DRAFT.tiers[tierKey];
+    if (el.dataset.sizeIndex === undefined) {
+      if (el.dataset.field === 'label') tier.label = el.value;
+    } else {
+      const size = tier.sizes[Number(el.dataset.sizeIndex)];
+      if (el.dataset.field === 'label') size.label = el.value;
+      if (el.dataset.field === 'price') size.price = Number(el.value) || 0;
+    }
+  });
+
+  // ── Modifier groups (extras) ──────────────────────────────────────────────
+  function renderModifierGroups() {
+    const groups = ORDERING_DRAFT.modifierGroups || {};
+    $('modifier-groups-container').innerHTML =
+      Object.entries(groups)
+        .map(
+          ([key, g]) => `
+      <div class="mod-group-block">
+        <div class="form-grid" style="margin-bottom:0.6rem">
+          <div class="form-field">
+            <label>Nombre del grupo (${esc(key)})</label>
+            <input type="text" class="mini-input" data-group="${esc(key)}" data-field="label" value="${esc(g.label || '')}">
+          </div>
+          <div class="form-field">
+            <label>Máximo seleccionable</label>
+            <input type="number" class="mini-input" data-group="${esc(key)}" data-field="maxSelect" min="1" max="8" value="${g.maxSelect || 1}">
+          </div>
+          <div class="form-field" style="justify-content:flex-end">
+            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;text-transform:none">
+              <input type="checkbox" data-group="${esc(key)}" data-field="required" ${g.required ? 'checked' : ''} style="width:auto">
+              Obligatorio
+            </label>
+          </div>
+        </div>
+        <table class="mini-table">
+          <thead><tr><th>Opción</th><th style="width:110px">Precio (€)</th><th style="width:40px"></th></tr></thead>
+          <tbody>
+            ${(g.options || [])
+              .map(
+                (o, i) => `
+              <tr>
+                <td><input type="text" class="mini-input" data-group="${esc(key)}" data-opt-index="${i}" data-field="label" value="${esc(o.label || '')}"></td>
+                <td><input type="number" class="mini-input" min="0" step="0.10" data-group="${esc(key)}" data-opt-index="${i}" data-field="price" value="${o.price != null ? o.price : 0}"></td>
+                <td><button type="button" class="btn btn-danger btn-sm" data-action="remove-option" data-group="${esc(key)}" data-opt-index="${i}">×</button></td>
+              </tr>
+            `
+              )
+              .join('')}
+          </tbody>
+        </table>
+        <div style="display:flex;gap:0.6rem;margin-top:0.4rem">
+          <button type="button" class="btn btn-ghost btn-sm" data-action="add-option" data-group="${esc(key)}">+ Opción</button>
+          <button type="button" class="btn btn-danger btn-sm" data-action="remove-group" data-group="${esc(key)}">Eliminar grupo</button>
+        </div>
+      </div>
+    `
+        )
+        .join('') || '<p style="color:var(--muted);font-size:0.85rem">No hay grupos de extras</p>';
+  }
+
+  $('modifier-groups-container').addEventListener('input', (e) => {
+    const el = e.target;
+    const key = el.dataset.group;
+    if (!key) return;
+    const g = ORDERING_DRAFT.modifierGroups[key];
+    if (el.dataset.optIndex !== undefined) {
+      const opt = g.options[Number(el.dataset.optIndex)];
+      if (el.dataset.field === 'label') opt.label = el.value;
+      if (el.dataset.field === 'price') opt.price = Number(el.value) || 0;
+    } else if (el.dataset.field === 'label') {
+      g.label = el.value;
+    } else if (el.dataset.field === 'maxSelect') {
+      g.maxSelect = Number(el.value) || 1;
+    } else if (el.dataset.field === 'required') {
+      g.required = el.checked;
+    }
+  });
+
+  $('modifier-groups-container').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action]');
+    if (!el) return;
+    const key = el.dataset.group;
+    const g = ORDERING_DRAFT.modifierGroups[key];
+    if (el.dataset.action === 'add-option') {
+      g.options.push({ id: '', label: '', price: 0 });
+      renderModifierGroups();
+    } else if (el.dataset.action === 'remove-option') {
+      g.options.splice(Number(el.dataset.optIndex), 1);
+      renderModifierGroups();
+    } else if (el.dataset.action === 'remove-group') {
+      if (!confirm('¿Eliminar este grupo de extras?')) return;
+      delete ORDERING_DRAFT.modifierGroups[key];
+      renderModifierGroups();
+    }
+  });
+
+  $('btn-add-modifier-group').addEventListener('click', () => {
+    const raw = prompt('Identificador del grupo (ej. "salsas"):');
+    if (!raw) return;
+    const slug = raw.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-').slice(0, 24);
+    if (!slug) return toast('Identificador no válido', 'err');
+    ORDERING_DRAFT.modifierGroups = ORDERING_DRAFT.modifierGroups || {};
+    if (ORDERING_DRAFT.modifierGroups[slug]) return toast('Ya existe un grupo con ese identificador', 'err');
+    ORDERING_DRAFT.modifierGroups[slug] = {
+      label: raw.trim(),
+      required: false,
+      maxSelect: 1,
+      options: [{ id: '', label: '', price: 0 }],
+    };
+    renderModifierGroups();
+  });
+
+  // ── Weekly schedule ────────────────────────────────────────────────────
+  function renderSchedule() {
+    const schedule = ORDERING_DRAFT.schedule || {};
+    $('schedule-container').innerHTML = DAY_KEYS.map((day) => {
+      const windows = schedule[day] || [];
+      return `
+        <div class="schedule-day-row">
+          <div class="schedule-day-label">${DAY_LABELS[day]}</div>
+          <div style="flex:1;min-width:220px">
+            ${
+              windows.length
+                ? windows
+                    .map(
+                      (w, i) => `
+              <div class="schedule-window-row">
+                <input type="time" class="mini-input sched-start" data-day="${day}" data-w-index="${i}" value="${esc(w[0])}" style="width:auto">
+                <span style="color:var(--muted)">–</span>
+                <input type="time" class="mini-input sched-end" data-day="${day}" data-w-index="${i}" value="${esc(w[1])}" style="width:auto">
+                <button type="button" class="btn btn-danger btn-sm" data-action="remove-window" data-day="${day}" data-w-index="${i}">×</button>
+              </div>
+            `
+                    )
+                    .join('')
+                : '<span style="font-size:0.8rem;color:var(--muted)">Cerrado todo el día</span>'
+            }
+            <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;color:var(--muted);cursor:pointer;margin-top:0.3rem">
+              <input type="checkbox" class="sched-closed" data-day="${day}" ${windows.length === 0 ? 'checked' : ''} style="width:auto">
+              Cerrado
+            </label>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" data-action="add-window" data-day="${day}">+ Tramo</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  $('schedule-container').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action]');
+    if (!el) return;
+    const day = el.dataset.day;
+    ORDERING_DRAFT.schedule = ORDERING_DRAFT.schedule || {};
+    ORDERING_DRAFT.schedule[day] = ORDERING_DRAFT.schedule[day] || [];
+    if (el.dataset.action === 'add-window') {
+      ORDERING_DRAFT.schedule[day].push(['13:00', '16:00']);
+    } else if (el.dataset.action === 'remove-window') {
+      ORDERING_DRAFT.schedule[day].splice(Number(el.dataset.wIndex), 1);
+    }
+    renderSchedule();
+  });
+
+  $('schedule-container').addEventListener('input', (e) => {
+    const el = e.target;
+    const day = el.dataset.day;
+    if (!day || el.dataset.wIndex === undefined) return;
+    const w = ORDERING_DRAFT.schedule[day][Number(el.dataset.wIndex)];
+    if (el.classList.contains('sched-start')) w[0] = el.value;
+    if (el.classList.contains('sched-end')) w[1] = el.value;
+  });
+
+  $('schedule-container').addEventListener('change', (e) => {
+    const el = e.target;
+    if (!el.classList.contains('sched-closed')) return;
+    const day = el.dataset.day;
+    ORDERING_DRAFT.schedule[day] = el.checked ? [] : [['13:00', '16:00']];
+    renderSchedule();
+  });
+
+  // ── Holidays / one-off closed dates ───────────────────────────────────
+  function renderDateChips(containerId, dates, removeAction) {
+    $(containerId).innerHTML =
+      (dates || [])
+        .map(
+          (d) => `
+      <span class="date-chip">${esc(d)}<button type="button" data-action="${removeAction}" data-date="${esc(d)}">×</button></span>
+    `
+        )
+        .join('') || '<span style="font-size:0.8rem;color:var(--muted)">Ninguno</span>';
+  }
+  function renderHolidayDates() {
+    renderDateChips('holiday-dates-list', ORDERING_DRAFT.holidayDates, 'remove-holiday');
+  }
+  function renderClosedDates() {
+    renderDateChips('closed-dates-list', ORDERING_DRAFT.closedDates, 'remove-closed');
+  }
+
+  $('btn-add-holiday').addEventListener('click', () => {
+    const v = $('holiday-date-input').value;
+    if (!v) return;
+    ORDERING_DRAFT.holidayDates = ORDERING_DRAFT.holidayDates || [];
+    if (!ORDERING_DRAFT.holidayDates.includes(v)) ORDERING_DRAFT.holidayDates.push(v);
+    ORDERING_DRAFT.holidayDates.sort();
+    $('holiday-date-input').value = '';
+    renderHolidayDates();
+  });
+  $('btn-add-closed').addEventListener('click', () => {
+    const v = $('closed-date-input').value;
+    if (!v) return;
+    ORDERING_DRAFT.closedDates = ORDERING_DRAFT.closedDates || [];
+    if (!ORDERING_DRAFT.closedDates.includes(v)) ORDERING_DRAFT.closedDates.push(v);
+    ORDERING_DRAFT.closedDates.sort();
+    $('closed-date-input').value = '';
+    renderClosedDates();
+  });
+  $('holiday-dates-list').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action="remove-holiday"]');
+    if (!el) return;
+    ORDERING_DRAFT.holidayDates = ORDERING_DRAFT.holidayDates.filter((d) => d !== el.dataset.date);
+    renderHolidayDates();
+  });
+  $('closed-dates-list').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action="remove-closed"]');
+    if (!el) return;
+    ORDERING_DRAFT.closedDates = ORDERING_DRAFT.closedDates.filter((d) => d !== el.dataset.date);
+    renderClosedDates();
+  });
+
+  // ── Save ───────────────────────────────────────────────────────────────
+  $('btn-save-ordering-config').addEventListener('click', async () => {
+    ORDERING_DRAFT.enabled = $('toggle-ordering-enabled').classList.contains('on');
+    ORDERING_DRAFT.delivery = {
+      fee: Number($('delivery-fee').value) || 0,
+      minimum: Number($('delivery-minimum').value) || 0,
+      zones: $('delivery-zones')
+        .value.split('\n')
+        .map((z) => z.trim())
+        .filter(Boolean),
+    };
+    try {
+      await api('PUT', '/api/ordering/settings', ORDERING_DRAFT);
+      ORDERING_CFG_CACHE = null; // stale tiers/modifierGroups: the item modal must refetch
+      toast('Configuración de pedidos guardada ✓');
     } catch (err) {
       toast(err.message, 'err');
     }
