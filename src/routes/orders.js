@@ -1,7 +1,7 @@
 // Online orders: public creation/status plus the admin list and state
 // changes. Prices are never taken from the client (see order-pricing.js).
 const { Router } = require('express');
-const { ORDERING_FILE } = require('../config');
+const { ORDERING_FILE, ORDER_CANCEL_WINDOW } = require('../config');
 const { readJSON } = require('../lib/json-store');
 const requireAuth = require('../middleware/require-auth');
 const { priceOrder } = require('../services/order-pricing');
@@ -18,6 +18,15 @@ const bad = (status, message) => {
   err.expose = true; // customer-readable by construction
   return err;
 };
+
+const CANCELLABLE_STATUSES = ['pending_payment', 'confirmed'];
+
+function isCancellable(order) {
+  return (
+    CANCELLABLE_STATUSES.includes(order.status) &&
+    Date.now() - Date.parse(order.createdAt) <= ORDER_CANCEL_WINDOW
+  );
+}
 
 function sanitizeCustomer(body, zones) {
   const c = body.customer || {};
@@ -145,7 +154,48 @@ router.get('/:id/status', async (req, res, next) => {
       fulfillmentType: order.fulfillment.type,
       items: order.items,
       createdAt: order.createdAt,
+      cancellable: isCancellable(order),
+      cancelDeadline: new Date(Date.parse(order.createdAt) + ORDER_CANCEL_WINDOW).toISOString(),
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Public: customer self-cancel within the no-questions-asked window. Refunds
+// (or expires the Checkout session) BEFORE touching order state — same
+// network-before-mutate rule as everywhere else in this file.
+router.post('/:id/cancel', async (req, res, next) => {
+  try {
+    const order = orders.getOrder(req.params.id);
+    if (!order || order.publicToken !== req.query.t) throw bad(404, 'Pedido no encontrado');
+    if (!isCancellable(order)) {
+      throw bad(409, 'Ya no se puede cancelar este pedido, llámanos si necesitas ayuda');
+    }
+
+    let refunded = false;
+    if (order.payment.method === 'stripe') {
+      if (order.payment.status === 'paid' && order.payment.stripePaymentIntentId) {
+        try {
+          await stripeClient.refundPayment(order.payment.stripePaymentIntentId);
+          refunded = true;
+        } catch (e) {
+          console.error('Stripe refund failed:', e.message);
+          throw bad(502, 'No se pudo procesar el reembolso, llámanos para cancelarlo');
+        }
+      } else if (order.payment.stripeSessionId) {
+        try {
+          await stripeClient.expireCheckoutSession(order.payment.stripeSessionId);
+        } catch {
+          /* best-effort: link may already be paid/expired */
+        }
+      }
+    }
+
+    const updated = orders.applyTransition(order.id, 'cancelled', (o) => {
+      if (refunded) o.payment.status = 'refunded';
+    });
+    res.json({ status: updated.status, paymentStatus: updated.payment.status });
   } catch (err) {
     next(err);
   }

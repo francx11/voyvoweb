@@ -35,6 +35,7 @@ module.exports = {
   ORDER_RETENTION_DAYS: 90,
   ORDER_MAX_FAILS: 10, // orders per IP per window
   ORDER_WINDOW: 15 * 60 * 1000,
+  ORDER_CANCEL_WINDOW: 5 * 60 * 1000, // customer self-cancel, no questions asked
   PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL || 'http://localhost:3000',
 
   UPLOAD_IMAGE_MAX_BYTES: 15 * 1024 * 1024,

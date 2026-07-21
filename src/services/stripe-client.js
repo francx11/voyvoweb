@@ -58,4 +58,19 @@ function verifyWebhook(rawBody, signature) {
 
 const retrieveSession = (id) => stripe().checkout.sessions.retrieve(id);
 
-module.exports = { isConfigured, mode, createCheckoutSession, verifyWebhook, retrieveSession };
+const refundPayment = (paymentIntentId) =>
+  stripe().refunds.create({ payment_intent: paymentIntentId });
+
+// Best-effort: stops a stale Checkout link from still being payable after
+// the order was cancelled locally. Session may already be expired/paid.
+const expireCheckoutSession = (id) => stripe().checkout.sessions.expire(id);
+
+module.exports = {
+  isConfigured,
+  mode,
+  createCheckoutSession,
+  verifyWebhook,
+  retrieveSession,
+  refundPayment,
+  expireCheckoutSession,
+};
