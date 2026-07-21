@@ -30,7 +30,16 @@ function itemSizes(item, ordering) {
   return null; // fixed price
 }
 
-function priceLine(raw, item, ordering, fulfillmentType) {
+// A pizza is "halvable" when at least one of its modifier groups offers the
+// 'mitad' option — same signal the client uses to show the second-pizza picker.
+function isHalvable(item, ordering) {
+  return (item.modifierGroupIds || []).some((gid) => {
+    const group = (ordering.modifierGroups || {})[gid];
+    return group && (group.options || []).some((o) => o.id === 'mitad');
+  });
+}
+
+function priceLine(raw, item, ordering, fulfillmentType, menuById) {
   const qty = Number(raw.qty);
   if (!Number.isInteger(qty) || qty < 1 || qty > ORDER_MAX_QTY) {
     reject(`Cantidad inválida para "${item.name}"`);
@@ -92,6 +101,25 @@ function priceLine(raw, item, ordering, fulfillmentType) {
     }
   }
 
+  // "Mitad y mitad": the customer must name the pizza for the other half.
+  // The supplement is already priced as a flat modifier above, so the half
+  // choice itself never changes the total — it's stored purely so the
+  // kitchen/admin panel know what to make.
+  let half = null;
+  if (modifiers.some((m) => m.id === 'mitad')) {
+    const halfItem = menuById.get(String(raw.halfItemId));
+    if (!halfItem || halfItem.active === false) {
+      reject(`Elige la otra mitad de "${item.name}"`);
+    }
+    if (halfItem.id === item.id) {
+      reject(`La otra mitad de "${item.name}" debe ser una pizza distinta`);
+    }
+    if (!isHalvable(halfItem, ordering)) {
+      reject(`"${halfItem.name}" no se puede pedir mitad y mitad`);
+    }
+    half = { itemId: halfItem.id, name: halfItem.name };
+  }
+
   const modsCents = modifiers.reduce((sum, m) => sum + toCents(m.price), 0);
   const lineCents = (unitCents + modsCents) * qty;
   return {
@@ -102,6 +130,7 @@ function priceLine(raw, item, ordering, fulfillmentType) {
     unitPrice: toEuros(unitCents),
     qty,
     modifiers: modifiers.map(({ id, label, price }) => ({ id, label, price })),
+    ...(half ? { half } : {}),
     notes: String(raw.notes || '').slice(0, 200),
     lineTotal: toEuros(lineCents),
     _cents: lineCents,
@@ -121,7 +150,7 @@ function priceOrder(rawItems, fulfillmentType) {
   const items = rawItems.map((raw) => {
     const item = byId.get(String(raw.itemId));
     if (!item || item.active === false) reject('Un producto del carrito ya no está disponible');
-    return priceLine(raw, item, ordering, fulfillmentType);
+    return priceLine(raw, item, ordering, fulfillmentType, byId);
   });
 
   const subtotalCents = items.reduce((sum, li) => sum + li._cents, 0);

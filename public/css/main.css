@@ -5,6 +5,10 @@
    ───────────────────────────────────────────────────────────── */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* The HTML `hidden` attribute is UA-origin `display: none`, so any author
+   rule that sets `display` on the same element (grid/flex layouts, mostly)
+   silently wins the cascade and the element stays visible. Force it back. */
+[hidden] { display: none !important; }
 
 :root {
   --paper: #faf6ee;
@@ -551,6 +555,7 @@ body.cart-scroll-lock { overflow: hidden; }
   color: var(--ink-soft); padding: 0 0 0.4rem; margin: 0;
 }
 .cart-modal-invalid legend { color: var(--tomato); }
+.field.cart-modal-invalid label { color: var(--tomato); }
 .cart-radio {
   display: flex; align-items: center; gap: 0.6rem;
   font-size: 0.94rem; cursor: pointer; min-height: 44px;
@@ -622,6 +627,17 @@ body.cart-scroll-lock { overflow: hidden; }
 .cart-fulfillment, .cart-payment { border: none; display: grid; gap: 0.3rem; padding: 0; }
 .cart-delivery-fields { display: grid; gap: 1.1rem; }
 .cart-delivery-note { font-size: 0.86rem; color: var(--ink-soft); }
+.cart-address-wrap { position: relative; }
+.cart-address-suggestions {
+  position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 2px);
+  background: var(--paper); border: 1px solid var(--line-strong); border-radius: 3px;
+  list-style: none; max-height: 240px; overflow-y: auto;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+.cart-address-suggestions li {
+  padding: 0.7rem 0.9rem; font-size: 0.9rem; cursor: pointer; min-height: 44px; display: flex; align-items: center;
+}
+.cart-address-suggestions li:hover { background: var(--paper-2); color: var(--tomato); }
 .cart-banner {
   font-size: 0.9rem; font-weight: 700; padding: 0.8rem 1rem;
   border-radius: 0.4rem; border: 1px solid currentColor;

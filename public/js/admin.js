@@ -797,7 +797,8 @@
     const fulfIcon = o.fulfillment.type === 'delivery' ? '🏠' : '🛍️';
     const fulfText =
       o.fulfillment.type === 'delivery'
-        ? `Domicilio · ${esc(o.fulfillment.zone || '')} · ${esc(o.fulfillment.address || '')}`
+        ? `Domicilio · ${esc(o.fulfillment.zone || '')} · ${esc(o.fulfillment.address || '')}` +
+          (o.fulfillment.needsCardTerminal ? ' · 💳 Necesita datáfono' : '')
         : 'Recogida en local';
 
     const itemsHtml = (o.items || [])
@@ -805,6 +806,7 @@
         const parts = [`${it.qty}× ${esc(it.name)}`];
         if (it.sizeLabel) parts.push(esc(it.sizeLabel));
         if (it.modifiers && it.modifiers.length) parts.push(it.modifiers.map((m) => esc(m.label)).join(', '));
+        if (it.half) parts.push(`🍕 mitad: ${esc(it.half.name)}`);
         let line = parts.join(' — ');
         if (it.notes) line += ` — <em>${esc(it.notes)}</em>`;
         return `<li>${line}</li>`;
