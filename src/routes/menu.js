@@ -1,10 +1,20 @@
 const fs = require('fs');
 const path = require('path');
 const { Router } = require('express');
-const { ASSETS_DIR, PUBLIC_DIR, ORDERING_FILE } = require('../config');
+const sharp = require('sharp');
+const {
+  ASSETS_DIR,
+  PUBLIC_DIR,
+  MENU_IMG_DIR,
+  ORDERING_FILE,
+  IMAGE_MAX_DIMENSION,
+  IMAGE_WEBP_QUALITY,
+} = require('../config');
 const { readJSON, writeJSON } = require('../lib/json-store');
 const requireAuth = require('../middleware/require-auth');
-const { pdfUpload } = require('../middleware/uploads');
+const { pdfUpload, imageUpload } = require('../middleware/uploads');
+
+if (!fs.existsSync(MENU_IMG_DIR)) fs.mkdirSync(MENU_IMG_DIR, { recursive: true });
 
 const MENU_FILE = 'menu.json';
 const CONFIG_FILE = 'config.json';
@@ -56,11 +66,20 @@ const sanitizeMenuItem = (p) => {
     price: sanitizePrice(p.price),
     allergens: Array.isArray(p.allergens) ? p.allergens.map(String).slice(0, 14) : [],
     active: p.active !== false,
+    ...(p.image ? { image: String(p.image).slice(0, 200) } : {}),
     ...(pricing ? { pricing } : {}),
     ...(modifierGroupIds.length ? { modifierGroupIds } : {}),
     ...(p.fulfillment === 'pickup_only' ? { fulfillment: 'pickup_only' } : {}),
   };
 };
+
+// Deletes an item's uploaded photo from disk (basename guards against
+// traversal). No-op when the item has no image or the file is already gone.
+function unlinkItemImage(image) {
+  if (!image) return;
+  const fp = path.join(MENU_IMG_DIR, path.basename(image));
+  if (fs.existsSync(fp)) fs.unlinkSync(fp);
+}
 
 const router = Router();
 
@@ -108,6 +127,44 @@ router.post('/pdf', requireAuth, pdfUpload.single('menu'), (req, res) => {
   res.json({ ok: true, pdf: cfg.site.menu.pdf });
 });
 
+// Per-item photo: sharp → WebP into MENU_IMG_DIR, same pipeline as the gallery.
+// The old photo is removed so replacements never orphan a file on disk.
+router.post('/:id/image', requireAuth, imageUpload.single('image'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Imagen requerida' });
+  const menu = readJSON(MENU_FILE, []);
+  const idx = menu.findIndex((p) => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'No encontrada' });
+  try {
+    const name = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
+    await sharp(req.file.buffer)
+      .rotate() // respects EXIF orientation
+      .resize({
+        width: IMAGE_MAX_DIMENSION,
+        height: IMAGE_MAX_DIMENSION,
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
+      .webp({ quality: IMAGE_WEBP_QUALITY })
+      .toFile(path.join(MENU_IMG_DIR, name));
+    unlinkItemImage(menu[idx].image);
+    menu[idx].image = `/assets/menu/${name}`;
+    writeJSON(MENU_FILE, menu);
+    res.json({ ok: true, image: menu[idx].image });
+  } catch (e) {
+    res.status(400).json({ error: `Error procesando imagen: ${e.message}` });
+  }
+});
+
+router.delete('/:id/image', requireAuth, (req, res) => {
+  const menu = readJSON(MENU_FILE, []);
+  const idx = menu.findIndex((p) => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'No encontrada' });
+  unlinkItemImage(menu[idx].image);
+  delete menu[idx].image;
+  writeJSON(MENU_FILE, menu);
+  res.json({ ok: true });
+});
+
 router.put('/:id', requireAuth, (req, res) => {
   const menu = readJSON(MENU_FILE, []);
   const idx = menu.findIndex((p) => p.id === req.params.id);
@@ -118,8 +175,13 @@ router.put('/:id', requireAuth, (req, res) => {
 });
 
 router.delete('/:id', requireAuth, (req, res) => {
-  const menu = readJSON(MENU_FILE, []).filter((p) => p.id !== req.params.id);
-  writeJSON(MENU_FILE, menu);
+  const menu = readJSON(MENU_FILE, []);
+  const removed = menu.find((p) => p.id === req.params.id);
+  if (removed) unlinkItemImage(removed.image);
+  writeJSON(
+    MENU_FILE,
+    menu.filter((p) => p.id !== req.params.id)
+  );
   res.json({ ok: true });
 });
 

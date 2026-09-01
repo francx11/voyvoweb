@@ -209,7 +209,8 @@
   function updateBadge() {
     var count = cart.reduce(function (sum, l) { return sum + l.qty; }, 0);
     badgeEl.textContent = String(count);
-    fabEl.hidden = cart.length === 0;
+    badgeEl.hidden = count === 0;
+    fabEl.hidden = false;
   }
 
   /* ── Drawer ──────────────────────────────────────────────────────────── */

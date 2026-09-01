@@ -116,6 +116,10 @@
             <input type="radio" name="menu-mode" value="pdf" id="mode-pdf" style="margin-top:0.25rem">
             <span><strong>PDF subido</strong> (la web muestra un botón "Ver la carta"; los buscadores no leen bien el PDF)</span>
           </label>
+          <label style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;cursor:pointer">
+            <input type="radio" name="menu-mode" value="both" id="mode-both" style="margin-top:0.25rem">
+            <span><strong>Ambos</strong> (tarjetas de productos y, debajo, un botón para ver la carta en PDF)</span>
+          </label>
         </div>
         <div style="display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap">
           <button type="button" class="btn btn-ghost" id="btn-upload-pdf">Subir carta en PDF</button>
@@ -507,6 +511,21 @@
         <div class="form-field full">
           <label>Descripción</label>
           <textarea id="item-desc" rows="3" placeholder="Ingredientes y descripción..."></textarea>
+        </div>
+        <div class="form-field full">
+          <label>Foto (opcional)</label>
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+            <img id="item-img-preview" alt="" src="/assets/menu-placeholder.svg"
+                 style="width:120px;height:90px;object-fit:cover;border-radius:0.4rem;border:1px solid var(--line)">
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+              <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+                <button type="button" class="btn btn-ghost" id="btn-item-img">Subir foto</button>
+                <button type="button" class="btn btn-ghost" id="btn-item-img-remove" style="display:none">Quitar foto</button>
+                <input type="file" id="item-img-input" accept="image/*" style="display:none">
+              </div>
+              <span id="item-img-hint" style="font-size:0.78rem;color:var(--muted)">Si no subes foto, se usa un placeholder de pizza.</span>
+            </div>
+          </div>
         </div>
         <div class="form-field">
           <label>Tag (etiqueta)</label>

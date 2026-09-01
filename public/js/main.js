@@ -186,33 +186,58 @@
     return order.map(function (cat) { return { category: cat, items: byCategory[cat] }; });
   }
 
+  var MENU_PLACEHOLDER = '/assets/menu-placeholder.svg';
+
+  // Compact price for the card face: fixed → exact; tier/sizes (many prices)
+  // → "Desde X" so the multi-size line never blows up the card. The full
+  // breakdown lives in the "Ver más" modal via priceDisplay().
+  function priceShort(p) {
+    var pricing = p.pricing || {};
+    var sizes = null;
+    if (pricing.mode === 'tier') {
+      var tier = orderingConfig && orderingConfig.tiers && orderingConfig.tiers[pricing.tierId];
+      sizes = tier && tier.sizes;
+    } else if (pricing.mode === 'sizes') {
+      sizes = pricing.sizes;
+    }
+    if (sizes && sizes.length) {
+      var min = Math.min.apply(null, sizes.map(function (s) { return Number(s.price); }));
+      return 'Desde ' + formatPrice(min);
+    }
+    return p.price != null ? formatPrice(p.price) : '';
+  }
+
   function renderMenuItem(p) {
-    var priceStr = priceDisplay(p);
     var canOrder = orderingConfig && orderingConfig.enabled && isOrderable(p);
-    return '<li class="menu-item">' +
-      '<div class="menu-line">' +
-        '<span class="menu-name">' + esc(p.name) + '</span>' +
-        (p.tag ? '<span class="menu-tag">' + esc(p.tag) + '</span>' : '') +
-        '<span class="menu-dots" aria-hidden="true"></span>' +
-        (priceStr
-          ? '<span class="menu-price' +
-            (priceStr.indexOf('·') !== -1 ? ' menu-price--multi' : '') +
-            '">' + priceStr + '</span>'
+    var priceStr = priceShort(p);
+    var hasDetail = !!(p.description || (p.allergens && p.allergens.length));
+    return '<article class="menu-card">' +
+      '<div class="menu-card-media">' +
+        '<img src="' + esc(p.image || MENU_PLACEHOLDER) + '" alt="' + esc(p.name) + '" loading="lazy">' +
+        (p.tag
+          ? '<span class="menu-card-badge" style="background:' + esc(p.tagColor || '#C41E3A') + '">' +
+            esc(p.tag) + '</span>'
           : '') +
       '</div>' +
-      (p.description ? '<p class="menu-desc">' + esc(p.description) + '</p>' : '') +
-      ((p.allergens && p.allergens.length)
-        ? '<p class="menu-alerg"><strong>Alérgenos:</strong> ' + p.allergens.map(esc).join(', ') + '</p>'
-        : '') +
-      (canOrder
-        ? '<div class="menu-item-actions"><button type="button" class="btn btn-outline btn-add-item" ' +
-          'data-item-id="' + esc(p.id) + '">Añadir</button></div>'
-        : '') +
-    '</li>';
+      '<div class="menu-card-body">' +
+        '<h4 class="menu-card-name">' + esc(p.name) + '</h4>' +
+        (p.description ? '<p class="menu-card-desc">' + esc(p.description) + '</p>' : '') +
+        (hasDetail
+          ? '<button type="button" class="menu-card-more" data-detail-id="' + esc(p.id) + '">Ver más</button>'
+          : '') +
+      '</div>' +
+      '<div class="menu-card-foot">' +
+        (priceStr ? '<span class="menu-card-price">' + esc(priceStr) + '</span>' : '<span></span>') +
+        (canOrder
+          ? '<button type="button" class="btn btn-primary btn-add-item" data-item-id="' +
+            esc(p.id) + '">Pedir</button>'
+          : '') +
+      '</div>' +
+    '</article>';
   }
 
   function renderMenu(items) {
-    var list = $('#menu-list');
+    var wrap = $('#menu-cards');
     var visible = items.filter(function (p) { return p.active !== false; })
       .filter(function (p) {
         var al = p.allergens || [];
@@ -220,17 +245,82 @@
         return true;
       });
     if (!visible.length) {
-      list.innerHTML = '<li class="menu-empty">Ninguna pizza cumple ese filtro. ' +
-        'Llámanos y te la preparamos a medida.</li>';
+      wrap.innerHTML = '<p class="menu-empty">Ninguna pizza cumple ese filtro. ' +
+        'Llámanos y te la preparamos a medida.</p>';
       return;
     }
-    list.innerHTML = groupByCategory(visible).map(function (group) {
-      return (group.category
-        ? '<li class="menu-category"><h3 class="menu-category-title">' + esc(group.category) + '</h3></li>'
-        : '') +
-        group.items.map(renderMenuItem).join('');
+    wrap.innerHTML = groupByCategory(visible).map(function (group) {
+      return '<div class="menu-cat-group">' +
+        (group.category
+          ? '<h3 class="menu-category-title">' + esc(group.category) + '</h3>'
+          : '') +
+        '<div class="menu-grid">' + group.items.map(renderMenuItem).join('') + '</div>' +
+      '</div>';
     }).join('');
   }
+
+  /* ── "Ver más" detail modal (reuses the shared .modal-overlay skeleton) ── */
+  var detailOverlay = null;
+  function ensureDetailModal() {
+    if (detailOverlay) return;
+    document.body.insertAdjacentHTML('beforeend',
+      '<div class="modal-overlay menu-detail-overlay" id="vv-detail-overlay">' +
+        '<div class="modal menu-detail" role="dialog" aria-modal="true" aria-labelledby="vv-detail-title">' +
+          '<button type="button" class="modal-close menu-detail-close" id="vv-detail-close" aria-label="Cerrar">&times;</button>' +
+          '<div class="modal-body" id="vv-detail-body"></div>' +
+        '</div>' +
+      '</div>');
+    detailOverlay = $('#vv-detail-overlay');
+    $('#vv-detail-close').addEventListener('click', closeDetail);
+    detailOverlay.addEventListener('click', function (e) { if (e.target === detailOverlay) closeDetail(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && detailOverlay.classList.contains('open')) closeDetail();
+    });
+    // The "Pedir" button inside the detail modal is a .btn-add-item, so cart.js
+    // opens the add-to-cart modal for it; we just close the detail modal first.
+    detailOverlay.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('.btn-add-item')) closeDetail();
+    });
+  }
+  function closeDetail() {
+    if (!detailOverlay) return;
+    detailOverlay.classList.remove('open');
+    document.body.classList.remove('cart-scroll-lock');
+  }
+  function openDetail(id) {
+    var p = (VV.menuItems || []).filter(function (x) { return x.id === id; })[0];
+    if (!p) return;
+    ensureDetailModal();
+    var canOrder = orderingConfig && orderingConfig.enabled && isOrderable(p);
+    var priceStr = priceDisplay(p);
+    $('#vv-detail-body').innerHTML =
+      '<div class="menu-detail-media">' +
+        '<img src="' + esc(p.image || MENU_PLACEHOLDER) + '" alt="' + esc(p.name) + '">' +
+        (p.tag
+          ? '<span class="menu-card-badge" style="background:' + esc(p.tagColor || '#C41E3A') + '">' +
+            esc(p.tag) + '</span>'
+          : '') +
+      '</div>' +
+      '<h2 class="modal-title" id="vv-detail-title">' + esc(p.name) + '</h2>' +
+      (p.description ? '<p class="menu-detail-desc">' + esc(p.description) + '</p>' : '') +
+      (priceStr
+        ? '<p class="menu-detail-price' + (priceStr.indexOf('·') !== -1 ? ' menu-price--multi' : '') +
+          '">' + esc(priceStr) + '</p>'
+        : '') +
+      ((p.allergens && p.allergens.length)
+        ? '<p class="menu-alerg"><strong>Alérgenos:</strong> ' + p.allergens.map(esc).join(', ') + '</p>'
+        : '') +
+      (canOrder
+        ? '<div class="menu-detail-actions"><button type="button" class="btn btn-primary btn-add-item" ' +
+          'data-item-id="' + esc(p.id) + '">Pedir</button></div>'
+        : '');
+    detailOverlay.classList.add('open');
+    document.body.classList.add('cart-scroll-lock');
+  }
+  document.addEventListener('click', function (e) {
+    var more = e.target.closest && e.target.closest('[data-detail-id]');
+    if (more) openDetail(more.getAttribute('data-detail-id'));
+  });
 
   function initAllergenFilters(items) {
     var all = [];
@@ -257,13 +347,23 @@
   }
 
   function loadMenu() {
-    // PDF mode: the client uploads their own menu as a PDF from the panel
-    if (SITE.menu && SITE.menu.mode === 'pdf' && SITE.menu.pdf) {
+    var mode = (SITE.menu && SITE.menu.mode) || 'products';
+    var pdf = SITE.menu && SITE.menu.pdf;
+    var pdfBox = $('#menu-pdf');
+    // PDF-only: the client uploaded their menu as a PDF; skip the products fetch
+    if (mode === 'pdf' && pdf) {
       $('#menu-products').hidden = true;
-      var pdfBox = $('#menu-pdf');
       pdfBox.hidden = false;
-      $('#menu-pdf-link').href = SITE.menu.pdf;
+      $('#menu-pdf-link').href = pdf;
       return;
+    }
+    // "both": cards AND a link to the PDF (shown together, with the PDF note)
+    if (mode === 'both' && pdf) {
+      pdfBox.hidden = false;
+      pdfBox.classList.add('menu-pdf--inline');
+      $('#menu-pdf-link').href = pdf;
+    } else {
+      pdfBox.hidden = true;
     }
     fetch('/api/menu')
       .then(function (r) { return r.json(); })

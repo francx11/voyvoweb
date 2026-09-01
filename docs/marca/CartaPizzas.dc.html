@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+  <style>
+    body { margin: 0; }
+    a { color: #B00E14; } a:hover { color: #8C0A10; }
+    .pz { display: flex; flex-direction: column; gap: 1px; }
+    .pz b { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.09em; text-transform: uppercase; color: #0A2A6B; }
+    .pz span { font-size: 16px; line-height: 1.3; color: #3A4152; }
+    .col { display: flex; flex-direction: column; gap: 9px; }
+  </style>
+</helmet>
+<div style="width: 794px; height: 1123px; box-sizing: border-box; background: #FAF2E2; font-family: 'Barlow', 'Segoe UI', sans-serif; color: #16181D; display: flex; flex-direction: column;">
+
+  <div style="background: #0A2A6B; color: #FAF2E2; padding: 16px 26px 14px; display: flex; align-items: center; gap: 18px;">
+    <img src="logo-voyvolando.png" alt="" style="width: 54px; height: 54px; display: block;">
+    <div style="display: flex; flex-direction: column;">
+      <div style="font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; color: #F0C24B;">Nuestras pizzas</div>
+      <div style="font-family: 'Alfa Slab One', Rockwell, Georgia, serif; font-size: 38px; line-height: 1.05;">Clásicas</div>
+    </div>
+    <div style="margin-left: auto; display: flex; gap: 8px; align-items: flex-end;">
+      <div style="background: #B00E14; padding: 7px 13px; text-align: center;">
+        <div style="font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;">Peq.</div>
+        <div style="font-family: 'Alfa Slab One', Rockwell, Georgia, serif; font-size: 21px; line-height: 1.15;">6,50</div>
+      </div>
+      <div style="background: #B00E14; padding: 7px 13px; text-align: center;">
+        <div style="font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;">Med.</div>
+        <div style="font-family: 'Alfa Slab One', Rockwell, Georgia, serif; font-size: 21px; line-height: 1.15;">9,50</div>
+      </div>
+      <div style="background: #B00E14; padding: 7px 13px; text-align: center;">
+        <div style="font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;">Fam.</div>
+        <div style="font-family: 'Alfa Slab One', Rockwell, Georgia, serif; font-size: 21px; line-height: 1.15;">11,50</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 7px; background: repeating-linear-gradient(45deg, #B00E14 0 10px, #FAF2E2 10px 20px, #0A2A6B 20px 30px, #FAF2E2 30px 40px);"></div>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 34px; padding: 18px 26px 0; flex-grow: 1; align-content: start;">
+
+    <div class="col">
+      <div class="pz"><b>Margarita</b><span>Tomate triturado, mozzarella y orégano</span></div>
+      <div class="pz"><b>Prosciutto</b><span>Tomate, mozzarella y jamón york</span></div>
+      <div class="pz"><b>Romana</b><span>Tomate, mozzarella, jamón york y champiñones</span></div>
+      <div class="pz"><b>Boloñesa</b><span>Tomate, mozzarella, picada de ternera y cebolla</span></div>
+      <div class="pz"><b>Pepperoni</b><span>Tomate, mozzarella y pepperoni</span></div>
+      <div class="pz"><b>Cuatro Quesos</b><span>Tomate, mozzarella, gouda, edam y roquefort</span></div>
+      <div class="pz"><b>Tonno</b><span>Tomate, mozzarella, atún y cebolla</span></div>
+      <div class="pz"><b>Hawaiana</b><span>Tomate, jamón york y piña</span></div>
+      <div class="pz"><b>Caprichosa</b><span>Tomate, mozzarella, jamón york, bacon y atún</span></div>
+      <div class="pz"><b>Cuatro Estaciones</b><span>Tomate, mozzarella, jamón york, bacon, atún y champiñones</span></div>
+      <div class="pz"><b>Barbacoa</b><span>Salsa BBQ, mozzarella, picada de ternera, cebolla y bacon</span></div>
+      <div class="pz"><b>Kebab</b><span>Salsa kebab, mozzarella, jamón york, bacon y pollo kebab</span></div>
+    </div>
+
+    <div class="col">
+      <div class="pz"><b>Campesina</b><span>Tomate, mozzarella, picada de ternera, cebolla y pimiento verde y rojo</span></div>
+      <div class="pz"><b>Carbonara</b><span>Nata, mozzarella, cebolla, bacon y champiñones</span></div>
+      <div class="pz"><b>Exquisita</b><span>Tomate, mozzarella, jamón york, alcachofas, aceitunas negras y champiñones</span></div>
+      <div class="pz"><b>Vegetal</b><span>Tomate, mozzarella, espárragos, pimiento rojo y aceitunas negras</span></div>
+      <div class="pz"><b>Primavera</b><span>Tomate, mozzarella, jamón york, maíz y champiñones</span></div>
+      <div class="pz"><b>Siciliana</b><span>Tomate, mozzarella, anchoas, alcaparras y aceitunas negras</span></div>
+      <div class="pz"><b>Cheddar</b><span>Tomate, mozzarella, picada de ternera, bacon y cheddar</span></div>
+      <div class="pz"><b>Suiza</b><span>Tomate, mozzarella, bacon, cebolla y roquefort</span></div>
+      <div class="pz"><b>Picante</b><span>Tomate picante, mozzarella, pepperoni y aceitunas negras</span></div>
+      <div class="pz"><b>Italiana</b><span>Tomate, mozzarella, jamón york, aceitunas negras, cherrys y rúcula</span></div>
+      <div class="pz"><b>Americana</b><span>BBQ, mozzarella, salchichas, pepperoni y cheddar</span></div>
+      <div class="pz"><b>Gaucha</b><span>Salsa gaucha, mozzarella, picada de ternera y pepperoni</span></div>
+    </div>
+
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 16px; margin: 0 26px 14px; padding: 12px 16px; background: #F0E4CC;">
+    <div style="width: 44px; height: 44px; border-radius: 50%; background: #B00E14; color: #FAF2E2; display: flex; align-items: center; justify-content: center; text-align: center; font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 12px; line-height: 1.05; letter-spacing: 0.04em; flex-shrink: 0;">DEL<br>MES</div>
+    <div style="font-size: 16px; line-height: 1.35; color: #3A4152;"><strong style="color: #0A2A6B;">Pregunta por la pizza del mes.</strong> Mitad y mitad 1 € · especiales 1,50 € · gourmet 2 €. Masa gruesa 2 € · extrafina 1 €. Bordes de queso 2 € (cheddar o roquefort 3 €).</div>
+  </div>
+
+  <div style="background: #0A2A6B; color: #FAF2E2; padding: 10px 26px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+    <div style="font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: 0.2em; text-transform: uppercase;">958 44 28 47</div>
+    <svg width="70" height="14" viewBox="0 0 70 14" fill="none" aria-hidden="true">
+      <path d="M1 10 C 18 10, 24 4, 42 4" stroke="#F0C24B" stroke-width="2" stroke-dasharray="3 5" stroke-linecap="round"/>
+      <path d="M44 1 L 69 4 L 44 7 L 47 4 Z" fill="#FAF2E2"/>
+    </svg>
+    <div style="font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #C9D4EE;">voyvolandosantafe.com</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

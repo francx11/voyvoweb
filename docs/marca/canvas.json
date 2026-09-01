@@ -1,0 +1,16 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "title": "Sistema de marca", "x": 0, "y": 0, "w": 1240, "h": 920 },
+    { "file": "WebHero.dc.html", "title": "Web — home", "x": 1360, "y": 0, "w": 1440, "h": 900 },
+    { "file": "CartaPortada.dc.html", "title": "Carta — portada A4", "x": 0, "y": 1080, "w": 794, "h": 1123, "print": "fixed" },
+    { "file": "CartaPizzas.dc.html", "title": "Carta — clásicas A4", "x": 920, "y": 1080, "w": 794, "h": 1123, "print": "fixed" },
+    { "file": "FlyerPromo.dc.html", "title": "Flyer promo A5", "x": 1840, "y": 1080, "w": 559, "h": 794, "print": "fixed" },
+    { "file": "DirB.dc.html", "title": "Dirección B (boceto)", "x": 0, "y": 2343, "w": 480, "h": 620 },
+    { "file": "DirC.dc.html", "title": "Dirección C (boceto)", "x": 600, "y": 2343, "w": 480, "h": 620 }
+  ],
+  "annotations": [
+    { "id": "note-1", "x": 0, "y": -150, "w": 700, "text": "Dirección A — Correo Aéreo. Azul piloto + rojo del wordmark + crema, con el motivo par avion que ya cuenta el nombre del negocio. Es la única de las tres que sale del logo en vez de pelearse con él." },
+    { "id": "note-2", "x": 1240, "y": 2343, "w": 460, "text": "B y C son bocetos de descarte, con su a favor y su en contra. Si prefieres una de ellas, la desarrollo entera y B/C pasan a ser la principal." }
+  ],
+  "launch": { "view": "canvas" }
+}

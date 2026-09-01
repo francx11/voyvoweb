@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carta Voy Volando — imprenta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --navy: #0A2A6B;
+    --red: #B00E14;
+    --gold: #F0C24B;
+    --cream: #FAF2E2;
+    --cream2: #F0E4CC;
+    --ink: #16181D;
+    --ink2: #3A4152;
+    --display: 'Alfa Slab One', Rockwell, Georgia, serif;
+    --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --body: 'Barlow', 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  @page { size: 226mm 313mm; margin: 0; }
+
+  .sheet {
+    position: relative;
+    width: 226mm; height: 313mm;
+    background: #fff;
+    page-break-after: always;
+    overflow: hidden;
+  }
+  .sheet:last-child { page-break-after: auto; }
+
+  /* marcas de corte: 5 mm de largo, arrancan a 3 mm del corte (fuera de la sangre) */
+  .crop { position: absolute; background: #000; }
+  .crop.h { width: 5mm; height: 0.25pt; }
+  .crop.v { width: 0.25pt; height: 5mm; }
+
+  /* zona de arte = corte (210x297) + 3 mm de sangre por lado */
+  .bleed {
+    position: absolute; top: 5mm; left: 5mm;
+    width: 216mm; height: 303mm;
+    overflow: hidden;
+    font-family: var(--body);
+    color: var(--ink);
+    display: flex; flex-direction: column;
+    background: var(--cream);
+  }
+
+  /* ---------- cabecera de sección ---------- */
+  .head {
+    background: var(--navy); color: var(--cream);
+    padding: 9mm 11mm 6mm;
+    display: flex; align-items: flex-end; gap: 7mm;
+  }
+  .head img { width: 17mm; height: 17mm; display: block; }
+  .head-txt { display: flex; flex-direction: column; gap: 1mm; }
+  .eyebrow {
+    font-family: var(--cond); font-weight: 700; font-size: 9pt;
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--gold);
+  }
+  .head-title { font-family: var(--display); font-size: 30pt; line-height: 1; }
+  .chips { margin-left: auto; display: flex; gap: 2.5mm; }
+  .chip { background: var(--red); padding: 2mm 3.5mm; text-align: center; min-width: 19mm; }
+  .chip .lbl {
+    font-family: var(--cond); font-weight: 700; font-size: 8pt;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--cream);
+  }
+  .chip .val { font-family: var(--display); font-size: 13pt; line-height: 1.2; color: var(--cream); }
+
+  .rule { height: 2.5mm; background: repeating-linear-gradient(45deg,
+    var(--red) 0 3mm, var(--cream) 3mm 6mm, var(--navy) 6mm 9mm, var(--cream) 9mm 12mm); }
+  .rule-v { background: repeating-linear-gradient(45deg,
+    var(--red) 0 3mm, var(--cream) 3mm 6mm, var(--navy) 6mm 9mm, var(--cream) 9mm 12mm); }
+
+  /* ---------- cuerpo ---------- */
+  .body { flex-grow: 1; padding: 7mm 11mm 0; display: flex; flex-direction: column; }
+  .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 9mm; align-content: start; }
+  .col { display: flex; flex-direction: column; }
+
+  .item { padding: 1.6mm 0; break-inside: avoid; }
+  .item .n {
+    font-family: var(--cond); font-weight: 700; font-size: 12pt;
+    letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy);
+    line-height: 1.15;
+  }
+  .item .d { font-size: 10.5pt; line-height: 1.28; color: var(--ink2); }
+
+  .subhead {
+    display: flex; align-items: baseline; gap: 4mm;
+    border-bottom: 0.6mm solid var(--navy);
+    padding-bottom: 1.5mm; margin: 4mm 0 2.5mm;
+  }
+  .subhead:first-child { margin-top: 0; }
+  .subhead h2 { font-family: var(--display); font-size: 17pt; margin: 0; color: var(--navy); line-height: 1; }
+  .subhead .price {
+    margin-left: auto; font-family: var(--cond); font-weight: 700; font-size: 11pt;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--red);
+  }
+
+  .note { background: var(--cream2); padding: 4mm 5mm; display: flex; gap: 4mm; align-items: center; margin-top: 4mm; }
+  .stamp {
+    width: 15mm; height: 15mm; border-radius: 50%; background: var(--red); color: var(--cream);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-family: var(--cond); font-weight: 700; font-size: 8.5pt; line-height: 1.05; flex-shrink: 0;
+  }
+  .note p { margin: 0; font-size: 10.5pt; line-height: 1.35; color: var(--ink2); }
+  .note strong { color: var(--navy); }
+
+  /* ---------- pie ---------- */
+  .foot {
+    background: var(--navy); color: var(--cream);
+    padding: 3.5mm 11mm; display: flex; align-items: center; justify-content: space-between; gap: 6mm;
+    font-family: var(--cond); font-weight: 700; font-size: 10pt; letter-spacing: 0.16em; text-transform: uppercase;
+  }
+  .foot .web { color: #C9D4EE; font-weight: 600; letter-spacing: 0.1em; }
+
+  /* ---------- listas de precio simples ---------- */
+  .plist { display: flex; flex-direction: column; }
+  .prow { display: flex; align-items: baseline; gap: 3mm; padding: 1.4mm 0; }
+  .prow .nm { font-family: var(--cond); font-weight: 700; font-size: 11.5pt; letter-spacing: 0.05em; text-transform: uppercase; color: var(--navy); white-space: nowrap; }
+  .prow .ds { font-size: 10.5pt; color: var(--ink2); line-height: 1.28; }
+  .prow .dots { flex-grow: 1; border-bottom: 0.3mm dotted #B9AE93; transform: translateY(-1mm); min-width: 6mm; }
+  .prow .pr { font-family: var(--display); font-size: 12pt; color: var(--red); white-space: nowrap; }
+
+  .drinks { width: 100%; border-collapse: collapse; }
+  .drinks th {
+    font-family: var(--cond); font-weight: 700; font-size: 9.5pt; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--navy); text-align: right; padding: 0 0 1.5mm 4mm;
+    border-bottom: 0.4mm solid var(--navy);
+  }
+  .drinks th.l { text-align: left; padding-left: 0; }
+  .drinks td { font-size: 10.5pt; padding: 1.5mm 0 1.5mm 4mm; text-align: right; border-bottom: 0.2mm solid #DED2B8; }
+  .drinks td.l { text-align: left; padding-left: 0; font-family: var(--cond); font-weight: 700; font-size: 11.5pt; letter-spacing: 0.05em; text-transform: uppercase; color: var(--navy); }
+  .drinks td .eur { font-family: var(--display); font-size: 11pt; color: var(--red); }
+
+  .legal { font-size: 8.5pt; color: #6B7183; line-height: 1.35; padding: 3mm 11mm 3mm; }
+
+  /* Ajuste vertical por pagina: el aire se reparte segun cuanto contenido lleva
+     cada una, para que ninguna quede con un tercio muerto al pie. */
+  .lead-a .item { padding: 2.8mm 0; }
+  .lead-b .item { padding: 4.3mm 0; }
+  .lead-c .item { padding: 4.9mm 0; }
+  .lead-c .subhead { margin: 8mm 0 3.5mm; }
+  .lead-c .subhead:first-child { margin-top: 0; }
+  .lead-d .item { padding: 2.4mm 0; }
+  .lead-d .prow { padding: 2.4mm 0; }
+  .lead-e .item { padding: 5.2mm 0; }
+  .lead-e .item .n { font-size: 14pt; }
+  .lead-e .item .d { font-size: 12pt; }
+  .lead-e .subhead { margin: 9mm 0 4mm; }
+  .lead-e .subhead:first-child { margin-top: 0; }
+  .lead-e .subhead h2 { font-size: 20pt; }
+  .lead-f .drinks td { padding: 3mm 0 3mm 4mm; }
+  .lead-f .subhead { margin: 6mm 0 3mm; }
+  .lead-f .subhead:first-child { margin-top: 0; }
+</style>
+</head>
+<body>
+
+<!-- ============ P1 · PORTADA ============ -->
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+  <div class="bleed" style="background: var(--navy); color: var(--cream); align-items: center; padding: 14mm 14mm 11mm;">
+
+    <div style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; padding: 12mm 11mm 10mm;">
+      <div class="rule" style="position:absolute; top:0; left:0; right:0; height:4mm;"></div>
+      <div class="rule" style="position:absolute; bottom:0; left:0; right:0; height:4mm;"></div>
+      <div class="rule-v" style="position:absolute; top:0; bottom:0; left:0; width:4mm;"></div>
+      <div class="rule-v" style="position:absolute; top:0; bottom:0; right:0; width:4mm;"></div>
+
+      <div class="eyebrow" style="font-size: 10.5pt; letter-spacing: 0.34em;">Pizzería · Santa Fe, Granada</div>
+
+      <img src="../logo-voyvolando.png" alt="Voy Volando" style="width: 88mm; height: 88mm; display:block; margin: 4mm 0 2mm;">
+
+      <div style="font-family: var(--display); font-size: 76pt; line-height: 0.95; text-align:center; text-shadow: 1.6mm 1.6mm 0 var(--red);">Carta</div>
+
+      <div style="display:flex; align-items:center; gap: 4mm; margin-top: 6mm;">
+        <svg width="80" height="16" viewBox="0 0 80 16" fill="none" aria-hidden="true">
+          <path d="M1 12 C 20 12, 27 4, 50 4" stroke="#F0C24B" stroke-width="2" stroke-dasharray="3 5" stroke-linecap="round"/>
+          <path d="M52 1 L 79 4 L 52 7 L 55 4 Z" fill="#B00E14"/>
+        </svg>
+        <div style="font-family: var(--cond); font-weight: 600; font-size: 14pt; letter-spacing: 0.2em; text-transform: uppercase;">Masa artesana cada mañana</div>
+      </div>
+
+      <div style="margin-top: 8mm; width: 100%; background: var(--cream); color: var(--ink); padding: 6mm 7mm; box-shadow: 1.8mm 1.8mm 0 var(--red);">
+        <div style="font-family: var(--cond); font-weight: 700; font-size: 10pt; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); text-align: center;">Precios por tamaño</div>
+        <table style="width:100%; border-collapse: collapse; margin-top: 4mm;">
+          <tr>
+            <th></th>
+            <th style="font-family: var(--cond); font-weight:700; font-size: 10.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); text-align:center; padding-bottom: 2mm;">Pequeña</th>
+            <th style="font-family: var(--cond); font-weight:700; font-size: 10.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); text-align:center; padding-bottom: 2mm;">Mediana</th>
+            <th style="font-family: var(--cond); font-weight:700; font-size: 10.5pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy); text-align:center; padding-bottom: 2mm;">Familiar</th>
+          </tr>
+          <tr>
+            <td style="font-family: var(--display); font-size: 13pt; color: var(--navy); padding: 1.6mm 0;">Clásicas</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">6,50 €</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">9,50 €</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">11,50 €</td>
+          </tr>
+          <tr>
+            <td style="font-family: var(--display); font-size: 13pt; color: var(--navy); padding: 1.6mm 0;">Especiales</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">7,50 €</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">11,00 €</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">13,00 €</td>
+          </tr>
+          <tr>
+            <td style="font-family: var(--display); font-size: 13pt; color: var(--navy); padding: 1.6mm 0;">Gourmet</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">8,00 €</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">11,50 €</td>
+            <td style="font-family: var(--display); font-size: 14pt; text-align:center;">13,50 €</td>
+          </tr>
+        </table>
+        <div style="margin-top: 4mm; border-top: 0.4mm dashed #C9BFA8; padding-top: 3mm; font-size: 10pt; line-height: 1.4; color: var(--ink2);">
+          Mitad y mitad 1 € · especiales 1,50 € · gourmet 2 €. Masa gruesa 2 € · extrafina 1 €. Bordes de queso 2 € (cheddar o roquefort 3 €).
+        </div>
+      </div>
+
+      <div style="margin-top: auto; width: 100%; display: flex; align-items: flex-end; justify-content: space-between; gap: 6mm;">
+        <div style="display:flex; flex-direction:column; gap: 0.8mm;">
+          <div class="eyebrow" style="font-size: 9pt;">Pedidos</div>
+          <div style="font-family: var(--display); font-size: 24pt; line-height: 1.1;">958 44 28 47</div>
+          <div style="font-size: 10.5pt; color: #C9D4EE;">C. Cristóbal Colón, 7 · 18320 Santa Fe (Granada)</div>
+        </div>
+        <div style="text-align:right; display:flex; flex-direction:column; gap: 0.8mm;">
+          <div class="eyebrow" style="font-size: 9pt;">Pide online</div>
+          <div style="font-family: var(--cond); font-weight: 700; font-size: 16pt; letter-spacing: 0.05em;">voyvolandosantafe.com</div>
+          <div style="font-size: 10.5pt; color: #C9D4EE;">Recogida y domicilio</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ P2 · CLÁSICAS ============ -->
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+  <div class="bleed lead-a">
+    <div class="head">
+      <img src="../logo-voyvolando.png" alt="">
+      <div class="head-txt">
+        <div class="eyebrow">Nuestras pizzas</div>
+        <div class="head-title">Clásicas</div>
+      </div>
+      <div class="chips">
+        <div class="chip"><div class="lbl">Pequeña</div><div class="val">6,50 €</div></div>
+        <div class="chip"><div class="lbl">Mediana</div><div class="val">9,50 €</div></div>
+        <div class="chip"><div class="lbl">Familiar</div><div class="val">11,50 €</div></div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="body">
+      <div class="cols">
+        <div class="col">
+          <div class="item"><div class="n">Margarita</div><div class="d">Tomate triturado, mozzarella y orégano</div></div>
+          <div class="item"><div class="n">Prosciutto</div><div class="d">Tomate, mozzarella y jamón york</div></div>
+          <div class="item"><div class="n">Romana</div><div class="d">Tomate, mozzarella, jamón york y champiñones</div></div>
+          <div class="item"><div class="n">Boloñesa</div><div class="d">Tomate, mozzarella, picada de ternera y cebolla</div></div>
+          <div class="item"><div class="n">Pepperoni</div><div class="d">Tomate, mozzarella y pepperoni</div></div>
+          <div class="item"><div class="n">Cuatro Quesos</div><div class="d">Tomate, mozzarella, gouda, edam y roquefort</div></div>
+          <div class="item"><div class="n">Tonno</div><div class="d">Tomate, mozzarella, atún y cebolla</div></div>
+          <div class="item"><div class="n">Hawaiana</div><div class="d">Tomate, jamón york y piña</div></div>
+          <div class="item"><div class="n">Caprichosa</div><div class="d">Tomate, mozzarella, jamón york, bacon y atún</div></div>
+          <div class="item"><div class="n">Cuatro Estaciones</div><div class="d">Tomate, mozzarella, jamón york, bacon, atún y champiñones</div></div>
+          <div class="item"><div class="n">Barbacoa</div><div class="d">Salsa BBQ, mozzarella, picada de ternera, cebolla y bacon</div></div>
+          <div class="item"><div class="n">Kebab</div><div class="d">Salsa kebab, mozzarella, jamón york, bacon y pollo kebab</div></div>
+        </div>
+        <div class="col">
+          <div class="item"><div class="n">Campesina</div><div class="d">Tomate, mozzarella, picada de ternera, cebolla, pimiento verde y rojo</div></div>
+          <div class="item"><div class="n">Carbonara</div><div class="d">Nata, mozzarella, cebolla, bacon y champiñones</div></div>
+          <div class="item"><div class="n">Exquisita</div><div class="d">Tomate, mozzarella, jamón york, alcachofas, aceitunas negras y champiñones</div></div>
+          <div class="item"><div class="n">Vegetal</div><div class="d">Tomate, mozzarella, espárragos, pimiento rojo y aceitunas negras</div></div>
+          <div class="item"><div class="n">Primavera</div><div class="d">Tomate, mozzarella, jamón york, maíz y champiñones</div></div>
+          <div class="item"><div class="n">Siciliana</div><div class="d">Tomate, mozzarella, anchoas, alcaparras y aceitunas negras</div></div>
+          <div class="item"><div class="n">Cheddar</div><div class="d">Tomate, mozzarella, picada de ternera, bacon y cheddar</div></div>
+          <div class="item"><div class="n">Suiza</div><div class="d">Tomate, mozzarella, bacon, cebolla y roquefort</div></div>
+          <div class="item"><div class="n">Picante</div><div class="d">Tomate picante, mozzarella, pepperoni y aceitunas negras</div></div>
+          <div class="item"><div class="n">Italiana</div><div class="d">Tomate, mozzarella, jamón york, aceitunas negras, cherrys y rúcula</div></div>
+          <div class="item"><div class="n">Americana</div><div class="d">Salsa BBQ, mozzarella, salchichas, pepperoni y cheddar</div></div>
+          <div class="item"><div class="n">Gaucha</div><div class="d">Salsa gaucha, mozzarella, picada de ternera y pepperoni</div></div>
+        </div>
+      </div>
+      <div class="note">
+        <div class="stamp">DEL<br>MES</div>
+        <p><strong>Pregunta por la pizza del mes.</strong> Mitad y mitad 1 € · especiales 1,50 € · gourmet 2 €. Masa gruesa 2 € · extrafina 1 €. Bordes de queso 2 € (cheddar o roquefort 3 €).</p>
+      </div>
+    </div>
+    <div class="legal">Información de alérgenos disponible: consulta a nuestro personal. IVA incluido.</div>
+    <div class="foot">
+      <span>958 44 28 47</span>
+      <svg width="66" height="12" viewBox="0 0 66 12" fill="none" aria-hidden="true">
+        <path d="M1 9 C 16 9, 22 3, 39 3" stroke="#F0C24B" stroke-width="1.6" stroke-dasharray="3 5" stroke-linecap="round"/>
+        <path d="M41 1 L 65 3 L 41 5 L 43 3 Z" fill="#FAF2E2"/>
+      </svg>
+      <span class="web">voyvolandosantafe.com</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ P3 · ESPECIALES ============ -->
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+  <div class="bleed lead-b">
+    <div class="head">
+      <img src="../logo-voyvolando.png" alt="">
+      <div class="head-txt">
+        <div class="eyebrow">Nuestras pizzas</div>
+        <div class="head-title">Especiales</div>
+      </div>
+      <div class="chips">
+        <div class="chip"><div class="lbl">Pequeña</div><div class="val">7,50 €</div></div>
+        <div class="chip"><div class="lbl">Mediana</div><div class="val">11,00 €</div></div>
+        <div class="chip"><div class="lbl">Familiar</div><div class="val">13,00 €</div></div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="body">
+      <div class="cols">
+        <div class="col">
+          <div class="item"><div class="n">Marinera</div><div class="d">Tomate, mozzarella, gambas, atún, aceitunas negras y anchoas</div></div>
+          <div class="item"><div class="n">Caramelizada</div><div class="d">Nata, mozzarella, cebolla caramelizada, bacon y pimienta negra</div></div>
+          <div class="item"><div class="n">Árabe</div><div class="d">Salsa kebab doble, mozzarella, cebolla, pimiento verde, cherrys y pollo kebab</div></div>
+          <div class="item"><div class="n">Diablo</div><div class="d">Tomate picante, mozzarella, cebolla, picada de ternera, pepperoni y gouda</div></div>
+          <div class="item"><div class="n">Parma</div><div class="d">Tomate, mozzarella, jamón serrano, cherrys, aceitunas negras, feta y AOVE</div></div>
+          <div class="item"><div class="n">Monstruo</div><div class="d">Salsa BBQ, mozzarella, jamón york, bacon, picada de ternera y atún</div></div>
+          <div class="item"><div class="n">Burger</div><div class="d">Salsa burger, mozzarella, pepinillos, cherrys, cebolla, picada de ternera y bacon</div></div>
+          <div class="item"><div class="n">Voy Volando</div><div class="d">Salsa Voy Volando, mozzarella, pollo kebab, picada de ternera y maíz</div></div>
+          <div class="item"><div class="n">Santa Fe</div><div class="d">Tomate, mozzarella, bacon, pollo kebab, cebolla, gouda y rúcula</div></div>
+        </div>
+        <div class="col">
+          <div class="item"><div class="n">Suprema</div><div class="d">Salsa suprema, mozzarella, carne picada, bacon, cebolla y champiñones</div></div>
+          <div class="item"><div class="n">Francis</div><div class="d">Tomate, mozzarella doble, picada de ternera, bacon, jamón york y champiñones</div></div>
+          <div class="item"><div class="n">Siete Quesos</div><div class="d">Tomate, mozzarella, edam, gouda, roquefort, feta, cabra y cheddar</div></div>
+          <div class="item"><div class="n">Especial</div><div class="d">Tomate, mozzarella, alcachofas, alcaparras, espárragos, aceitunas negras, jamón york y champiñones</div></div>
+          <div class="item"><div class="n">Capitulaciones</div><div class="d">Nata, mozzarella, cherrys, huevo, bacon y salami</div></div>
+          <div class="item"><div class="n">Mediterránea</div><div class="d">Tomate, mozzarella, alcachofas, aceitunas negras, jamón serrano, champiñones y AOVE</div></div>
+          <div class="item"><div class="n">Alpujarreña</div><div class="d">Tomate, mozzarella, chorizo, jamón serrano, cebolla, pimiento verde y huevo</div></div>
+          <div class="item"><div class="n">Mare e Monti</div><div class="d">Tomate, mozzarella, gambas, atún, espárragos y champiñones</div></div>
+          <div class="item"><div class="n">Texas</div><div class="d">Tomate, mozzarella, pollo kebab, bacon, pimiento verde, maíz y salsa BBQ</div></div>
+        </div>
+      </div>
+      <div class="note">
+        <div class="stamp">MITAD<br>MITAD</div>
+        <p><strong>Combina dos sabores en la misma pizza.</strong> Mitad y mitad 1 € · con especiales 1,50 € · con gourmet 2 €. Masa gruesa 2 € · extrafina 1 €. Bordes de queso 2 € (cheddar o roquefort 3 €).</p>
+      </div>
+    </div>
+    <div class="legal">Información de alérgenos disponible: consulta a nuestro personal. IVA incluido.</div>
+    <div class="foot">
+      <span>958 44 28 47</span>
+      <svg width="66" height="12" viewBox="0 0 66 12" fill="none" aria-hidden="true">
+        <path d="M1 9 C 16 9, 22 3, 39 3" stroke="#F0C24B" stroke-width="1.6" stroke-dasharray="3 5" stroke-linecap="round"/>
+        <path d="M41 1 L 65 3 L 41 5 L 43 3 Z" fill="#FAF2E2"/>
+      </svg>
+      <span class="web">voyvolandosantafe.com</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ P4 · GOURMET + GRATINADOS ============ -->
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+  <div class="bleed lead-c">
+    <div class="head">
+      <img src="../logo-voyvolando.png" alt="">
+      <div class="head-txt">
+        <div class="eyebrow">Lo más nuestro</div>
+        <div class="head-title">Gourmet y gratinados</div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="body">
+      <div class="subhead">
+        <h2>Pizzas gourmet</h2>
+        <span class="price">Peq. 8,00 € · Med. 11,50 € · Fam. 13,50 €</span>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <div class="item"><div class="n">Caprese</div><div class="d">Tomate, mozzarella, jamón serrano, pesto, cherrys, queso de cabra y rúcula</div></div>
+          <div class="item"><div class="n">Cabra</div><div class="d">Nata, mozzarella, bacon, cebolla caramelizada, queso de cabra, pimiento verde y mermelada de fresa</div></div>
+          <div class="item"><div class="n">Bourbon</div><div class="d">Nata, mozzarella, bacon, picada de ternera, queso de cabra, cebolla caramelizada y BBQ bourbon</div></div>
+        </div>
+        <div class="col">
+          <div class="item"><div class="n">Colón</div><div class="d">Tomate, mozzarella, picada de ternera, pimiento rojo, roquefort, cebolla caramelizada y nueces</div></div>
+          <div class="item"><div class="n">Trifásica</div><div class="d">Nata, mozzarella, picada de ternera, pollo kebab, bacon, cheddar y cebolla crujiente</div></div>
+          <div class="item"><div class="n">Golosa</div><div class="d">Tomate, mozzarella, picada de ternera, queso de cabra, bacon, cebolla caramelizada y salsa gaucha</div></div>
+        </div>
+      </div>
+
+      <div class="subhead">
+        <h2>Gratinados</h2>
+        <span class="price">Pequeño 3,90 € · Grande 5,90 €</span>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <div class="item"><div class="n">Benji</div><div class="d">Nata, mozzarella, bacon, cebolla y champiñones</div></div>
+          <div class="item"><div class="n">BBQ</div><div class="d">Salsa BBQ, mozzarella, picada de ternera, bacon y cebolla</div></div>
+          <div class="item"><div class="n">Cuatro Quesos</div><div class="d">Nata, mozzarella, gouda, roquefort y cheddar</div></div>
+        </div>
+        <div class="col">
+          <div class="item"><div class="n">Cheddar</div><div class="d">Cheddar, mozzarella, bacon y cebolla crispy</div></div>
+          <div class="item"><div class="n">Salchipapa</div><div class="d">Cheddar, mozzarella y salchichas</div></div>
+          <div class="item"><div class="n">Kebab</div><div class="d">Salsa kebab, mozzarella y pollo kebab</div></div>
+        </div>
+      </div>
+
+      <div class="subhead">
+        <h2>Gratinados especiales</h2>
+        <span class="price">Pequeño 4,50 € · Grande 6,50 €</span>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <div class="item"><div class="n">Burger</div><div class="d">Salsa burger, mozzarella, bacon, picada de ternera y cebolla</div></div>
+          <div class="item"><div class="n">Supremo</div><div class="d">Salsa suprema, mozzarella, picada de ternera, bacon, cebolla y champiñones</div></div>
+        </div>
+        <div class="col">
+          <div class="item"><div class="n">Voy Volando</div><div class="d">Salsa Voy Volando, mozzarella, picada de ternera, pollo y maíz</div></div>
+          <div class="item"><div class="n">Goat</div><div class="d">Nata, mozzarella, bacon, cebolla caramelizada y queso de cabra</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="legal">Información de alérgenos disponible: consulta a nuestro personal. IVA incluido.</div>
+    <div class="foot">
+      <span>958 44 28 47</span>
+      <svg width="66" height="12" viewBox="0 0 66 12" fill="none" aria-hidden="true">
+        <path d="M1 9 C 16 9, 22 3, 39 3" stroke="#F0C24B" stroke-width="1.6" stroke-dasharray="3 5" stroke-linecap="round"/>
+        <path d="M41 1 L 65 3 L 41 5 L 43 3 Z" fill="#FAF2E2"/>
+      </svg>
+      <span class="web">voyvolandosantafe.com</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ P5 · COMPLEMENTOS + COMBOS ============ -->
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+  <div class="bleed lead-d">
+    <div class="head">
+      <img src="../logo-voyvolando.png" alt="">
+      <div class="head-txt">
+        <div class="eyebrow">Para compartir</div>
+        <div class="head-title">Complementos</div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="body">
+      <div class="cols" style="gap: 0 9mm;">
+        <div class="col">
+          <div class="subhead"><h2>Al centro</h2></div>
+          <div class="plist">
+            <div class="prow"><span class="nm">Alitas</span><span class="ds">7 uds., elige tu salsa</span><span class="dots"></span><span class="pr">4,90 €</span></div>
+            <div class="prow"><span class="nm">Nuggets de pollo</span><span class="ds">7 uds.</span><span class="dots"></span><span class="pr">4,50 €</span></div>
+            <div class="prow"><span class="nm">Patatas fritas</span><span class="ds">tarrina</span><span class="dots"></span><span class="pr">5,00 €</span></div>
+            <div class="prow"><span class="nm">Pan de ajo</span><span class="dots"></span><span class="pr">5,00 €</span></div>
+            <div class="prow"><span class="nm">Próvola</span><span class="dots"></span><span class="pr">6,00 €</span></div>
+          </div>
+          <div class="item" style="padding-top: 0.5mm;"><div class="d">Próvola: tomate, mozzarella, orégano y sticks de pizza con mermelada de fresa.</div></div>
+
+          <div class="subhead"><h2>Pizza roll</h2><span class="price">7 uds. · 8,00 €</span></div>
+          <div class="item"><div class="n">BBQ</div><div class="d">Salsa BBQ, mozzarella y carne picada</div></div>
+          <div class="item"><div class="n">Kebab</div><div class="d">Salsa de yogur, mozzarella y pollo kebab</div></div>
+          <div class="item"><div class="n">Cheesebacon</div><div class="d">Cheddar, mozzarella y bacon</div></div>
+          <div class="item"><div class="n">Nutella</div><div class="d">Nutella con nueces o pistachos</div></div>
+        </div>
+
+        <div class="col">
+          <div class="subhead"><h2>Pizzaburger</h2><span class="price">8,00 €</span></div>
+          <div class="item" style="padding-top: 0;"><div class="d">Hamburguesa con masa de pizza.</div></div>
+          <div class="item"><div class="n">BBQ</div><div class="d">Hamburguesa, BBQ, mozzarella y pepinillos</div></div>
+          <div class="item"><div class="n">Cabra</div><div class="d">Hamburguesa, queso de cabra, cebolla caramelizada y BBQ</div></div>
+          <div class="item"><div class="n">Cheesebacon</div><div class="d">Hamburguesa, cheddar, mozzarella y bacon</div></div>
+
+          <div class="subhead"><h2>Rosquipizza</h2><span class="price">12,00 €</span></div>
+          <div class="item" style="padding-top: 0;"><div class="d">Pizza en rosca con patatas en el centro.</div></div>
+          <div class="item"><div class="n">Kebab</div><div class="d">Salsa kebab, mozzarella, gouda y pollo kebab</div></div>
+          <div class="item"><div class="n">Burger</div><div class="d">Salsa burger, mozzarella, carne picada y cherrys</div></div>
+          <div class="item"><div class="n">Serrana</div><div class="d">Tomate, mozzarella, jamón serrano y aceitunas negras</div></div>
+        </div>
+      </div>
+
+      <div style="margin-top: auto; background: var(--navy); color: var(--cream); padding: 5mm 6mm; box-shadow: 1.8mm 1.8mm 0 var(--gold);">
+        <div class="eyebrow" style="margin-bottom: 3mm;">Combos</div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2mm 9mm;">
+          <div style="display:flex; align-items:baseline; gap:3mm; border-bottom: 0.2mm solid rgba(250,242,226,0.28); padding-bottom: 1.6mm;">
+            <span style="font-size: 10.5pt;">Alitas 6 uds. + patatas + salsa</span>
+            <span style="flex-grow:1"></span>
+            <span style="font-family: var(--display); font-size: 12pt; color: var(--gold);">5,90 €</span>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:3mm; border-bottom: 0.2mm solid rgba(250,242,226,0.28); padding-bottom: 1.6mm;">
+            <span style="font-size: 10.5pt;">Nuggets 6 uds. + patatas + salsa</span>
+            <span style="flex-grow:1"></span>
+            <span style="font-family: var(--display); font-size: 12pt; color: var(--gold);">5,50 €</span>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:3mm; border-bottom: 0.2mm solid rgba(250,242,226,0.28); padding-bottom: 1.6mm;">
+            <span style="font-size: 10.5pt;">Gratinado grande normal + bebida</span>
+            <span style="flex-grow:1"></span>
+            <span style="font-family: var(--display); font-size: 12pt; color: var(--gold);">6,90 €</span>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:3mm; border-bottom: 0.2mm solid rgba(250,242,226,0.28); padding-bottom: 1.6mm;">
+            <span style="font-size: 10.5pt;">Gratinado grande especial + bebida</span>
+            <span style="flex-grow:1"></span>
+            <span style="font-family: var(--display); font-size: 12pt; color: var(--gold);">7,50 €</span>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:3mm;">
+            <span style="font-size: 10.5pt;">Pizzaburger + patatas + bebida</span>
+            <span style="flex-grow:1"></span>
+            <span style="font-family: var(--display); font-size: 12pt; color: var(--gold);">10,00 €</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="legal">Información de alérgenos disponible: consulta a nuestro personal. IVA incluido.</div>
+    <div class="foot">
+      <span>958 44 28 47</span>
+      <svg width="66" height="12" viewBox="0 0 66 12" fill="none" aria-hidden="true">
+        <path d="M1 9 C 16 9, 22 3, 39 3" stroke="#F0C24B" stroke-width="1.6" stroke-dasharray="3 5" stroke-linecap="round"/>
+        <path d="M41 1 L 65 3 L 41 5 L 43 3 Z" fill="#FAF2E2"/>
+      </svg>
+      <span class="web">voyvolandosantafe.com</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ P6 · ENSALADAS + PASTAS + POSTRES ============ -->
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+  <div class="bleed lead-e">
+    <div class="head">
+      <img src="../logo-voyvolando.png" alt="">
+      <div class="head-txt">
+        <div class="eyebrow">También en carta</div>
+        <div class="head-title">Ensaladas, pastas y postres</div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="body">
+      <div class="subhead"><h2>Ensaladas</h2><span class="price">5,00 €</span></div>
+      <div class="cols">
+        <div class="col">
+          <div class="item"><div class="n">De la Huerta</div><div class="d">Lechuga, tomate, aceitunas, maíz, espárragos, queso feta y vinagre de Módena</div></div>
+          <div class="item"><div class="n">César</div><div class="d">Lechuga, tomate, pollo, queso feta y salsa César</div></div>
+        </div>
+        <div class="col">
+          <div class="item"><div class="n">De la Casa</div><div class="d">Lechuga, tomate, queso feta, atún, jamón york, cebolla y vinagre de Módena</div></div>
+        </div>
+      </div>
+
+      <div class="subhead"><h2>Pastas</h2><span class="price">6,70 €</span></div>
+      <div class="cols">
+        <div class="col">
+          <div class="item"><div class="n">Spaghetti boloñesa</div><div class="d">Tomate, picada de ternera, mozzarella y orégano</div></div>
+          <div class="item"><div class="n">Spaghetti al pesto</div><div class="d">Tomate, pesto, picada de ternera, mozzarella y orégano</div></div>
+          <div class="item"><div class="n">Spaghetti funghi</div><div class="d">Tomate, picada de ternera, champiñones, mozzarella y orégano</div></div>
+        </div>
+        <div class="col">
+          <div class="item"><div class="n">Tallarines carbonara</div><div class="d">Nata, bacon, mozzarella y orégano</div></div>
+          <div class="item"><div class="n">Tallarines mar y montaña</div><div class="d">Nata, bacon, gambas, mozzarella y orégano</div></div>
+          <div class="item"><div class="n">Tallarines cheesebacon</div><div class="d">Nata, bacon, roquefort, cheddar, mozzarella y orégano</div></div>
+        </div>
+      </div>
+
+      <div class="subhead"><h2>Postres</h2><span class="price">4,00 €</span></div>
+      <div class="cols">
+        <div class="col">
+          <div class="item"><div class="n">Tarta tres chocolates</div></div>
+          <div class="item"><div class="n">Tarta de la abuela</div></div>
+          <div class="item"><div class="n">Tarta de Oreo</div></div>
+        </div>
+        <div class="col">
+          <div class="item"><div class="n">Pizza roll de Nutella</div><div class="d">6 uds., con nueces o pistachos</div></div>
+          <div class="item"><div class="n">Sticks de pizza con Nutella</div><div class="d">6 uds.</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="legal">Información de alérgenos disponible: consulta a nuestro personal. IVA incluido.</div>
+    <div class="foot">
+      <span>958 44 28 47</span>
+      <svg width="66" height="12" viewBox="0 0 66 12" fill="none" aria-hidden="true">
+        <path d="M1 9 C 16 9, 22 3, 39 3" stroke="#F0C24B" stroke-width="1.6" stroke-dasharray="3 5" stroke-linecap="round"/>
+        <path d="M41 1 L 65 3 L 41 5 L 43 3 Z" fill="#FAF2E2"/>
+      </svg>
+      <span class="web">voyvolandosantafe.com</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ P7 · BEBIDAS + PROMOCIONES ============ -->
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+  <div class="bleed lead-f">
+    <div class="head">
+      <img src="../logo-voyvolando.png" alt="">
+      <div class="head-txt">
+        <div class="eyebrow">Para acompañar</div>
+        <div class="head-title">Bebidas y promociones</div>
+      </div>
+    </div>
+    <div class="rule"></div>
+    <div class="body">
+      <div class="subhead"><h2>Bebidas</h2></div>
+      <table class="drinks">
+        <tr><th class="l">&nbsp;</th><th>Lata</th><th>1 L</th><th>2 L</th></tr>
+        <tr><td class="l">Coca-Cola</td><td><span class="eur">1,50 €</span></td><td><span class="eur">2,00 €</span></td><td><span class="eur">2,50 €</span></td></tr>
+        <tr><td class="l">Coca-Cola Zero</td><td><span class="eur">1,50 €</span></td><td><span class="eur">2,00 €</span></td><td><span class="eur">2,50 €</span></td></tr>
+        <tr><td class="l">Fanta naranja</td><td><span class="eur">1,50 €</span></td><td><span class="eur">2,00 €</span></td><td><span class="eur">2,50 €</span></td></tr>
+        <tr><td class="l">Aquarius limón</td><td><span class="eur">1,50 €</span></td><td>—</td><td>—</td></tr>
+        <tr><td class="l">Aquarius naranja</td><td><span class="eur">1,50 €</span></td><td>—</td><td>—</td></tr>
+        <tr><td class="l">Fuze Tea maracuyá</td><td><span class="eur">1,50 €</span></td><td>—</td><td>—</td></tr>
+        <tr><td class="l">Cerveza</td><td><span class="eur">1,80 €</span></td><td><span class="eur">2,30 €</span></td><td>—</td></tr>
+        <tr><td class="l">Agua</td><td><span class="eur">1,00 €</span> <span style="font-size:9pt; color:#6B7183;">500 ml</span></td><td><span class="eur">1,50 €</span> <span style="font-size:9pt; color:#6B7183;">1,5 L</span></td><td>—</td></tr>
+      </table>
+
+      <div class="subhead" style="margin-top: 6mm;"><h2>Promociones</h2></div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4mm;">
+
+        <div style="background: var(--red); color: var(--cream); padding: 5mm; box-shadow: 1.6mm 1.6mm 0 var(--navy);">
+          <div style="font-family: var(--display); font-size: 26pt; line-height: 1;">3×2</div>
+          <div style="font-family: var(--cond); font-weight: 700; font-size: 12pt; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 1.5mm;">En pizzas medianas</div>
+          <div style="font-size: 10.5pt; margin-top: 1.5mm;">De lunes a jueves.</div>
+        </div>
+
+        <div style="background: var(--navy); color: var(--cream); padding: 5mm; box-shadow: 1.6mm 1.6mm 0 var(--gold);">
+          <div style="font-family: var(--display); font-size: 26pt; line-height: 1; color: var(--gold);">3×18 €</div>
+          <div style="font-family: var(--cond); font-weight: 700; font-size: 12pt; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 1.5mm;">Tres pizzas pequeñas</div>
+          <div style="font-size: 10.5pt; margin-top: 1.5mm;">Todos los días, solo para recoger.</div>
+        </div>
+
+        <div style="background: var(--cream2); padding: 5mm;">
+          <div style="font-family: var(--cond); font-weight: 700; font-size: 12pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy);">Familiares para recoger</div>
+          <div style="font-size: 10.5pt; margin-top: 1.5mm; color: var(--ink2);">Clásica <strong style="font-family: var(--display); color: var(--red); font-size: 12pt;">10 €</strong> · Especial <strong style="font-family: var(--display); color: var(--red); font-size: 12pt;">12 €</strong>. Todos los días.</div>
+        </div>
+
+        <div style="background: var(--cream2); padding: 5mm;">
+          <div style="font-family: var(--cond); font-weight: 700; font-size: 12pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy);">Menú para uno</div>
+          <div style="font-size: 10.5pt; margin-top: 1.5mm; color: var(--ink2);">Pequeña + refresco + patatas: clásica <strong style="font-family: var(--display); color: var(--red); font-size: 12pt;">8 €</strong> · especial <strong style="font-family: var(--display); color: var(--red); font-size: 12pt;">8,50 €</strong>. Solo para recoger.</div>
+        </div>
+
+        <div style="background: var(--cream2); padding: 5mm; display:flex; gap: 4mm; align-items:center;">
+          <div class="stamp" style="width: 14mm; height: 14mm; font-size: 8pt;">MAR</div>
+          <div>
+            <div style="font-family: var(--cond); font-weight: 700; font-size: 12pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy);">Martes de papas</div>
+            <div style="font-size: 10.5pt; color: var(--ink2);">Gratinado pequeño gratis en pedidos a domicilio desde 13 €.</div>
+          </div>
+        </div>
+
+        <div style="background: var(--cream2); padding: 5mm; display:flex; gap: 4mm; align-items:center;">
+          <div class="stamp" style="width: 14mm; height: 14mm; font-size: 8pt;">MIÉ</div>
+          <div>
+            <div style="font-family: var(--cond); font-weight: 700; font-size: 12pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--navy);">Miércoles de pizza</div>
+            <div style="font-size: 10.5pt; color: var(--ink2);">1 litro de refresco gratis en pedidos a domicilio desde 13 €.</div>
+          </div>
+        </div>
+
+      </div>
+      <div style="font-size: 9.5pt; color: #6B7183; margin-top: 4mm;">Promociones no acumulables entre sí.</div>
+    </div>
+    <div class="legal">Información de alérgenos disponible: consulta a nuestro personal. IVA incluido.</div>
+    <div class="foot">
+      <span>958 44 28 47</span>
+      <svg width="66" height="12" viewBox="0 0 66 12" fill="none" aria-hidden="true">
+        <path d="M1 9 C 16 9, 22 3, 39 3" stroke="#F0C24B" stroke-width="1.6" stroke-dasharray="3 5" stroke-linecap="round"/>
+        <path d="M41 1 L 65 3 L 41 5 L 43 3 Z" fill="#FAF2E2"/>
+      </svg>
+      <span class="web">voyvolandosantafe.com</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ P8 · CONTRAPORTADA ============ -->
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+  <div class="bleed" style="background: var(--navy); color: var(--cream); padding: 14mm 14mm 11mm;">
+    <div style="position:relative; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content: space-between; padding: 14mm 11mm 11mm;">
+      <div class="rule" style="position:absolute; top:0; left:0; right:0; height:4mm;"></div>
+      <div class="rule" style="position:absolute; bottom:0; left:0; right:0; height:4mm;"></div>
+      <div class="rule-v" style="position:absolute; top:0; bottom:0; left:0; width:4mm;"></div>
+      <div class="rule-v" style="position:absolute; top:0; bottom:0; right:0; width:4mm;"></div>
+      <div style="display:flex; flex-direction:column; align-items:center;">
+    <img src="../logo-voyvolando.png" alt="Voy Volando" style="width: 74mm; height: 74mm; display:block;">
+    <div style="font-family: var(--display); font-size: 40pt; line-height: 1; margin-top: 4mm; text-align:center;">Voy Volando</div>
+    <div style="display:flex; align-items:center; gap: 4mm; margin-top: 5mm;">
+      <svg width="70" height="14" viewBox="0 0 70 14" fill="none" aria-hidden="true">
+        <path d="M1 10 C 18 10, 24 4, 42 4" stroke="#F0C24B" stroke-width="1.8" stroke-dasharray="3 5" stroke-linecap="round"/>
+        <path d="M44 1 L 69 4 L 44 7 L 47 4 Z" fill="#B00E14"/>
+      </svg>
+      <div style="font-family: var(--cond); font-weight: 600; font-size: 13pt; letter-spacing: 0.22em; text-transform: uppercase;">Recogida y domicilio</div>
+    </div>
+
+      </div>
+
+    <div style="background: var(--cream); color: var(--ink); padding: 7mm 9mm; box-shadow: 1.8mm 1.8mm 0 var(--red); text-align:center; min-width: 120mm;">
+      <div style="font-family: var(--cond); font-weight: 700; font-size: 10pt; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red);">Pedidos</div>
+      <div style="font-family: var(--display); font-size: 34pt; line-height: 1.15; margin-top: 1.5mm;">958 44 28 47</div>
+      <div style="font-size: 11pt; color: var(--ink2); margin-top: 2mm;">C. Cristóbal Colón, 7<br>18320 Santa Fe (Granada)</div>
+      <div style="border-top: 0.4mm dashed #C9BFA8; margin-top: 4mm; padding-top: 3mm;">
+        <div style="font-family: var(--cond); font-weight: 700; font-size: 14pt; letter-spacing: 0.06em; color: var(--navy);">voyvolandosantafe.com</div>
+        <div style="font-size: 10.5pt; color: var(--ink2); margin-top: 1mm;">[HORARIO — pendiente de confirmar]</div>
+      </div>
+    </div>
+
+    <div style="font-size: 9.5pt; color: #9FB0D6; text-align:center; max-width: 150mm;">Información de alérgenos disponible: consulta a nuestro personal. IVA incluido. Precios válidos salvo error tipográfico.</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

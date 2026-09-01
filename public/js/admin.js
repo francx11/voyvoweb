@@ -226,7 +226,7 @@
   async function loadMenuMode() {
     const s = await api('GET', '/api/site').catch(() => ({}));
     const menu = s.menu || {};
-    const mode = menu.mode === 'pdf' ? 'pdf' : 'products';
+    const mode = ['pdf', 'both'].includes(menu.mode) ? menu.mode : 'products';
     $(`mode-${mode}`).checked = true;
     $('pdf-current').innerHTML = menu.pdf
       ? `PDF actual: <a href="${menu.pdf}" target="_blank" rel="noopener" style="color:var(--text)">${menu.pdf.split('/').pop()}</a>`
@@ -236,7 +236,7 @@
   document.querySelectorAll('input[name=menu-mode]').forEach((r) => {
     r.addEventListener('change', async () => {
       const mode = document.querySelector('input[name=menu-mode]:checked').value;
-      if (mode === 'pdf') {
+      if (mode === 'pdf' || mode === 'both') {
         const s = await api('GET', '/api/site').catch(() => ({}));
         if (!s.menu?.pdf) {
           toast('Sube primero un PDF para poder activar este modo', 'err');
@@ -268,6 +268,50 @@
       toast(err.message, 'err');
     }
     pdfInput.value = '';
+  });
+
+  // ── Item photo upload (only for an already-saved item) ───────────────────
+  const itemImgInput = $('item-img-input');
+  function setItemImageUI(image) {
+    const disabled = !$('item-id').value; // new items have no id yet
+    $('item-img-preview').src = image || '/assets/menu-placeholder.svg';
+    $('btn-item-img-remove').style.display = image ? '' : 'none';
+    $('btn-item-img').disabled = disabled;
+    $('btn-item-img-remove').disabled = disabled;
+    $('item-img-hint').textContent = disabled
+      ? 'Guarda la pizza primero para poder añadir una foto.'
+      : 'Si no subes foto, se usa un placeholder de pizza.';
+  }
+  $('btn-item-img').addEventListener('click', () => {
+    if ($('item-id').value) itemImgInput.click();
+  });
+  itemImgInput.addEventListener('change', async () => {
+    const id = $('item-id').value;
+    if (!id || !itemImgInput.files.length) return;
+    const fd = new FormData();
+    fd.append('image', itemImgInput.files[0]);
+    toast('Subiendo foto...');
+    try {
+      const res = await apiUploadForm(`/api/menu/${id}/image`, fd);
+      setItemImageUI(res.image);
+      loadMenu();
+      toast('Foto subida ✓');
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+    itemImgInput.value = '';
+  });
+  $('btn-item-img-remove').addEventListener('click', async () => {
+    const id = $('item-id').value;
+    if (!id) return;
+    try {
+      await api('DELETE', `/api/menu/${id}/image`);
+      setItemImageUI('');
+      loadMenu();
+      toast('Foto quitada ✓');
+    } catch (err) {
+      toast(err.message, 'err');
+    }
   });
 
   // ── Item modal ───────────────────────────────────────────────────────────
@@ -384,6 +428,7 @@
     $('modal-item-title').textContent = 'Nueva pizza';
     $('form-item').reset();
     $('item-id').value = '';
+    setItemImageUI(''); // no id yet → upload disabled with a hint
     setAllergens([]);
     $('item-sizes-rows').innerHTML = '';
     $('item-pricing-mode').value = 'fixed';
@@ -399,6 +444,7 @@
     if (!p) return;
     $('modal-item-title').textContent = 'Editar pizza';
     $('item-id').value = p.id;
+    setItemImageUI(p.image || '');
     $('item-emoji').value = p.emoji || '';
     $('item-name').value = p.name || '';
     $('item-desc').value = p.description || '';
