@@ -11,6 +11,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'voyvoweb-orders-'));
 process.env.DATA_DIR = path.join(tmp, 'data');
 process.env.PUBLIC_DIR = path.join(tmp, 'public');
 process.env.ADMIN_PASSWORD = 'test-password-123';
+process.env.ORDERING_ENABLED = 'true'; // this whole file exercises the feature
 delete process.env.STRIPE_SECRET_KEY;
 delete process.env.STRIPE_WEBHOOK_SECRET;
 fs.mkdirSync(process.env.DATA_DIR, { recursive: true });

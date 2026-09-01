@@ -7,6 +7,8 @@ Web y gestor de contenidos de la **Pizzería Voy Volando** (C. Cristóbal Colón
 - **Panel de admin** (`/admin`): edita carta, galería (con optimización automática de imagen),
   pizza del mes, textos del hero/historia, contacto y horarios. Todo se publica al instante, sin
   redeploy.
+- **Pedidos online** (carrito, checkout, Stripe, panel de Pedidos): apagados por defecto, se
+  encienden con `ORDERING_ENABLED=true` — ver *Pedidos online* más abajo.
 
 ## Stack
 
@@ -36,6 +38,7 @@ pnpm start             # producción
 | `pnpm check` | ESLint + Prettier + tests (correr antes de cada deploy) |
 | `pnpm format` | Formatea código y docs |
 | `pnpm backup` | Copia `data/` y la galería a `backups/<fecha>/` |
+| `pnpm build:static` | Export estático a `dist/` para GitHub Pages (sin backend) |
 
 ## Estructura
 
@@ -74,6 +77,34 @@ scripts/backup.mjs     Backup de datos y galería
 - **Constantes ajustables** (límites de subida, TTLs, tamaños de imagen) viven en `src/config.js`,
   no repartidas por el código.
 - Tras cualquier cambio: `pnpm check`.
+
+## Pedidos online (desactivados por defecto)
+
+Toda la tienda online vive tras el flag `ORDERING_ENABLED` (`.env`, leído en `src/config.js` como
+`FEATURES.ordering`). Con el flag apagado:
+
+- no se montan `/api/orders`, `/api/places` ni el webhook de Stripe (responden 404);
+- `/api/ordering/config` devuelve `enabled:false`, así que la web se dibuja sin carrito ni botones
+  de "Pedir" — la carta sigue mostrando precios;
+- el panel oculta la sección **Pedidos** y avisa en **Config. pedidos** de que el servidor manda.
+
+El flag tiene prioridad sobre el interruptor "Pedidos online activados" del panel: ese sigue
+siendo el interruptor del día a día (cerrar pedidos puntualmente), y `ORDERING_ENABLED` el de la
+fase del proyecto. Las tarifas, extras y horarios se pueden preparar con la función apagada.
+
+Para encenderlo: `ORDERING_ENABLED=true` + claves de Stripe en `.env`, y un hosting con backend
+(no GitHub Pages).
+
+## Despliegue estático (GitHub Pages)
+
+Mientras no haya pedidos, la web se publica sin servidor. `pnpm build:static` levanta la propia
+app Express en un puerto efímero, congela cada endpoint público en `dist/api/<nombre>.json` y
+copia `public/` sin el panel ni la página de estado de pedido; `public/js/main.js` detecta
+`window.VV_STATIC` y pide los `.json` en lugar de las rutas vivas. `.github/workflows/pages.yml`
+lo reconstruye y publica en cada push a `main`.
+
+Para cambiar contenido en esta fase: `pnpm dev` → editar en el panel local → commit de
+`data/*.json` (+ `public/assets/`) → push.
 
 ## Seguridad
 

@@ -1,7 +1,76 @@
 # Plan de despliegue a producción
 
-**Fecha:** 8 de julio de 2026
-**Stack a desplegar:** Node.js (Express) + archivos JSON + galería en disco → necesita **disco persistente**.
+**Fecha:** 8 de julio de 2026 · **Actualizado:** 1 de septiembre de 2026 (migración en dos fases)
+**Stack a desplegar:** Node.js (Express) + archivos JSON + galería en disco → necesita **disco
+persistente** cuando haya pedidos online; hasta entonces basta un hosting estático.
+
+## Dos fases
+
+La migración desde el WordPress actual se hace en dos saltos, no en uno:
+
+| Fase                                     | Hosting                             | Pedidos online | Coste    |
+| ---------------------------------------- | ----------------------------------- | -------------- | -------- |
+| **1 — web de escaparate** (ahora)        | GitHub Pages (export estático)      | Desactivados   | 0 €      |
+| **2 — tienda online** (cuando se decida) | Railway / VPS con disco persistente | Activados      | ~5 $/mes |
+
+La fase 1 sustituye ya al WordPress con el mismo dominio y sin coste. Todo el código de pedidos
+sigue en el repo, apagado por `ORDERING_ENABLED`: pasar a fase 2 es desplegar el mismo repo en
+Railway con la variable a `true` y mover el DNS.
+
+---
+
+# Fase 1 — GitHub Pages (estático, sin backend)
+
+## Cómo funciona el export
+
+`pnpm build:static` (`scripts/build-static.mjs`) levanta el propio Express en un puerto efímero,
+congela cada GET público en `dist/api/<nombre>.json` y copia `public/` a `dist/` sin el panel ni
+la página de estado de pedido. No hay un segundo renderizador: el HTML/CSS/JS publicado es el
+mismo que sirve Node, así que las dos fases no pueden divergir.
+
+```bash
+pnpm build:static     # → dist/  (CNAME, .nojekyll, 404.html, robots, sitemap incluidos)
+```
+
+`public/js/main.js` pide `/api/menu.json` en lugar de `/api/menu` cuando detecta
+`window.VV_STATIC`, bandera que el build inyecta en `dist/index.html`.
+
+## Qué se pierde en fase 1 (y es aceptable)
+
+| Función           | Estado en estático                                                               |
+| ----------------- | -------------------------------------------------------------------------------- |
+| Panel `/admin`    | No se publica. Se usa en local (`pnpm dev`) y los cambios se suben con un commit |
+| Pedidos online    | Desactivados (`ORDERING_ENABLED=false`): sin carrito, sin checkout, sin Stripe   |
+| Reseñas de Google | Congeladas en el build (se refrescan en cada deploy) si existe el secret         |
+| Subida de fotos   | En local; las imágenes ya optimizadas viajan en el repo                          |
+
+**Editar contenido en fase 1:** `pnpm dev` → panel en local → editar → commit de `data/*.json` y
+`public/assets/` → push a `main` → GitHub Actions reconstruye y publica (~1 min).
+
+## Checklist GitHub Pages
+
+1. [ ] Repo en GitHub (puede ser privado con Pages en plan Pro; si es gratuito, público).
+2. [ ] Settings → Pages → **Source: GitHub Actions** (el workflow `.github/workflows/pages.yml`
+       ya está en el repo; se dispara en cada push a `main`).
+3. [ ] Settings → Secrets → `GOOGLE_API_KEY` (opcional: sin él las reseñas salen vacías).
+4. [ ] Settings → Pages → Custom domain: `voyvolandosantafe.com` + **Enforce HTTPS**.
+       El workflow ya escribe `dist/CNAME` en cada build (variable `SITE_DOMAIN`).
+5. [ ] DNS en el registrador — ⚠️ **antes**, backup/captura de la web WordPress actual:
+   - `A` de la raíz → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+   - `CNAME` de `www` → `<usuario>.github.io`
+6. [ ] Esperar la propagación, comprobar `https://voyvolandosantafe.com` y el redirect de `www`.
+7. [ ] Actualizar la URL en el perfil de Google Business del local.
+
+## Salto a fase 2
+
+1. [ ] Desplegar el repo en Railway siguiendo el checklist de abajo.
+2. [ ] `ORDERING_ENABLED=true` + claves de Stripe en las variables de Railway.
+3. [ ] Configurar tarifas, envío y horario en **Panel → Config. pedidos** (editables ya en fase 1).
+4. [ ] Mover el DNS de GitHub Pages a Railway (CNAME) y desactivar el workflow de Pages.
+
+---
+
+# Fase 2 — servidor con backend (Railway)
 
 ## Hosting recomendado
 

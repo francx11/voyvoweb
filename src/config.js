@@ -12,9 +12,18 @@ module.exports = {
   PORT: Number(process.env.PORT) || 3000,
   PROD: process.env.NODE_ENV === 'production',
 
+  // Feature flags. Online ordering ships OFF: the transitional site (static
+  // export on GitHub Pages) has no backend that could take an order, and the
+  // flag is the single switch that turns the whole feature on later —
+  // it overrides `enabled` in ordering.json, never the other way round.
+  FEATURES: {
+    ordering: process.env.ORDERING_ENABLED === 'true',
+  },
+
   ROOT,
   PUBLIC_DIR,
   DATA_DIR,
+  DIST_DIR: process.env.DIST_DIR || path.join(ROOT, 'dist'),
   ASSETS_DIR: path.join(PUBLIC_DIR, 'assets'),
   GALLERY_DIR: path.join(PUBLIC_DIR, 'assets', 'gallery'),
   MENU_IMG_DIR: path.join(PUBLIC_DIR, 'assets', 'menu'),
@@ -45,4 +54,15 @@ module.exports = {
 
   IMAGE_MAX_DIMENSION: 1600,
   IMAGE_WEBP_QUALITY: 80,
+
+  // Static export (scripts/build-static.mjs): custom domain written to
+  // dist/CNAME, and the files the admin-only half of the site lives in.
+  SITE_DOMAIN: process.env.SITE_DOMAIN || 'voyvolandosantafe.com',
+  STATIC_EXCLUDE: [
+    'admin.html',
+    'pedido.html',
+    'css/admin.css',
+    'js/admin.js',
+    'js/order-status.js',
+  ],
 };

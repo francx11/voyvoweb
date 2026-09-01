@@ -1,0 +1,54 @@
+# Fase 1 de la migración: la web se publica como sitio estático en GitHub
+# Pages sobre el dominio oficial, sin backend. `pnpm build:static` levanta el
+# propio Express en un puerto efímero y congela las respuestas de /api en
+# dist/, así que el contenido publicado es el de data/*.json en este commit:
+# para actualizar la carta se edita en el panel local y se hace push.
+name: Deploy static site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un despliegue a la vez; no se cancela el que ya esté publicando.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SITE_DOMAIN: voyvolandosantafe.com
+      # Las reseñas de Google se congelan en el build si el secret existe;
+      # sin él, dist/api/reviews.json queda como {configured:false}.
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:static
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

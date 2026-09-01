@@ -10,7 +10,8 @@
     "lint": "eslint src scripts tests public/js",
     "format": "prettier --write \"src/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\" \"*.json\" \"docs/**/*.md\"",
     "check": "eslint src scripts tests public/js && prettier --check \"src/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\" && node --test \"tests/**/*.test.js\"",
-    "backup": "node scripts/backup.mjs"
+    "backup": "node scripts/backup.mjs",
+    "build:static": "node scripts/build-static.mjs"
   },
   "engines": {
     "node": ">=18.17"
