@@ -306,54 +306,97 @@ img { max-width: 100%; display: block; }
 .chip:hover { color: var(--ink); border-color: var(--ink); }
 .chip[aria-pressed="true"] { background: var(--tomato-btn); border-color: var(--tomato-btn); color: var(--on-tomato); }
 
-.menu-list { list-style: none; }
-.menu-item { padding: 1.1rem 0; }
-.menu-item + .menu-item { border-top: 1px dashed var(--line); }
-.menu-line {
-  display: flex; align-items: baseline; gap: 0.6rem;
-}
-.menu-name {
-  font-family: var(--display); font-weight: 600;
-  font-size: clamp(1.15rem, 2.5vw, 1.4rem);
-}
-.menu-tag {
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--tomato);
-  white-space: nowrap;
-}
-.menu-dots {
-  flex: 1; min-width: 2rem;
-  border-bottom: 2px dotted var(--line-strong);
-  transform: translateY(-0.3em);
-}
-.menu-price {
-  font-family: var(--display); font-weight: 600;
-  font-size: 1.15rem; white-space: nowrap;
-}
 /* Multi-size price lines are long: let them wrap (nbsp inside each size keeps
-   the breaks at the "·" separators) instead of overflowing the viewport. */
-.menu-price--multi { white-space: normal; text-align: right; min-width: 0; }
-.menu-desc { color: var(--ink-soft); font-size: 0.94rem; max-width: 60ch; margin-top: 0.25rem; }
+   the breaks at the "·" separators) instead of overflowing. Used in the modal. */
+.menu-price--multi { white-space: normal; }
 .menu-alerg {
-  font-size: 0.76rem; color: var(--ink-soft);
-  margin-top: 0.4rem; letter-spacing: 0.02em;
+  font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.02em;
 }
 .menu-alerg strong { font-weight: 700; color: var(--ink); }
 .menu-empty { text-align: center; color: var(--ink-soft); padding: 2rem 0; }
 
-.menu-category { padding: 1.4rem 0 0.2rem; }
-.menu-category:first-child { padding-top: 0; }
+/* Category groups */
+.menu-cat-group + .menu-cat-group { margin-top: 2.6rem; }
 .menu-category-title {
   font-family: var(--display); font-weight: 600;
   font-size: 0.95rem; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--tomato);
+  color: var(--tomato); margin-bottom: 1.2rem;
 }
-.menu-item-actions { margin-top: 0.7rem; text-align: right; }
-.btn-add-item { min-height: 40px; padding: 0.5rem 1.2rem; font-size: 0.8rem; }
+
+/* Card grid: 3 (desktop) / 2 (tablet) / 1 (mobile) */
+.menu-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+}
+@media (max-width: 860px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .menu-grid { grid-template-columns: 1fr; } }
+
+.menu-card {
+  display: flex; flex-direction: column;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 0.7rem; overflow: hidden;
+  box-shadow: 0 1px 3px rgba(43, 38, 32, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(43, 38, 32, 0.13); }
+.menu-card-media { position: relative; aspect-ratio: 4 / 3; background: var(--paper-2); }
+.menu-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.menu-card-badge {
+  position: absolute; top: 0.7rem; left: 0.7rem;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #fff; padding: 0.3rem 0.75rem; border-radius: 30px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
+}
+.menu-card-body { padding: 1rem 1.1rem 0.4rem; flex: 1; display: flex; flex-direction: column; }
+.menu-card-name {
+  font-family: var(--display); font-weight: 600; font-size: 1.2rem;
+  line-height: 1.2; margin-bottom: 0.4rem;
+}
+.menu-card-desc {
+  color: var(--ink-soft); font-size: 0.9rem; line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.menu-card-more {
+  align-self: flex-start; margin-top: 0.55rem; padding: 0;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--body); font-weight: 700; font-size: 0.85rem;
+  color: var(--tomato); text-decoration: underline; text-underline-offset: 2px;
+}
+.menu-card-more:hover { color: var(--tomato-dark); }
+.menu-card-foot {
+  margin-top: auto; display: flex; align-items: center; justify-content: space-between;
+  gap: 0.6rem; padding: 0.7rem 1.1rem 1.1rem;
+}
+.menu-card-price { font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
+.menu-card-foot .btn-add-item { min-height: 40px; padding: 0.5rem 1.4rem; font-size: 0.85rem; }
+
+/* "Ver más" detail modal (reuses .modal skeleton) */
+.menu-detail { position: relative; }
+/* Doble clase: .modal-close se define más abajo y ganaría por orden de cascada. */
+.menu-detail .menu-detail-close {
+  position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
+  width: 2.2rem; height: 2.2rem; padding: 0; margin: 0; border-radius: 50%;
+  background: rgba(20, 16, 12, 0.5); color: #fff;
+}
+.menu-detail .menu-detail-close:hover { background: rgba(20, 16, 12, 0.72); color: #fff; }
+.menu-detail-media {
+  position: relative; aspect-ratio: 4 / 3; border-radius: 0.5rem; overflow: hidden;
+  background: var(--paper-2);
+  /* Tope de alto: en pantallas apaisadas o bajas la foto no debe empujar el
+     precio y el botón "Pedir" fuera de la vista. width:100% fija el ancho para
+     que el tope recorte solo el alto (si no, aspect-ratio encoge ambos). */
+  width: 100%; max-height: 42vh; max-height: 42dvh;
+}
+.menu-detail-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.menu-detail-desc { color: var(--ink-soft); line-height: 1.55; }
+.menu-detail-price { font-family: var(--display); font-weight: 600; font-size: 1.25rem; }
+.menu-detail-actions .btn { width: 100%; }
 
 /* Menu as PDF */
 .menu-pdf { text-align: center; padding: 1.5rem 0 0.5rem; }
 .menu-pdf p { color: var(--ink-soft); margin-bottom: 1.4rem; }
+/* "both" mode: the PDF link sits under the cards, set off by a divider */
+.menu-pdf--inline { margin-top: 2.6rem; padding-top: 2rem; border-top: 1px dashed var(--line); }
 
 /* ── Monthly special ── */
 .monthly-special-box {
@@ -540,6 +583,11 @@ body.cart-scroll-lock { overflow: hidden; }
 .modal-body {
   padding: 1.2rem clamp(0.9rem, 4vw, 1.4rem); overflow-y: auto; display: grid; gap: 1.1rem;
   overscroll-behavior: contain;
+  /* align-content:start → las filas conservan su alto de contenido y el body
+     desborda (y scrollea) en vez de aplastar el texto cuando un hijo rígido
+     (imagen con aspect-ratio) no cede. min-height:0 permite encoger como
+     flex item dentro de .modal, que tiene overflow:hidden. */
+  align-content: start; min-height: 0;
 }
 .modal-footer {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;

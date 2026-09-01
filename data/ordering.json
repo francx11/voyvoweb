@@ -4,17 +4,41 @@
     "clasica": {
       "label": "Pizzas Clásicas",
       "sizes": [
-        { "id": "peq", "label": "Pequeña 30cm", "price": 6.7 },
-        { "id": "med", "label": "Mediana 36cm", "price": 9.7 },
-        { "id": "fam", "label": "Familiar 40cm", "price": 11.7 }
+        {
+          "id": "peq",
+          "label": "Pequeña 30cm",
+          "price": 6.7
+        },
+        {
+          "id": "med",
+          "label": "Mediana 36cm",
+          "price": 9.7
+        },
+        {
+          "id": "fam",
+          "label": "Familiar 40cm",
+          "price": 11.7
+        }
       ]
     },
     "especial": {
       "label": "Pizzas Especiales",
       "sizes": [
-        { "id": "peq", "label": "Pequeña 30cm", "price": 7.7 },
-        { "id": "med", "label": "Mediana 36cm", "price": 11.2 },
-        { "id": "fam", "label": "Familiar 40cm", "price": 13.2 }
+        {
+          "id": "peq",
+          "label": "Pequeña 30cm",
+          "price": 7.7
+        },
+        {
+          "id": "med",
+          "label": "Mediana 36cm",
+          "price": 11.2
+        },
+        {
+          "id": "fam",
+          "label": "Familiar 40cm",
+          "price": 13.2
+        }
       ]
     }
   },
@@ -24,11 +48,31 @@
       "required": false,
       "maxSelect": 3,
       "options": [
-        { "id": "mitad", "label": "Mitad y mitad", "price": 1 },
-        { "id": "masa-gruesa", "label": "Masa gruesa", "price": 2 },
-        { "id": "masa-extrafina", "label": "Masa extrafina", "price": 1 },
-        { "id": "borde-cheddar", "label": "Bordes de queso cheddar", "price": 2 },
-        { "id": "borde-roquefort", "label": "Bordes de queso roquefort", "price": 2 }
+        {
+          "id": "mitad",
+          "label": "Mitad y mitad",
+          "price": 1
+        },
+        {
+          "id": "masa-gruesa",
+          "label": "Masa gruesa",
+          "price": 2
+        },
+        {
+          "id": "masa-extrafina",
+          "label": "Masa extrafina",
+          "price": 1
+        },
+        {
+          "id": "borde-cheddar",
+          "label": "Bordes de queso cheddar",
+          "price": 2
+        },
+        {
+          "id": "borde-roquefort",
+          "label": "Bordes de queso roquefort",
+          "price": 2
+        }
       ]
     },
     "salsa-alitas": {
@@ -36,9 +80,21 @@
       "required": true,
       "maxSelect": 1,
       "options": [
-        { "id": "bbq", "label": "Barbacoa", "price": 0 },
-        { "id": "picante", "label": "Picante", "price": 0 },
-        { "id": "yogur", "label": "Yogur", "price": 0 }
+        {
+          "id": "bbq",
+          "label": "Barbacoa",
+          "price": 0
+        },
+        {
+          "id": "picante",
+          "label": "Picante",
+          "price": 0
+        },
+        {
+          "id": "yogur",
+          "label": "Yogur",
+          "price": 0
+        }
       ]
     },
     "patatas-sazon": {
@@ -46,25 +102,87 @@
       "required": true,
       "maxSelect": 1,
       "options": [
-        { "id": "sal", "label": "Sal", "price": 0 },
-        { "id": "sazonador", "label": "Sazonador", "price": 0 }
+        {
+          "id": "sal",
+          "label": "Sal",
+          "price": 0
+        },
+        {
+          "id": "sazonador",
+          "label": "Sazonador",
+          "price": 0
+        }
       ]
     }
   },
   "delivery": {
     "fee": 1,
     "minimum": 10,
-    "zones": ["Santa Fe", "Jau", "Belicena", "Purchil", "Ambroz"]
+    "zones": [
+      "Santa Fe",
+      "Jau",
+      "Belicena",
+      "Purchil",
+      "Ambroz"
+    ]
   },
   "schedule": {
-    "mon": [["20:00", "24:00"]],
-    "tue": [["20:00", "24:00"]],
-    "wed": [["20:00", "24:00"]],
-    "thu": [["20:00", "24:00"]],
-    "fri": [["13:30", "15:30"], ["20:00", "24:00"]],
-    "sat": [["13:30", "15:30"], ["20:00", "24:00"]],
-    "sun": [["13:30", "15:30"], ["20:00", "24:00"]]
+    "mon": [
+      [
+        "20:00",
+        "24:00"
+      ]
+    ],
+    "tue": [
+      [
+        "20:00",
+        "24:00"
+      ]
+    ],
+    "wed": [
+      [
+        "20:00",
+        "24:00"
+      ]
+    ],
+    "thu": [
+      [
+        "20:00",
+        "24:00"
+      ]
+    ],
+    "fri": [
+      [
+        "13:30",
+        "15:30"
+      ],
+      [
+        "20:00",
+        "24:00"
+      ]
+    ],
+    "sat": [
+      [
+        "13:30",
+        "15:30"
+      ],
+      [
+        "20:00",
+        "24:00"
+      ]
+    ],
+    "sun": [
+      [
+        "13:30",
+        "15:30"
+      ],
+      [
+        "20:00",
+        "24:00"
+      ]
+    ]
   },
   "holidayDates": [],
-  "closedDates": []
+  "closedDates": [],
+  "forceOpen": true
 }

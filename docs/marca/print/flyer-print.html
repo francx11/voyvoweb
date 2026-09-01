@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Flyer promociones Voy Volando — imprenta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --navy: #0A2A6B; --red: #B00E14; --gold: #F0C24B;
+    --cream: #FAF2E2; --cream2: #F0E4CC; --ink: #16181D; --ink2: #3A4152;
+    --display: 'Alfa Slab One', Rockwell, Georgia, serif;
+    --cond: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --body: 'Barlow', 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  @page { size: 164mm 226mm; margin: 0; }
+
+  .sheet { position: relative; width: 164mm; height: 226mm; background: #fff; overflow: hidden; }
+  .crop { position: absolute; background: #000; }
+  .crop.h { width: 5mm; height: 0.25pt; }
+  .crop.v { width: 0.25pt; height: 5mm; }
+
+  /* arte = corte 148x210 + 3 mm de sangre por lado */
+  .bleed {
+    position: absolute; top: 5mm; left: 5mm;
+    width: 154mm; height: 216mm;
+    background: var(--cream); color: var(--ink);
+    font-family: var(--body);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .rule { height: 5mm; background: repeating-linear-gradient(45deg,
+    var(--red) 0 4mm, var(--cream) 4mm 8mm, var(--navy) 8mm 12mm, var(--cream) 12mm 16mm); }
+  .pad { padding-left: 11mm; padding-right: 11mm; }
+  .eyebrow { font-family: var(--cond); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="crop h" style="top:8mm; left:0"></div><div class="crop v" style="left:8mm; top:0"></div>
+  <div class="crop h" style="top:8mm; right:0"></div><div class="crop v" style="right:8mm; top:0"></div>
+  <div class="crop h" style="bottom:8mm; left:0"></div><div class="crop v" style="left:8mm; bottom:0"></div>
+  <div class="crop h" style="bottom:8mm; right:0"></div><div class="crop v" style="right:8mm; bottom:0"></div>
+
+  <div class="bleed">
+    <div class="rule"></div>
+
+    <div class="pad" style="padding-top: 7mm; display: flex; align-items: center; gap: 5mm;">
+      <img src="../logo-voyvolando.png" alt="Voy Volando" style="width: 26mm; height: 26mm; display: block;">
+      <div style="display: flex; flex-direction: column; gap: 0.5mm;">
+        <div style="font-family: var(--display); font-size: 21pt; line-height: 1.05; color: var(--navy);">Voy Volando</div>
+        <div class="eyebrow" style="font-size: 10pt; color: var(--red);">Santa Fe · Granada</div>
+      </div>
+    </div>
+
+    <div class="pad" style="padding-top: 8mm;">
+      <div style="font-family: var(--display); font-size: 86pt; line-height: 0.82; color: var(--red);">3×2</div>
+      <div style="font-family: var(--display); font-size: 31pt; line-height: 1.0; color: var(--navy); margin-top: 2mm;">en pizzas medianas</div>
+      <div class="eyebrow" style="font-size: 17pt; letter-spacing: 0.14em; color: var(--ink); margin-top: 3mm;">De lunes a jueves</div>
+    </div>
+
+    <div class="pad" style="padding-top: 7mm;">
+      <div style="background: var(--navy); color: var(--cream); padding: 5mm 6mm; box-shadow: 1.8mm 1.8mm 0 var(--gold);">
+        <div class="eyebrow" style="font-size: 9.5pt; color: var(--gold);">Y toda la semana</div>
+        <div style="display: flex; align-items: baseline; gap: 3mm; border-bottom: 0.2mm solid rgba(250,242,226,0.3); padding: 2.6mm 0;">
+          <span style="font-size: 11.5pt;">Familiar clásica, solo recoger</span>
+          <span style="flex-grow: 1;"></span>
+          <span style="font-family: var(--display); font-size: 15pt; color: var(--gold);">10 €</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 3mm; border-bottom: 0.2mm solid rgba(250,242,226,0.3); padding: 2.6mm 0;">
+          <span style="font-size: 11.5pt;">3 pizzas pequeñas, solo recoger</span>
+          <span style="flex-grow: 1;"></span>
+          <span style="font-family: var(--display); font-size: 15pt; color: var(--gold);">18 €</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 3mm; padding: 2.6mm 0 0;">
+          <span style="font-size: 11.5pt;">Pequeña + refresco + patatas</span>
+          <span style="flex-grow: 1;"></span>
+          <span style="font-family: var(--display); font-size: 15pt; color: var(--gold);">8 €</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pad" style="padding-top: 5mm; display: flex; gap: 4mm; align-items: center;">
+      <div style="width: 19mm; height: 19mm; border-radius: 50%; background: var(--red); color: var(--cream); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-family: var(--cond); font-weight: 700; font-size: 9.5pt; line-height: 1.0; flex-shrink: 0;">MAR<br>MIÉ</div>
+      <div style="font-size: 11pt; line-height: 1.35; color: var(--ink2);">
+        <strong style="color: var(--navy);">Martes de papas</strong> — gratinado pequeño gratis a domicilio.<br>
+        <strong style="color: var(--navy);">Miércoles de pizza</strong> — 1 litro de refresco gratis a domicilio.<br>
+        <span style="font-size: 9.5pt; color: #6B7183;">En pedidos desde 13 €. Promociones no acumulables.</span>
+      </div>
+    </div>
+
+    <div style="margin-top: auto; background: var(--navy); color: var(--cream); padding: 6mm 11mm; display: flex; align-items: flex-end; justify-content: space-between; gap: 5mm;">
+      <div style="display: flex; flex-direction: column; gap: 0.6mm;">
+        <div class="eyebrow" style="font-size: 9pt; color: var(--gold);">Pide ya</div>
+        <div style="font-family: var(--display); font-size: 25pt; line-height: 1.1;">958 44 28 47</div>
+        <div style="font-size: 10.5pt; color: #C9D4EE;">C. Cristóbal Colón, 7 · Santa Fe</div>
+      </div>
+      <div style="text-align: right; display: flex; flex-direction: column; gap: 0.6mm;">
+        <div style="font-family: var(--cond); font-weight: 700; font-size: 13pt; letter-spacing: 0.05em;">voyvolandosantafe.com</div>
+        <div style="font-size: 10pt; color: #C9D4EE;">Recogida y domicilio</div>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+  </div>
+</div>
+
+</body>
+</html>

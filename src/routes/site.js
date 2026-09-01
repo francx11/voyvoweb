@@ -4,6 +4,7 @@ const { readJSON, writeJSON } = require('../lib/json-store');
 const requireAuth = require('../middleware/require-auth');
 
 const CONFIG_FILE = 'config.json';
+const MENU_MODES = ['products', 'pdf', 'both'];
 
 const router = Router();
 
@@ -19,6 +20,9 @@ router.put('/', requireAuth, (req, res) => {
   if (req.body.menu) {
     // deep merge: switching mode must not clobber an already-uploaded PDF path
     cfg.site.menu = { ...(previous.menu || {}), ...req.body.menu };
+    if (req.body.menu.mode !== undefined && !MENU_MODES.includes(cfg.site.menu.mode)) {
+      cfg.site.menu.mode = 'products';
+    }
   }
   writeJSON(CONFIG_FILE, cfg);
   res.json({ ok: true });

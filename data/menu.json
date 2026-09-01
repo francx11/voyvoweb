@@ -1,19 +1,5 @@
 [
   {
-    "id": "pz-margarita",
-    "emoji": "🍕",
-    "name": "Margarita",
-    "description": "Tomate, mozzarella y orégano.",
-    "tag": "Clásica",
-    "tagColor": "#C41E3A",
-    "category": "Pizzas Clásicas",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
-  },
-  {
     "id": "pz-prosciutto",
     "emoji": "🍕",
     "name": "Prosciutto",
@@ -24,8 +10,32 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-margarita",
+    "emoji": "🍕",
+    "name": "Margarita",
+    "description": "Tomate, mozzarella y orégano.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-romana",
@@ -38,8 +48,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-bolonesa",
@@ -52,8 +67,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-cuatro-quesos",
@@ -66,8 +86,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-caprichosa",
@@ -80,8 +105,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-hawaiana",
@@ -94,8 +124,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-cuatro-estaciones",
@@ -108,8 +143,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-barbacoa",
@@ -122,8 +162,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-campesina",
@@ -136,8 +181,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-carbonara",
@@ -150,8 +200,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-monstruo",
@@ -164,8 +219,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-kebab",
@@ -178,8 +238,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-italiana",
@@ -192,8 +257,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "clasica" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-marinera",
@@ -206,8 +276,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-especial",
@@ -220,8 +295,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-suprema",
@@ -234,8 +314,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-alpujarrena",
@@ -248,8 +333,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-capitulaciones",
@@ -262,8 +352,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-santa-fe",
@@ -276,8 +371,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-voy-volando",
@@ -290,8 +390,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-diablo",
@@ -304,8 +409,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-francis",
@@ -318,8 +428,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-burger",
@@ -332,8 +447,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-cabra",
@@ -346,8 +466,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-mediterranea",
@@ -360,8 +485,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "pz-gonza",
@@ -374,8 +504,13 @@
     "price": null,
     "allergens": [],
     "active": true,
-    "pricing": { "mode": "tier", "tierId": "especial" },
-    "modifierGroupIds": ["pizza-mods"]
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
   },
   {
     "id": "papas-cheddar",
@@ -391,8 +526,16 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "med", "label": "Medianas", "price": 3.4 },
-        { "id": "gra", "label": "Grandes", "price": 4.9 }
+        {
+          "id": "med",
+          "label": "Medianas",
+          "price": 3.4
+        },
+        {
+          "id": "gra",
+          "label": "Grandes",
+          "price": 4.9
+        }
       ]
     }
   },
@@ -410,8 +553,16 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "med", "label": "Medianas", "price": 3.4 },
-        { "id": "gra", "label": "Grandes", "price": 4.9 }
+        {
+          "id": "med",
+          "label": "Medianas",
+          "price": 3.4
+        },
+        {
+          "id": "gra",
+          "label": "Grandes",
+          "price": 4.9
+        }
       ]
     }
   },
@@ -429,8 +580,16 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "med", "label": "Medianas", "price": 3.4 },
-        { "id": "gra", "label": "Grandes", "price": 4.9 }
+        {
+          "id": "med",
+          "label": "Medianas",
+          "price": 3.4
+        },
+        {
+          "id": "gra",
+          "label": "Grandes",
+          "price": 4.9
+        }
       ]
     }
   },
@@ -448,8 +607,16 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "med", "label": "Medianas", "price": 3.4 },
-        { "id": "gra", "label": "Grandes", "price": 4.9 }
+        {
+          "id": "med",
+          "label": "Medianas",
+          "price": 3.4
+        },
+        {
+          "id": "gra",
+          "label": "Grandes",
+          "price": 4.9
+        }
       ]
     }
   },
@@ -467,8 +634,16 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "med", "label": "Medianas", "price": 3.4 },
-        { "id": "gra", "label": "Grandes", "price": 4.9 }
+        {
+          "id": "med",
+          "label": "Medianas",
+          "price": 3.4
+        },
+        {
+          "id": "gra",
+          "label": "Grandes",
+          "price": 4.9
+        }
       ]
     }
   },
@@ -486,8 +661,16 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "med", "label": "Medianas", "price": 3.4 },
-        { "id": "gra", "label": "Grandes", "price": 4.9 }
+        {
+          "id": "med",
+          "label": "Medianas",
+          "price": 3.4
+        },
+        {
+          "id": "gra",
+          "label": "Grandes",
+          "price": 4.9
+        }
       ]
     }
   },
@@ -502,7 +685,9 @@
     "price": 4.5,
     "allergens": [],
     "active": true,
-    "modifierGroupIds": ["salsa-alitas"]
+    "modifierGroupIds": [
+      "salsa-alitas"
+    ]
   },
   {
     "id": "pan-ajo",
@@ -512,7 +697,7 @@
     "tag": "",
     "tagColor": "#e67e22",
     "category": "Para Picotear",
-    "price": 4.0,
+    "price": 4,
     "allergens": [],
     "active": true
   },
@@ -536,10 +721,12 @@
     "tag": "",
     "tagColor": "#e67e22",
     "category": "Para Picotear",
-    "price": 3.0,
+    "price": 3,
     "allergens": [],
     "active": true,
-    "modifierGroupIds": ["patatas-sazon"]
+    "modifierGroupIds": [
+      "patatas-sazon"
+    ]
   },
   {
     "id": "ensalada-huerta",
@@ -549,7 +736,7 @@
     "tag": "",
     "tagColor": "#27ae60",
     "category": "Ensaladas",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -561,7 +748,7 @@
     "tag": "",
     "tagColor": "#27ae60",
     "category": "Ensaladas",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -573,7 +760,7 @@
     "tag": "",
     "tagColor": "#27ae60",
     "category": "Ensaladas",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -585,7 +772,7 @@
     "tag": "",
     "tagColor": "#27ae60",
     "category": "Ensaladas",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -597,7 +784,7 @@
     "tag": "",
     "tagColor": "#27ae60",
     "category": "Ensaladas",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -609,7 +796,7 @@
     "tag": "",
     "tagColor": "#27ae60",
     "category": "Ensaladas",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -675,8 +862,18 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "rec", "label": "Para recoger", "price": 7, "fulfillment": "pickup" },
-        { "id": "dom", "label": "A domicilio", "price": 9, "fulfillment": "delivery" }
+        {
+          "id": "rec",
+          "label": "Para recoger",
+          "price": 7,
+          "fulfillment": "pickup"
+        },
+        {
+          "id": "dom",
+          "label": "A domicilio",
+          "price": 9,
+          "fulfillment": "delivery"
+        }
       ]
     }
   },
@@ -694,8 +891,18 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "rec", "label": "Para recoger", "price": 5, "fulfillment": "pickup" },
-        { "id": "dom", "label": "A domicilio", "price": 7, "fulfillment": "delivery" }
+        {
+          "id": "rec",
+          "label": "Para recoger",
+          "price": 5,
+          "fulfillment": "pickup"
+        },
+        {
+          "id": "dom",
+          "label": "A domicilio",
+          "price": 7,
+          "fulfillment": "delivery"
+        }
       ]
     }
   },
@@ -713,8 +920,18 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "rec", "label": "Para recoger", "price": 7, "fulfillment": "pickup" },
-        { "id": "dom", "label": "A domicilio", "price": 9, "fulfillment": "delivery" }
+        {
+          "id": "rec",
+          "label": "Para recoger",
+          "price": 7,
+          "fulfillment": "pickup"
+        },
+        {
+          "id": "dom",
+          "label": "A domicilio",
+          "price": 9,
+          "fulfillment": "delivery"
+        }
       ]
     }
   },
@@ -732,9 +949,21 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "33cl", "label": "33cl", "price": 1.5 },
-        { "id": "1l", "label": "1L", "price": 2 },
-        { "id": "2l", "label": "2L", "price": 2.5 }
+        {
+          "id": "33cl",
+          "label": "33cl",
+          "price": 1.5
+        },
+        {
+          "id": "1l",
+          "label": "1L",
+          "price": 2
+        },
+        {
+          "id": "2l",
+          "label": "2L",
+          "price": 2.5
+        }
       ]
     }
   },
@@ -752,8 +981,16 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "33cl", "label": "33cl", "price": 1.5 },
-        { "id": "1l", "label": "1L", "price": 2.3 }
+        {
+          "id": "33cl",
+          "label": "33cl",
+          "price": 1.5
+        },
+        {
+          "id": "1l",
+          "label": "1L",
+          "price": 2.3
+        }
       ]
     }
   },
@@ -771,8 +1008,16 @@
     "pricing": {
       "mode": "sizes",
       "sizes": [
-        { "id": "33cl", "label": "33cl (botella pequeña)", "price": 1.0 },
-        { "id": "1.5l", "label": "1.5L", "price": 1.6 }
+        {
+          "id": "33cl",
+          "label": "33cl (botella pequeña)",
+          "price": 1
+        },
+        {
+          "id": "1.5l",
+          "label": "1.5L",
+          "price": 1.6
+        }
       ]
     }
   },
@@ -784,7 +1029,7 @@
     "tag": "",
     "tagColor": "#8e44ad",
     "category": "Postres",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -796,7 +1041,7 @@
     "tag": "",
     "tagColor": "#8e44ad",
     "category": "Postres",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -808,7 +1053,7 @@
     "tag": "",
     "tagColor": "#8e44ad",
     "category": "Postres",
-    "price": 5.0,
+    "price": 5,
     "allergens": [],
     "active": true
   },
@@ -820,7 +1065,7 @@
     "tag": "",
     "tagColor": "#8e44ad",
     "category": "Postres",
-    "price": 4.0,
+    "price": 4,
     "allergens": [],
     "active": true
   },
