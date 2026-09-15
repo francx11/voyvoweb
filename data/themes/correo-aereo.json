@@ -1,0 +1,35 @@
+{
+  "id": "correo-aereo",
+  "name": "Correo Aéreo",
+  "notes": "Dirección A del sistema de marca (docs/marca/). Sale del logo de la mascota piloto: azul piloto, rojo volando y oro de las gafas sobre crema de masa. Regla dura: el oro nunca como color de texto sobre crema (1,5:1).",
+  "fonts": {
+    "display": "'Alfa Slab One', Rockwell, Georgia, serif",
+    "heading": "'Barlow Condensed', 'Arial Narrow', sans-serif",
+    "body": "'Barlow', 'Segoe UI', sans-serif",
+    "href": "https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap"
+  },
+  "light": {
+    "paper": "#faf2e2",
+    "ink": "#16181d",
+    "tomato": "#b00e14",
+    "tomatoBtn": "#b00e14",
+    "navy": "#0a2a6b",
+    "gold": "#f0c24b",
+    "paper2": "#f0e4cc",
+    "inkSoft": "#3a4152",
+    "tomatoDark": "#8c0a10",
+    "tomatoBtnHover": "#8c0a10"
+  },
+  "dark": {
+    "paper": "#0c1730",
+    "ink": "#f3ece0",
+    "tomato": "#e8564c",
+    "tomatoBtn": "#b00e14",
+    "navy": "#0a2a6b",
+    "gold": "#f0c24b",
+    "paper2": "#12203f",
+    "inkSoft": "#b7c2da",
+    "tomatoDark": "#ff7a6e",
+    "tomatoBtnHover": "#c81620"
+  }
+}

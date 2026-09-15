@@ -1,5 +1,5 @@
 {
-  "preset": "actual",
+  "preset": "correo-aereo",
   "overrides": {
     "light": {},
     "dark": {}

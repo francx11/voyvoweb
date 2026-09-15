@@ -18,16 +18,40 @@
 [hidden] { display: none !important; }
 
 :root {
-  --display: 'Fraunces', Georgia, serif;
-  --body: 'Karla', 'Segoe UI', sans-serif;
-  /* Radios: una sola escala para toda la web. Nada de cajas ni botones
-     cuadrados — si algo tiene borde o fondo propio, lleva uno de estos.
-     Geometría, no color: no cambia al cambiar de tema. */
-  --radius-sm: 0.5rem;     /* inputs, superficies pequeñas */
-  --radius: 0.75rem;       /* por defecto: tarjetas y cajas */
-  --radius-lg: 1.25rem;    /* marcos grandes y modales */
-  --radius-pill: 999px;    /* botones, chips, badges */
-  --radius-round: 50%;     /* botones-icono circulares */
+  /* Dirección "Correo Aéreo" (docs/marca/): americana vintage de aviación y
+     correo postal. Alfa Slab One para titulares y precios, Barlow Condensed
+     en mayúsculas para rótulos y botones, Barlow para el texto corrido. Es la
+     misma tipografía que la carta impresa. */
+  --display: 'Alfa Slab One', Rockwell, Georgia, serif;
+  --heading: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --body: 'Barlow', 'Segoe UI', sans-serif;
+
+  /* Radios: el sistema es plano y recto. El único redondeo que sobrevive es
+     el de los sellos circulares, que son un recurso de marca. Las variables
+     se conservan aunque valgan 0 para no tocar las ~40 reglas que las usan;
+     cambiar de dirección gráfica vuelve a ser cambiar estas cinco líneas. */
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-lg: 0;
+  --radius-pill: 0;
+  --radius-round: 50%;     /* sellos y botones-icono circulares */
+
+  /* Sombra dura de la marca: sin blur, desplazada, en oro. Es el gesto de
+     serigrafía de la carta impresa, no una sombra de profundidad. */
+  --shadow-hard: 4px 4px 0 var(--gold);
+}
+
+/* Banda "par avion": el separador del sistema, el mismo que en carta y flyer.
+   Sustituye al ornamento decorativo y a los filetes de 1px entre secciones. */
+.airmail-rule {
+  height: 6px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--tomato) 0 10px,
+    var(--paper) 10px 20px,
+    var(--navy) 20px 30px,
+    var(--paper) 30px 40px
+  );
 }
 
 body { transition: background 0.25s ease, color 0.25s ease; }
@@ -70,31 +94,24 @@ img { max-width: 100%; display: block; }
 /* ── Utility typography ── */
 .eyebrow {
   display: block;
-  font-size: 0.72rem; font-weight: 700;
-  letter-spacing: 0.28em; text-transform: uppercase;
+  font-family: var(--heading);
+  font-size: 0.95rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--tomato);
   margin-bottom: 1rem;
 }
 .section-title {
   font-family: var(--display);
-  font-weight: 600;
-  font-size: clamp(1.9rem, 4.5vw, 3rem);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  font-size: clamp(1.8rem, 4.2vw, 2.8rem);
+  line-height: 1.15;
+  letter-spacing: 0;
   margin-bottom: 1.2rem;
 }
 .section-intro { color: var(--ink-soft); max-width: 56ch; }
 
-/* Printed-menu-style divider ornament */
-.ornament {
-  display: flex; align-items: center; gap: 0.9rem;
-  color: var(--tomato);
-  margin: 1.4rem 0;
-}
-.ornament::before, .ornament::after {
-  content: ''; height: 1px; flex: 1; background: var(--line);
-}
-.ornament span { font-size: 0.8rem; line-height: 1; }
+/* .ornament (un ◆ entre dos filetes) se retiró con la dirección "Correo
+   Aéreo": era decoración sin significado. Su papel lo hace .airmail-rule. */
 
 /* ── Header / nav ── */
 .site-header {
@@ -110,12 +127,18 @@ img { max-width: 100%; display: block; }
   position: relative;
 }
 .header-right { display: flex; align-items: center; gap: 0.7rem; }
+/* El logo es la mascota piloto del original. Margen libre alrededor igual a
+   la altura del casco, y nunca sobre rojo (docs/marca/prompt-canva-carta.md). */
 .brand {
-  font-family: var(--display); font-weight: 600;
-  font-size: 1.25rem; color: var(--ink);
-  text-decoration: none; letter-spacing: 0.01em;
+  display: flex; align-items: center; gap: 0.6rem;
+  color: var(--ink); text-decoration: none;
 }
-.brand em { font-style: italic; color: var(--tomato); }
+.brand-logo { width: 52px; height: 52px; object-fit: contain; flex: none; }
+.brand-name {
+  font-family: var(--heading); font-weight: 700;
+  font-size: 1.35rem; letter-spacing: 0.14em; text-transform: uppercase;
+  line-height: 1;
+}
 
 .nav-toggle {
   display: none;
@@ -152,8 +175,8 @@ img { max-width: 100%; display: block; }
 }
 .site-nav a {
   color: var(--ink-soft); text-decoration: none;
-  font-size: 0.85rem; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
+  font-family: var(--heading); font-size: 1rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
   padding: 0.6rem 0;
 }
 .site-nav a:hover { color: var(--tomato); }
@@ -169,18 +192,24 @@ img { max-width: 100%; display: block; }
   min-height: 48px;
   padding: 0.8rem 1.8rem;
   border-radius: var(--radius-pill);
-  font-family: var(--body); font-size: 0.9rem; font-weight: 700;
-  letter-spacing: 0.04em;
+  font-family: var(--heading); font-size: 1.05rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
   text-decoration: none; cursor: pointer; border: none;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
-.btn-primary { background: var(--tomato-btn); color: var(--on-tomato); }
+.btn-primary {
+  background: var(--tomato-btn); color: var(--on-tomato);
+  box-shadow: var(--shadow-hard);
+}
 .btn-primary:hover { background: var(--tomato-btn-hover); }
+/* La sombra dura no se difumina al pasar el ratón: el botón se desplaza hacia
+   ella, como un sello que se presiona. */
+.btn-primary:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--gold); }
 .btn-outline {
   background: transparent; color: var(--ink);
-  border: 1px solid var(--line-strong);
+  border: 2px solid var(--ink);
 }
-.btn-outline:hover { border-color: var(--ink); }
+.btn-outline:hover { background: var(--ink); color: var(--paper); }
 
 /* ── Hero ── */
 .hero {
@@ -191,13 +220,17 @@ img { max-width: 100%; display: block; }
 .hero-inner { max-width: 820px; margin: 0 auto; }
 .hero h1 {
   font-family: var(--display);
-  font-weight: 600;
-  font-size: clamp(2.6rem, 8vw, 5.2rem);
-  line-height: 1.03;
-  letter-spacing: -0.015em;
+  font-weight: 400;
+  /* Alfa Slab One pesa mucho más que la serif anterior: al tamaño de antes el
+     titular ocupaba tres líneas y se comía el hero entero. */
+  font-size: clamp(2.1rem, 5vw, 3.6rem);
+  line-height: 1.12;
+  letter-spacing: 0;
   margin-bottom: 1.4rem;
 }
-.hero h1 em { font-style: italic; color: var(--tomato); }
+/* Sin italic: Alfa Slab One no tiene cursiva, así que el navegador sintetizaba
+   una oblicua deformada. El énfasis lo lleva el color. */
+.hero h1 em { font-style: normal; color: var(--tomato); }
 .hero-sub {
   font-size: clamp(1rem, 2vw, 1.15rem);
   color: var(--ink-soft);
@@ -229,17 +262,16 @@ img { max-width: 100%; display: block; }
   color: var(--tomato);
 }
 .story-card {
-  border: 1px solid var(--line-strong);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-lg);
-  outline: 1px solid var(--line);
-  outline-offset: 5px;
+  box-shadow: var(--shadow-hard);
   padding: clamp(1.8rem, 4vw, 3rem);
   text-align: center;
   background: var(--paper);
 }
 .story-card .big {
-  font-family: var(--display); font-weight: 600;
-  font-size: clamp(3.4rem, 7vw, 5rem); line-height: 1;
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(3rem, 6vw, 4.2rem); line-height: 1;
   color: var(--tomato);
 }
 .story-card .big-label {
@@ -252,14 +284,14 @@ img { max-width: 100%; display: block; }
 
 /* ── Menu (printed-menu style) ── */
 .menu-frame {
-  border: 1px solid var(--line-strong);
+  border: 2px solid var(--ink);
   border-radius: var(--radius-lg);
-  outline: 1px solid var(--line);
-  outline-offset: 5px;
+  box-shadow: var(--shadow-hard);
   background: var(--paper);
   padding: clamp(1.6rem, 5vw, 3.5rem);
 }
 .menu-header { text-align: center; margin-bottom: 2.2rem; }
+.menu-frame .airmail-rule { margin: 1.4rem 0; }
 
 .allergen-filters {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;
@@ -271,7 +303,8 @@ img { max-width: 100%; display: block; }
   color: var(--ink-soft); margin-bottom: 0.4rem;
 }
 .chip {
-  font-family: var(--body); font-size: 0.82rem; font-weight: 700;
+  font-family: var(--heading); font-size: 0.95rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
   min-height: 40px; padding: 0.45rem 1.1rem;
   background: transparent; color: var(--ink-soft);
   border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
@@ -292,8 +325,8 @@ img { max-width: 100%; display: block; }
 /* Category groups */
 .menu-cat-group + .menu-cat-group { margin-top: 2.6rem; }
 .menu-category-title {
-  font-family: var(--display); font-weight: 600;
-  font-size: 0.95rem; letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: var(--heading); font-weight: 700;
+  font-size: 1.15rem; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--tomato); margin-bottom: 1.2rem;
 }
 
@@ -307,12 +340,11 @@ img { max-width: 100%; display: block; }
 .menu-card {
   display: flex; flex-direction: column;
   background: var(--paper);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius); overflow: hidden;
-  box-shadow: 0 1px 3px rgb(var(--shadow-rgb) / 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgb(var(--shadow-rgb) / 0.13); }
+.menu-card:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-hard); }
 .menu-card-media { position: relative; aspect-ratio: 4 / 3; background: var(--paper-2); }
 .menu-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .menu-card-badge {
@@ -327,7 +359,7 @@ img { max-width: 100%; display: block; }
 }
 .menu-card-body { padding: 1rem 1.1rem 0.4rem; flex: 1; display: flex; flex-direction: column; }
 .menu-card-name {
-  font-family: var(--display); font-weight: 600; font-size: 1.2rem;
+  font-family: var(--display); font-weight: 400; font-size: 1.2rem;
   line-height: 1.2; margin-bottom: 0.4rem;
 }
 .menu-card-desc {
@@ -345,7 +377,7 @@ img { max-width: 100%; display: block; }
   margin-top: auto; display: flex; align-items: center; justify-content: space-between;
   gap: 0.6rem; padding: 0.7rem 1.1rem 1.1rem;
 }
-.menu-card-price { font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
+.menu-card-price { font-family: var(--display); font-weight: 400; font-size: 1.05rem; }
 .menu-card-foot .btn-add-item { min-height: 40px; padding: 0.5rem 1.4rem; font-size: 0.85rem; }
 
 /* "Ver más" detail modal (reuses .modal skeleton) */
@@ -369,7 +401,7 @@ img { max-width: 100%; display: block; }
 }
 .menu-detail-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .menu-detail-desc { color: var(--ink-soft); line-height: 1.55; }
-.menu-detail-price { font-family: var(--display); font-weight: 600; font-size: 1.25rem; }
+.menu-detail-price { font-family: var(--display); font-weight: 400; font-size: 1.25rem; }
 .menu-detail-actions .btn { width: 100%; }
 
 /* Menu as PDF */
@@ -397,8 +429,8 @@ img { max-width: 100%; display: block; }
   font-family: var(--display);
 }
 .monthly-special-stamp .st-top { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; font-family: var(--body); font-weight: 700; }
-.monthly-special-stamp .st-mid { font-size: 1.6rem; font-weight: 600; font-style: italic; line-height: 1.1; }
-.monthly-special-text h3 { font-family: var(--display); font-weight: 600; font-size: clamp(1.4rem, 3vw, 2rem); margin-bottom: 0.6rem; }
+.monthly-special-stamp .st-mid { font-size: 1.7rem; font-weight: 400; line-height: 1.1; }
+.monthly-special-text h3 { font-family: var(--display); font-weight: 400; font-size: clamp(1.4rem, 3vw, 2rem); margin-bottom: 0.6rem; }
 .monthly-special-text .ms-badge {
   display: inline-block; font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.16em; text-transform: uppercase;
@@ -435,7 +467,7 @@ img { max-width: 100%; display: block; }
 .legal-back:hover { color: var(--tomato); }
 .legal-prose h1 { margin-bottom: 2rem; }
 .legal-prose h2 {
-  font-family: var(--display); font-weight: 600;
+  font-family: var(--display); font-weight: 400;
   font-size: 1.25rem; margin: 2.2rem 0 0.7rem;
 }
 .legal-prose p, .legal-prose li { color: var(--ink-soft); margin-bottom: 0.9rem; }
@@ -480,7 +512,7 @@ img { max-width: 100%; display: block; }
 .offer:hover .offer-media img { transform: scale(1.04); }
 .offer-body { padding: 1.2rem 1.3rem 1.4rem; }
 .offer-body h3 {
-  font-family: var(--display); font-weight: 600;
+  font-family: var(--display); font-weight: 400;
   font-size: 1.25rem; margin-bottom: 0.4rem;
 }
 .offer-body p { color: var(--ink-soft); font-size: 0.92rem; margin: 0; }
@@ -492,10 +524,10 @@ img { max-width: 100%; display: block; }
 }
 .service { border-top: 2px solid var(--ink); padding-top: 1.2rem; }
 .service .num {
-  font-family: var(--display); font-style: italic;
+  font-family: var(--display);
   color: var(--tomato); font-size: 1rem;
 }
-.service h3 { font-family: var(--display); font-weight: 600; font-size: 1.3rem; margin: 0.3rem 0 0.5rem; }
+.service h3 { font-family: var(--display); font-weight: 400; font-size: 1.3rem; margin: 0.3rem 0 0.5rem; }
 .service p { color: var(--ink-soft); font-size: 0.95rem; }
 .service a { color: var(--tomato); font-weight: 700; }
 
@@ -516,7 +548,7 @@ img { max-width: 100%; display: block; }
 
 /* ── Reviews ── */
 .reviews-head { display: flex; align-items: baseline; gap: 1.2rem; flex-wrap: wrap; margin: 2rem 0; }
-.reviews-head .score { font-family: var(--display); font-weight: 600; font-size: 3rem; line-height: 1; }
+.reviews-head .score { font-family: var(--display); font-weight: 400; font-size: 3rem; line-height: 1; }
 .reviews-head .stars { color: var(--tomato); font-size: 1.1rem; letter-spacing: 0.1em; }
 .reviews-head .total { color: var(--ink-soft); font-size: 0.88rem; }
 .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
@@ -539,7 +571,7 @@ img { max-width: 100%; display: block; }
 }
 .faq-list details:last-child { border-bottom: 1px solid var(--line); }
 .faq-list summary {
-  font-family: var(--display); font-weight: 600; font-size: 1.1rem;
+  font-family: var(--display); font-weight: 400; font-size: 1.1rem;
   cursor: pointer; list-style: none;
   display: flex; justify-content: space-between; align-items: center; gap: 1rem;
   min-height: 44px;
@@ -636,7 +668,7 @@ body.cart-scroll-lock { overflow: hidden; }
   display: flex; align-items: center; justify-content: space-between;
   padding: 1.2rem clamp(0.9rem, 4vw, 1.4rem); border-bottom: 1px solid var(--line);
 }
-.modal-title { font-family: var(--display); font-weight: 600; font-size: 1.2rem; }
+.modal-title { font-family: var(--display); font-weight: 400; font-size: 1.2rem; }
 .modal-close {
   background: none; border: none; color: var(--ink-soft); cursor: pointer;
   font-size: 1.6rem; line-height: 1; padding: 0.6rem;
@@ -657,7 +689,7 @@ body.cart-scroll-lock { overflow: hidden; }
   padding: 1.1rem clamp(0.9rem, 4vw, 1.4rem); border-top: 1px solid var(--line);
 }
 .modal-footer .btn { flex: 1 1 auto; }
-.cart-modal-price { font-family: var(--display); font-weight: 600; font-size: 1.2rem; }
+.cart-modal-price { font-family: var(--display); font-weight: 400; font-size: 1.2rem; }
 .cart-modal-desc { color: var(--ink-soft); font-size: 0.92rem; }
 
 .cart-modal-sizes, .cart-modal-mods { border: none; display: grid; gap: 0.5rem; }
@@ -678,7 +710,7 @@ body.cart-scroll-lock { overflow: hidden; }
 .cart-modal-qty-row, .cart-total-row, .cart-subtotal-row {
   display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
 }
-.cart-total-row { font-family: var(--display); font-weight: 600; font-size: 1.15rem; padding-top: 0.4rem; }
+.cart-total-row { font-family: var(--display); font-weight: 400; font-size: 1.15rem; padding-top: 0.4rem; }
 .cart-qty { display: flex; align-items: center; gap: 0.7rem; }
 .cart-qty-btn {
   width: 44px; height: 44px; border-radius: var(--radius-round);
@@ -699,7 +731,7 @@ body.cart-scroll-lock { overflow: hidden; }
   display: flex; align-items: center; justify-content: space-between;
   padding: 1.2rem clamp(0.9rem, 4vw, 1.4rem); border-bottom: 1px solid var(--line);
 }
-.cart-drawer-header h2 { font-family: var(--display); font-weight: 600; font-size: 1.3rem; }
+.cart-drawer-header h2 { font-family: var(--display); font-weight: 400; font-size: 1.3rem; }
 .cart-drawer-body {
   padding: 1.2rem clamp(0.9rem, 4vw, 1.4rem); overflow-y: auto; flex: 1;
   overscroll-behavior: contain;
@@ -774,7 +806,7 @@ body.cart-scroll-lock { overflow: hidden; }
 
 /* ── Order confirmation page (pedido.html) ── */
 .order-code {
-  font-family: var(--display); font-weight: 600; text-align: center;
+  font-family: var(--display); font-weight: 400; text-align: center;
   font-size: clamp(2.2rem, 6vw, 3.2rem); letter-spacing: 0.02em;
 }
 .order-status-line { text-align: center; font-weight: 700; font-size: 1.15rem; margin: 0.6rem 0 1.2rem; }
@@ -843,8 +875,13 @@ body.cart-scroll-lock { overflow: hidden; }
   display: flex; justify-content: space-between; align-items: center;
   gap: 1.5rem; flex-wrap: wrap;
 }
-.footer-brand { font-family: var(--display); font-weight: 600; font-size: 1.2rem; }
-.footer-brand em { font-style: italic; color: var(--tomato); }
+.footer-brand {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: var(--heading); font-weight: 700;
+  font-size: 1.2rem; letter-spacing: 0.14em; text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.footer-brand img { width: 44px; height: 44px; object-fit: contain; flex: none; }
 .footer-inner p, .footer-inner a { font-size: 0.86rem; color: var(--ink-soft); }
 .footer-inner a { text-decoration-color: var(--tomato); }
 .footer-inner a:hover { color: var(--tomato); }

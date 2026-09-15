@@ -2,6 +2,12 @@
   "id": "actual",
   "name": "Trattoria (paleta original)",
   "notes": "Reproduce byte a byte la paleta que el sitio tenía antes del motor de temas. Existe para que introducir el motor no cambiase ni un píxel, y como punto de comparación. --navy y --gold no existían en esta dirección: llevan los valores de marca porque ninguna regla CSS los usa todavía.",
+  "fonts": {
+    "display": "'Fraunces', Georgia, serif",
+    "heading": "'Fraunces', Georgia, serif",
+    "body": "'Karla', 'Segoe UI', sans-serif",
+    "href": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Karla:wght@400;700&display=swap"
+  },
   "light": {
     "paper": "#faf6ee",
     "ink": "#2b2620",
@@ -9,7 +15,6 @@
     "tomatoBtn": "#a83226",
     "navy": "#0a2a6b",
     "gold": "#f0c24b",
-
     "paper2": "#f3ecdf",
     "inkSoft": "#5c544a",
     "tomatoDark": "#87281f",
@@ -23,7 +28,6 @@
     "tomatoBtn": "#c2301d",
     "navy": "#0a2a6b",
     "gold": "#f0c24b",
-
     "paper2": "#29231c",
     "inkSoft": "#b9ae9d",
     "tomatoDark": "#f08672",
