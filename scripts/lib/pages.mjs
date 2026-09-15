@@ -119,6 +119,8 @@ ${jsonLd.map(jsonLdBlock).join('\n')}
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Karla:wght@400;700&display=swap" rel="stylesheet">
 
+  <!-- theme.css primero: define los tokens de color que main.css consume. -->
+  <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>

@@ -115,4 +115,34 @@ test('el build estático reescribe el dominio en todas partes', () => {
   for (const loc of ['/', '/carta/', '/contacto/', '/aviso-legal/', '/privacidad/']) {
     assert.ok(sitemap.includes(`<loc>https://${DOMAIN}${loc}</loc>`), `sitemap sin ${loc}`);
   }
+
+  // theme.css es un artefacto generado y gitignored. Llega a dist/ porque
+  // copyPublic() copia public/ literalmente, y eso solo funciona si
+  // ensureThemeCss() corre ANTES de copyPublic(). Si alguien mueve esa llamada
+  // después (junto al arranque del servidor, que es lo natural), dist/ sale sin
+  // paleta y el sitio se publica sin estilos. Esta aserción convierte ese fallo
+  // mudo en un build roto.
+  const themeCss = fs.readFileSync(path.join(OUT, 'css', 'theme.css'), 'utf-8');
+  for (const token of ['--paper', '--ink', '--tomato', '--shadow-rgb']) {
+    assert.ok(themeCss.includes(token + ':'), `theme.css sin ${token}`);
+  }
+  assert.strictEqual(
+    (themeCss.match(/--paper:/g) || []).length,
+    3,
+    'theme.css debe definir los tres bloques: :root, media query y [data-theme="dark"]'
+  );
+
+  // El orden de la cascada es el contrato: main.css no define ningún color, así
+  // que cargarlo antes que theme.css dejaría la página sin paleta.
+  for (const [name, page] of [
+    ['portada', html],
+    ['carta', carta],
+    ['contacto', contacto],
+    ['404', fs.readFileSync(path.join(OUT, '404.html'), 'utf-8')],
+  ]) {
+    const t = page.indexOf('/css/theme.css');
+    const m = page.indexOf('/css/main.css');
+    assert.ok(t !== -1, `${name}: no enlaza theme.css`);
+    assert.ok(t < m, `${name}: theme.css debe ir antes que main.css`);
+  }
 });

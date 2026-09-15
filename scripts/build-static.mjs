@@ -24,6 +24,7 @@ process.env.ORDERING_ENABLED = 'false';
 const require = createRequire(import.meta.url);
 const { PUBLIC_DIR, DIST_DIR, SITE_DOMAIN, STATIC_EXCLUDE, BUSINESS } = require('../src/config');
 const { createApp } = require('../src/app');
+const { ensureThemeCss } = require('../src/services/theme-store');
 
 // Public GETs the storefront makes, mirroring apiUrl() in public/js/main.js.
 const ENDPOINTS = [
@@ -239,7 +240,8 @@ ${urls}</urlset>
   );
   await fs.writeFile(
     path.join(DIST_DIR, '404.html'),
-    `<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Página no encontrada — Pizzería Voy Volando</title>\n  <meta name="robots" content="noindex">\n  <link rel="stylesheet" href="/css/main.css">\n</head>\n<body>\n  <main class="section">\n    <div class="container-narrow" style="text-align:center">\n      <h1 class="section-title">Esta página no existe</h1>\n      <p>Vuelve a la portada para ver la carta y contactar con nosotros.</p>\n      <p><a class="btn btn-primary" href="/">Ir a la portada</a></p>\n    </div>\n  </main>\n</body>\n</html>\n`
+    `<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Página no encontrada — Pizzería Voy Volando</title>\n  <meta name="robots" content="noindex">\n  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/main.css">\n</head>\n<body>\n  <main class="section">\n    <div class="container-narrow" style="text-align:center">\n      <h1 class="section-title">Esta página no existe</h1>\n      <p>Vuelve a la portada para ver la carta y contactar con nosotros.</p>\n      <p><a class="btn btn-primary" href="/">Ir a la portada</a></p>\n    </div>\n  </main>\n</body>\n</html>\n`
   );
 }
 
@@ -248,6 +250,10 @@ async function main() {
   await fs.mkdir(DIST_DIR, { recursive: true });
 
   console.log(`\nBuild estático → ${DIST_DIR}`);
+  // Antes de copyPublic, no después: copyPublic es un fs.cp literal y corre
+  // antes de que exista el servidor, así que la garantía de createApp llegaría
+  // tarde y dist/ se llevaría un theme.css viejo, o ninguno.
+  ensureThemeCss();
   await copyPublic();
   log(`public/ copiado (sin ${STATIC_EXCLUDE.join(', ')})`);
 

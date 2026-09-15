@@ -4,11 +4,15 @@ const path = require('path');
 const express = require('express');
 const { PROD, PUBLIC_DIR, FEATURES, NOINDEX } = require('./config');
 const { initAuth } = require('./services/passwords');
+const { ensureThemeCss } = require('./services/theme-store');
 const securityHeaders = require('./middleware/security-headers');
 const errorHandler = require('./middleware/error-handler');
 
 function createApp() {
   initAuth();
+  // public/css/theme.css is generated and gitignored, so it may simply not
+  // exist on a fresh clone. Write it before express.static can be asked for it.
+  ensureThemeCss();
 
   const app = express();
   // Behind Railway's proxy req.ip would be the proxy address and the login

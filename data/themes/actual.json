@@ -1,0 +1,33 @@
+{
+  "id": "actual",
+  "name": "Trattoria (paleta original)",
+  "notes": "Reproduce byte a byte la paleta que el sitio tenia antes del motor de temas. Existe para que introducir el motor no cambiase ni un pixel, y como punto de comparacion. --navy y --gold no existian en esta direccion: llevan los valores de marca porque ninguna regla CSS los usa todavia.",
+  "light": {
+    "paper": "#faf6ee",
+    "ink": "#2b2620",
+    "tomato": "#a83226",
+    "tomatoBtn": "#a83226",
+    "navy": "#0a2a6b",
+    "gold": "#f0c24b",
+
+    "paper2": "#f3ecdf",
+    "inkSoft": "#5c544a",
+    "tomatoDark": "#87281f",
+    "tomatoBtnHover": "#87281f",
+    "scrimRgb": "20 16 12"
+  },
+  "dark": {
+    "paper": "#211c17",
+    "ink": "#f2ece1",
+    "tomato": "#e2664f",
+    "tomatoBtn": "#c2301d",
+    "navy": "#0a2a6b",
+    "gold": "#f0c24b",
+
+    "paper2": "#29231c",
+    "inkSoft": "#b9ae9d",
+    "tomatoDark": "#f08672",
+    "tomatoBtnHover": "#d13a24",
+    "scrimRgb": "20 16 12"
+  }
+}

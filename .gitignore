@@ -11,3 +11,6 @@ backups/
 
 # Export estático (scripts/build-static.mjs) — se regenera en cada deploy
 dist/
+
+# Generado por src/services/theme-store.js desde data/theme.json
+public/css/theme.css

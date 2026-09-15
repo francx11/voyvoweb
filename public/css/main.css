@@ -1,7 +1,14 @@
 /* ─────────────────────────────────────────────────────────────
    Voy Volando · Santa Fe, Granada
-   Direction: "editorial trattoria" — printed menu, cream paper,
-   warm ink, a single tomato-red accent.
+
+   Los colores NO viven aquí. Están en /css/theme.css, que genera
+   src/services/theme-store.js desde data/theme.json + data/themes/<id>.json
+   y que el <link> de cada página carga ANTES que esta hoja.
+
+   No reintroduzcas aquí un :root de color "por si acaso": mientras esta hoja
+   no defina ningún color, un theme.css que falte deja la página obviamente
+   rota, que es el fallo que se quiere. Con valores de respaldo, el fallo sería
+   silencioso y publicaría la paleta vieja.
    ───────────────────────────────────────────────────────────── */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -11,75 +18,16 @@
 [hidden] { display: none !important; }
 
 :root {
-  --paper: #faf6ee;
-  --paper-2: #f3ecdf;
-  --ink: #2b2620;
-  --ink-soft: #5c544a;
-  --tomato: #a83226;       /* text/accents on --paper: AA in both themes */
-  --tomato-dark: #87281f;
-  --tomato-btn: #a83226;   /* solid button fill: calibrated against --on-tomato */
-  --tomato-btn-hover: #87281f;
-  --on-tomato: #fff;       /* text on --tomato-btn: fixed, theme-independent */
-  --line: rgba(43, 38, 32, 0.18);
-  --line-strong: rgba(43, 38, 32, 0.55);
-  /* Tripletes de color (sin alpha) para sombras y velos: la geometría de cada
-     sombra vive en su regla, aquí solo viaja el color.
-     --shadow-rgb no puede seguir a --ink: en tema oscuro --ink es casi blanco
-     y la sombra sería un halo. Tampoco a --paper, que es la superficie misma:
-     una sombra del color del fondo no se ve. La regla es "más oscuro que el
-     fondo" — la tinta en tema claro, negro en tema oscuro.
-     --scrim-rgb es oscuro en ambos temas — un velo de modal aclara el fondo
-     jamás, lo oscurece siempre. */
-  --shadow-rgb: 43 38 32;
-  --scrim-rgb: 20 16 12;
   --display: 'Fraunces', Georgia, serif;
   --body: 'Karla', 'Segoe UI', sans-serif;
   /* Radios: una sola escala para toda la web. Nada de cajas ni botones
-     cuadrados — si algo tiene borde o fondo propio, lleva uno de estos. */
+     cuadrados — si algo tiene borde o fondo propio, lleva uno de estos.
+     Geometría, no color: no cambia al cambiar de tema. */
   --radius-sm: 0.5rem;     /* inputs, superficies pequeñas */
   --radius: 0.75rem;       /* por defecto: tarjetas y cajas */
   --radius-lg: 1.25rem;    /* marcos grandes y modales */
   --radius-pill: 999px;    /* botones, chips, badges */
   --radius-round: 50%;     /* botones-icono circulares */
-  color-scheme: light;
-}
-
-/* Dark: follows the system preference unless the user picks manually.
-   --tomato-btn uses a different red than --tomato: the text tone (e2664f)
-   was tuned to read on dark --paper, but that same hue only gives 3.4:1
-   with white text on top — short of AA (4.5:1). c2301d clears both bars:
-   ≥4.5:1 with white and ≥3:1 of distinction against the dark background. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #211c17;
-    --paper-2: #29231c;
-    --ink: #f2ece1;
-    --ink-soft: #b9ae9d;
-    --tomato: #e2664f;
-    --tomato-dark: #f08672;
-    --tomato-btn: #c2301d;
-    --tomato-btn-hover: #d13a24;
-    --line: rgba(242, 236, 225, 0.14);
-    --line-strong: rgba(242, 236, 225, 0.4);
-    --shadow-rgb: 0 0 0;  /* negro: --paper ya es oscuro, solo algo MÁS oscuro lee como sombra */
-    --scrim-rgb: 20 16 12;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #211c17;
-  --paper-2: #29231c;
-  --ink: #f2ece1;
-  --ink-soft: #b9ae9d;
-  --tomato: #e2664f;
-  --tomato-dark: #f08672;
-  --tomato-btn: #c2301d;
-  --tomato-btn-hover: #d13a24;
-  --line: rgba(242, 236, 225, 0.14);
-  --line-strong: rgba(242, 236, 225, 0.4);
-  --shadow-rgb: 0 0 0;  /* negro: --paper ya es oscuro, solo algo MÁS oscuro lee como sombra */
-  --scrim-rgb: 20 16 12;
-  color-scheme: dark;
 }
 
 body { transition: background 0.25s ease, color 0.25s ease; }
