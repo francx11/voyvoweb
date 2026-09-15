@@ -1,0 +1,13 @@
+# En Windows core.autocrlf=true saca los ficheros con CRLF y `pnpm check` falla
+# en el paso de Prettier (que espera LF). Normalizamos todo el texto a LF en el
+# repo y en el árbol de trabajo, así el check da lo mismo en Windows y en CI.
+* text=auto eol=lf
+
+# Binarios: nunca tocar.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.svg text eol=lf
