@@ -127,6 +127,43 @@ test('gold is never used as a text colour', () => {
   assert.deepEqual(offenders, [], 'gold is a fill and an accent, never a text colour');
 });
 
+test("the active preset's fonts are actually loaded on every page", () => {
+  // The <link> to Google Fonts is hand-written in five places, on purpose: an
+  // @import inside a stylesheet would chain HTML → CSS → googleapis → font
+  // files in series and cost LCP. The price is that a half-done font change
+  // falls back to Georgia in silence, so CI checks it instead.
+  const active = theme.loadPreset(theme.readTheme().preset);
+  assert.ok(active.fonts, 'the active preset must declare its fonts');
+
+  const families = ['display', 'heading', 'body']
+    .map((k) => active.fonts[k].match(/'([^']+)'/)[1])
+    .filter((v, i, a) => a.indexOf(v) === i);
+
+  const pages = [
+    'public/index.html',
+    'public/pedido.html',
+    'public/aviso-legal/index.html',
+    'public/privacidad/index.html',
+    'scripts/lib/pages.mjs',
+  ];
+  for (const page of pages) {
+    const html = fs.readFileSync(path.join(ROOT, page), 'utf-8');
+    const link = html.match(/fonts\.googleapis\.com\/css2\?[^"']+/);
+    assert.ok(link, `${page}: no carga Google Fonts`);
+    for (const family of families) {
+      assert.ok(
+        link[0].includes(family.replace(/ /g, '+')),
+        `${page}: el <link> de fuentes no incluye ${family}`
+      );
+    }
+  }
+
+  // And main.css must actually use them.
+  for (const token of ['--display', '--heading', '--body']) {
+    assert.ok(MAIN_CSS.includes(token + ':'), `main.css no define ${token}`);
+  }
+});
+
 test('"actual" reproduces the pre-theme-engine palette byte for byte', () => {
   // The preset that made introducing the engine a no-op visually. If these
   // drift, the claim "phase 1-4 changed no pixels" stops being true.

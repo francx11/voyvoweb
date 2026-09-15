@@ -16,6 +16,7 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { renderCarta, renderContacto } from './lib/pages.mjs';
+import { HTML_PAGES, MANIFEST } from './sync-theme.mjs';
 
 // Must be set before src/config is required: the flag is read at load time,
 // and an ordering-enabled .env must never leak into a backendless build.
@@ -24,7 +25,7 @@ process.env.ORDERING_ENABLED = 'false';
 const require = createRequire(import.meta.url);
 const { PUBLIC_DIR, DIST_DIR, SITE_DOMAIN, STATIC_EXCLUDE, BUSINESS } = require('../src/config');
 const { createApp } = require('../src/app');
-const { ensureThemeCss } = require('../src/services/theme-store');
+const { ensureThemeCss, themeColor } = require('../src/services/theme-store');
 
 // Public GETs the storefront makes, mirroring apiUrl() in public/js/main.js.
 const ENDPOINTS = [
@@ -177,6 +178,43 @@ async function assertBusinessData() {
   }
 }
 
+// theme-color vive en el HTML y en el manifest porque el navegador lo lee
+// antes de tener CSS, así que es el mismo dato en dos sitios que el de arriba:
+// si el tema cambia y nadie ejecuta `pnpm theme:sync`, la barra del navegador
+// se publica con la paleta anterior. Mismo remedio, parar en vez de publicar.
+async function assertThemeColor() {
+  const { light, dark } = themeColor();
+  const wrong = [];
+
+  // pedido.html y el panel no se exportan (STATIC_EXCLUDE): theme:sync sí los
+  // sincroniza, para el despliegue Node, pero aquí no existen.
+  const published = HTML_PAGES.filter((p) => !STATIC_EXCLUDE.includes(p));
+
+  for (const page of published) {
+    const html = await fs.readFile(path.join(DIST_DIR, page), 'utf-8');
+    const found = (html.match(/<meta name="theme-color"[^>]*content="(#[0-9a-fA-F]{6})"/g) || [])
+      .map((m) => m.match(/content="(#[0-9a-fA-F]{6})"/)[1].toLowerCase())
+      .sort();
+    const expected = [light, dark].map((c) => c.toLowerCase()).sort();
+    if (found.join() !== expected.join()) {
+      wrong.push(`${page} (tiene ${found.join(', ') || 'nada'})`);
+    }
+  }
+
+  const manifest = JSON.parse(await fs.readFile(path.join(DIST_DIR, MANIFEST), 'utf-8'));
+  if (manifest.theme_color?.toLowerCase() !== light.toLowerCase()) {
+    wrong.push(`${MANIFEST} (tiene ${manifest.theme_color})`);
+  }
+
+  if (wrong.length) {
+    throw new Error(
+      `theme-color no coincide con el tema activo (claro ${light}, oscuro ${dark}).\n` +
+        `  Desajustado en: ${wrong.join(', ')}\n` +
+        `  Ejecuta: pnpm theme:sync`
+    );
+  }
+}
+
 async function writeContentPages() {
   const [menu, ordering, site] = await Promise.all([
     readSnapshot('menu'),
@@ -268,6 +306,7 @@ async function main() {
   const rewritten = await rewriteHtml();
   if (rewritten) log(`${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
   await assertBusinessData();
+  await assertThemeColor();
   const content = await writeContentPages();
   log(`${content.pages} páginas indexables (carta con ${content.items} platos)`);
   const redirects = await writeLegacyRedirects();

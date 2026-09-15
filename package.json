@@ -11,7 +11,8 @@
     "format": "prettier --write \"src/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\" \"*.json\" \"docs/**/*.md\"",
     "check": "eslint src scripts tests public/js && prettier --check \"src/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\" && node --test \"tests/**/*.test.js\"",
     "backup": "node scripts/backup.mjs",
-    "build:static": "node scripts/build-static.mjs"
+    "build:static": "node scripts/build-static.mjs",
+    "theme:sync": "node scripts/sync-theme.mjs"
   },
   "engines": {
     "node": ">=18.17"
