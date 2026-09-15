@@ -24,6 +24,13 @@
   --line-strong: rgba(43, 38, 32, 0.55);
   --display: 'Fraunces', Georgia, serif;
   --body: 'Karla', 'Segoe UI', sans-serif;
+  /* Radios: una sola escala para toda la web. Nada de cajas ni botones
+     cuadrados — si algo tiene borde o fondo propio, lleva uno de estos. */
+  --radius-sm: 0.5rem;     /* inputs, superficies pequeñas */
+  --radius: 0.75rem;       /* por defecto: tarjetas y cajas */
+  --radius-lg: 1.25rem;    /* marcos grandes y modales */
+  --radius-pill: 999px;    /* botones, chips, badges */
+  --radius-round: 50%;     /* botones-icono circulares */
   color-scheme: light;
 }
 
@@ -86,6 +93,9 @@ img { max-width: 100%; display: block; }
   position: absolute; left: -9999px; top: 0; z-index: 300;
   background: var(--ink); color: var(--paper);
   padding: 0.7rem 1.2rem; font-size: 0.9rem;
+  /* Al recibir el foco se ancla a la esquina superior izquierda del viewport:
+     solo se redondea el vértice que queda suelto. */
+  border-radius: 0 0 var(--radius) 0;
 }
 .skip-link:focus { left: 0; }
 
@@ -148,7 +158,7 @@ img { max-width: 100%; display: block; }
 .nav-toggle {
   display: none;
   background: none; border: 1px solid var(--line-strong);
-  border-radius: 4px; cursor: pointer;
+  border-radius: var(--radius-pill); cursor: pointer;
   min-width: 44px; min-height: 44px;
   align-items: center; justify-content: center;
   color: var(--ink);
@@ -160,7 +170,7 @@ img { max-width: 100%; display: block; }
 
 .theme-toggle {
   background: none; border: 1px solid var(--line-strong);
-  border-radius: 999px; cursor: pointer;
+  border-radius: var(--radius-pill); cursor: pointer;
   width: 44px; height: 44px;
   display: inline-flex; align-items: center; justify-content: center;
   color: var(--ink); flex-shrink: 0;
@@ -187,7 +197,7 @@ img { max-width: 100%; display: block; }
 .site-nav a:hover { color: var(--tomato); }
 .site-nav .nav-cta {
   color: var(--on-tomato); background: var(--tomato-btn);
-  padding: 0.6rem 1.2rem; border-radius: 999px;
+  padding: 0.6rem 1.2rem; border-radius: var(--radius-pill);
 }
 .site-nav .nav-cta:hover { background: var(--tomato-btn-hover); color: var(--on-tomato); }
 
@@ -196,7 +206,7 @@ img { max-width: 100%; display: block; }
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
   min-height: 48px;
   padding: 0.8rem 1.8rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-family: var(--body); font-size: 0.9rem; font-weight: 700;
   letter-spacing: 0.04em;
   text-decoration: none; cursor: pointer; border: none;
@@ -258,6 +268,7 @@ img { max-width: 100%; display: block; }
 }
 .story-card {
   border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
   outline: 1px solid var(--line);
   outline-offset: 5px;
   padding: clamp(1.8rem, 4vw, 3rem);
@@ -280,6 +291,7 @@ img { max-width: 100%; display: block; }
 /* ── Menu (printed-menu style) ── */
 .menu-frame {
   border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
   outline: 1px solid var(--line);
   outline-offset: 5px;
   background: var(--paper);
@@ -300,7 +312,7 @@ img { max-width: 100%; display: block; }
   font-family: var(--body); font-size: 0.82rem; font-weight: 700;
   min-height: 40px; padding: 0.45rem 1.1rem;
   background: transparent; color: var(--ink-soft);
-  border: 1px solid var(--line-strong); border-radius: 30px;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
   cursor: pointer; transition: all 0.2s;
 }
 .chip:hover { color: var(--ink); border-color: var(--ink); }
@@ -334,7 +346,7 @@ img { max-width: 100%; display: block; }
   display: flex; flex-direction: column;
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 0.7rem; overflow: hidden;
+  border-radius: var(--radius); overflow: hidden;
   box-shadow: 0 1px 3px rgba(43, 38, 32, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -344,7 +356,7 @@ img { max-width: 100%; display: block; }
 .menu-card-badge {
   position: absolute; top: 0.7rem; left: 0.7rem;
   font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-  color: #fff; padding: 0.3rem 0.75rem; border-radius: 30px;
+  color: #fff; padding: 0.3rem 0.75rem; border-radius: var(--radius-pill);
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
 }
 .menu-card-body { padding: 1rem 1.1rem 0.4rem; flex: 1; display: flex; flex-direction: column; }
@@ -375,12 +387,12 @@ img { max-width: 100%; display: block; }
 /* Doble clase: .modal-close se define más abajo y ganaría por orden de cascada. */
 .menu-detail .menu-detail-close {
   position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
-  width: 2.2rem; height: 2.2rem; padding: 0; margin: 0; border-radius: 50%;
+  width: 2.2rem; height: 2.2rem; padding: 0; margin: 0; border-radius: var(--radius-round);
   background: rgba(20, 16, 12, 0.5); color: #fff;
 }
 .menu-detail .menu-detail-close:hover { background: rgba(20, 16, 12, 0.72); color: #fff; }
 .menu-detail-media {
-  position: relative; aspect-ratio: 4 / 3; border-radius: 0.5rem; overflow: hidden;
+  position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); overflow: hidden;
   background: var(--paper-2);
   /* Tope de alto: en pantallas apaisadas o bajas la foto no debe empujar el
      precio y el botón "Pedir" fuera de la vista. width:100% fija el ancho para
@@ -403,13 +415,14 @@ img { max-width: 100%; display: block; }
   display: grid; grid-template-columns: auto 1fr;
   gap: clamp(1.5rem, 4vw, 3rem); align-items: center;
   border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
   outline: 1px solid var(--line); outline-offset: 5px;
   background: var(--paper);
   padding: clamp(1.6rem, 4vw, 2.8rem);
 }
 .monthly-special-stamp {
   width: clamp(96px, 14vw, 130px); height: clamp(96px, 14vw, 130px);
-  border: 2px solid var(--tomato); border-radius: 50%;
+  border: 2px solid var(--tomato); border-radius: var(--radius-round);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   color: var(--tomato); text-align: center;
   transform: rotate(-8deg);
@@ -422,7 +435,7 @@ img { max-width: 100%; display: block; }
   display: inline-block; font-size: 0.68rem; font-weight: 700;
   letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--tomato); border: 1px solid currentColor;
-  padding: 0.25rem 0.7rem; border-radius: 30px; margin-bottom: 0.8rem;
+  padding: 0.25rem 0.7rem; border-radius: var(--radius-pill); margin-bottom: 0.8rem;
 }
 .monthly-special-text p { color: var(--ink-soft); margin-bottom: 1.2rem; max-width: 58ch; }
 
@@ -436,6 +449,7 @@ img { max-width: 100%; display: block; }
 .ms-photo {
   width: 100%; height: auto; display: block;
   border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
 }
 .monthly-special-box.has-image { grid-template-columns: minmax(0, 0.95fr) 1fr; }
 .has-image .monthly-special-stamp {
@@ -461,7 +475,7 @@ img { max-width: 100%; display: block; }
 .legal-prose a { color: var(--tomato); text-decoration: underline; }
 .legal-prose code {
   font-size: 0.88em; background: var(--paper-2);
-  padding: 0.1rem 0.35rem; border-radius: 0.25rem;
+  padding: 0.1rem 0.35rem; border-radius: var(--radius-sm);
 }
 .legal-lead {
   border-left: 3px solid var(--tomato);
@@ -488,6 +502,7 @@ img { max-width: 100%; display: block; }
 .offer {
   display: flex; flex-direction: column;
   border: 1px solid var(--line-strong); background: var(--paper);
+  border-radius: var(--radius); overflow: hidden;
 }
 .offer-media { aspect-ratio: 4 / 3; overflow: hidden; }
 .offer-media img {
@@ -524,11 +539,12 @@ img { max-width: 100%; display: block; }
 .gallery-cell {
   aspect-ratio: 1; overflow: hidden;
   border: 1px solid var(--line);
+  border-radius: var(--radius);
   background: var(--paper-2);
 }
 .gallery-cell:first-child { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; min-height: 260px; }
 .gallery-cell img { width: 100%; height: 100%; object-fit: cover; }
-.gallery-empty { color: var(--ink-soft); text-align: center; padding: 2.5rem 1rem; border: 1px dashed var(--line-strong); margin-top: 2.5rem; }
+.gallery-empty { color: var(--ink-soft); text-align: center; padding: 2.5rem 1rem; border: 1px dashed var(--line-strong); border-radius: var(--radius); margin-top: 2.5rem; }
 
 /* ── Reviews ── */
 .reviews-head { display: flex; align-items: baseline; gap: 1.2rem; flex-wrap: wrap; margin: 2rem 0; }
@@ -538,6 +554,7 @@ img { max-width: 100%; display: block; }
 .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
 .review {
   border: 1px solid var(--line); background: var(--paper);
+  border-radius: var(--radius);
   padding: 1.4rem;
 }
 .review .review-head { display: flex; justify-content: space-between; gap: 0.6rem; margin-bottom: 0.7rem; }
@@ -594,7 +611,7 @@ img { max-width: 100%; display: block; }
 .field input, .field select, .field textarea {
   font-family: var(--body); font-size: 1rem; color: var(--ink);
   background: var(--paper);
-  border: 1px solid var(--line-strong); border-radius: 3px;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
   padding: 0.75rem 0.9rem; min-height: 48px;
   resize: vertical;
 }
@@ -616,7 +633,7 @@ body.cart-scroll-lock { overflow: hidden; }
   position: fixed; z-index: 150;
   right: calc(1rem + env(safe-area-inset-right, 0px));
   bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
-  width: 56px; height: 56px; border-radius: 50%;
+  width: 56px; height: 56px; border-radius: var(--radius-round);
   background: var(--tomato-btn); color: var(--on-tomato); border: none;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem; cursor: pointer;
@@ -627,7 +644,7 @@ body.cart-scroll-lock { overflow: hidden; }
 .cart-fab-badge {
   position: absolute; top: -4px; right: -4px;
   min-width: 22px; height: 22px; padding: 0 5px;
-  border-radius: 999px; background: var(--ink); color: var(--paper);
+  border-radius: var(--radius-pill); background: var(--ink); color: var(--paper);
   font-family: var(--body); font-size: 0.72rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   border: 2px solid var(--paper);
@@ -645,7 +662,7 @@ body.cart-scroll-lock { overflow: hidden; }
   background: var(--paper); border: 1px solid var(--line-strong);
   width: 100%; max-height: 92vh; max-height: 92dvh;
   display: flex; flex-direction: column;
-  border-radius: 1rem 1rem 0 0; overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow: hidden;
 }
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -696,7 +713,7 @@ body.cart-scroll-lock { overflow: hidden; }
 .cart-total-row { font-family: var(--display); font-weight: 600; font-size: 1.15rem; padding-top: 0.4rem; }
 .cart-qty { display: flex; align-items: center; gap: 0.7rem; }
 .cart-qty-btn {
-  width: 44px; height: 44px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: var(--radius-round);
   border: 1px solid var(--line-strong); background: transparent; color: var(--ink);
   font-size: 1.1rem; line-height: 1; cursor: pointer;
 }
@@ -756,7 +773,7 @@ body.cart-scroll-lock { overflow: hidden; }
 .cart-address-wrap { position: relative; }
 .cart-address-suggestions {
   position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 2px);
-  background: var(--paper); border: 1px solid var(--line-strong); border-radius: 3px;
+  background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
   list-style: none; max-height: 240px; overflow-y: auto;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
@@ -766,7 +783,7 @@ body.cart-scroll-lock { overflow: hidden; }
 .cart-address-suggestions li:hover { background: var(--paper-2); color: var(--tomato); }
 .cart-banner {
   font-size: 0.9rem; font-weight: 700; padding: 0.8rem 1rem;
-  border-radius: 0.4rem; border: 1px solid currentColor;
+  border-radius: var(--radius); border: 1px solid currentColor;
 }
 .cart-banner-closed { color: var(--tomato); background: color-mix(in srgb, var(--tomato) 10%, transparent); }
 .cart-error { color: var(--tomato); font-size: 0.88rem; font-weight: 700; }
@@ -776,7 +793,7 @@ body.cart-scroll-lock { overflow: hidden; }
 @media (min-width: 861px) {
   .cart-fab { width: 60px; height: 60px; right: 1.2rem; bottom: 1.2rem; }
   .modal-overlay { align-items: center; padding: 1rem; }
-  .modal { max-width: 480px; max-height: 88vh; max-height: 88dvh; border-radius: 0.6rem; }
+  .modal { max-width: 480px; max-height: 88vh; max-height: 88dvh; border-radius: var(--radius-lg); }
   .cart-drawer-overlay { justify-content: flex-end; }
   .cart-drawer { max-width: 420px; border-left: 1px solid var(--line-strong); }
 }
@@ -784,7 +801,7 @@ body.cart-scroll-lock { overflow: hidden; }
 @media (max-height: 520px) {
   .modal-header, .cart-drawer-header { padding-top: 0.7rem; padding-bottom: 0.7rem; }
   .modal-footer, .cart-drawer-footer { padding-top: 0.6rem; padding-bottom: 0.6rem; }
-  .modal { max-height: 100vh; max-height: 100dvh; border-radius: 0; }
+  .modal { max-height: 100vh; max-height: 100dvh; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 }
 
 /* ── Order confirmation page (pedido.html) ── */
@@ -845,6 +862,7 @@ body.cart-scroll-lock { overflow: hidden; }
     position: absolute; top: 100%; left: 0; right: 0;
     background: var(--paper);
     border-bottom: 1px solid var(--line-strong);
+    border-radius: 0 0 var(--radius) var(--radius);
     display: none;
   }
   .site-nav.open { display: block; }

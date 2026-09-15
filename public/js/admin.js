@@ -902,7 +902,6 @@
     $('site-city').value = s.city || '';
     $('site-phone').value = s.phone || '';
     $('site-email').value = s.email || '';
-    $('site-whatsapp').value = s.whatsapp || '';
     $('site-hours').value = s.hours || '';
   }
 
@@ -913,7 +912,6 @@
       city: $('site-city').value,
       phone: $('site-phone').value,
       email: $('site-email').value,
-      whatsapp: $('site-whatsapp').value.replace(/[^\d]/g, ''),
       hours: $('site-hours').value,
       hero: {
         eyebrow: $('site-hero-eyebrow').value,
