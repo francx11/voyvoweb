@@ -14,3 +14,9 @@ dist/
 
 # Generado por src/services/theme-store.js desde data/theme.json
 public/css/theme.css
+
+# Notas de trabajo del dueño, no forman parte del proyecto
+mejoras.txt
+mejorasCarta.txt
+nuevaCarta.txt
+data/CodigoQRVoyvo.png
