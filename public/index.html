@@ -18,8 +18,11 @@
   <meta property="og:title" content="Pizzería Voy Volando — Pizza artesanal en Santa Fe, Granada">
   <meta property="og:description" content="Masa artesanal, ingredientes frescos y el sabor de siempre. A domicilio, para recoger o en nuestro local de Santa Fe.">
   <meta property="og:url" content="https://voyvolandosantafe.com/">
-  <!-- PENDING: og:image with a real photo of the venue once uploaded to the gallery -->
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://voyvolandosantafe.com/assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Pizza artesanal de Voy Volando recién salida del horno">
+  <meta name="twitter:card" content="summary_large_image">
 
   <!-- Structured data: local business (SEO + GEO) -->
   <script type="application/ld+json">
@@ -40,7 +43,27 @@
       "addressCountry": "ES"
     },
     "hasMenu": "https://voyvolandosantafe.com/#menu",
-    "acceptsReservations": "True"
+    "acceptsReservations": "True",
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+        "opens": "20:00",
+        "closes": "00:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Friday",
+        "opens": "13:00",
+        "closes": "15:30"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Saturday", "Sunday"],
+        "opens": "13:30",
+        "closes": "15:30"
+      }
+    ]
   }
   </script>
   <script type="application/ld+json">

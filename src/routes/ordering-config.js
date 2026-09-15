@@ -1,7 +1,7 @@
 // Ordering configuration: a public read (what the cart needs to render)
 // and the authenticated admin editor for ordering.json.
 const { Router } = require('express');
-const { ORDERING_FILE, ORDER_CANCEL_WINDOW } = require('../config');
+const { ORDERING_FILE, ORDER_CANCEL_WINDOW, FEATURES } = require('../config');
 const { readJSON, writeJSON } = require('../lib/json-store');
 const requireAuth = require('../middleware/require-auth');
 const { isOpenNow, todayWindows } = require('../services/ordering-schedule');
@@ -105,11 +105,15 @@ function sanitizeOrderingConfig(body, current) {
 }
 
 // Public subset: everything the cart UI needs, nothing it doesn't.
+// FEATURES.ordering is the deployment-level kill switch: with it off the
+// answer is enabled:false whatever ordering.json says, because the routes
+// that would take the order are not even mounted.
 router.get('/config', (_req, res) => {
   const cfg = readJSON(ORDERING_FILE, {});
+  const enabled = FEATURES.ordering && cfg.enabled !== false;
   res.json({
-    enabled: cfg.enabled !== false,
-    open: isOpenNow(cfg),
+    enabled,
+    open: enabled && isOpenNow(cfg),
     todayWindows: todayWindows(cfg),
     tiers: cfg.tiers || {},
     modifierGroups: cfg.modifierGroups || {},
@@ -118,7 +122,7 @@ router.get('/config', (_req, res) => {
       minimum: (cfg.delivery && cfg.delivery.minimum) || 0,
       zones: (cfg.delivery && cfg.delivery.zones) || [],
     },
-    stripeEnabled: stripeClient.isConfigured(),
+    stripeEnabled: enabled && stripeClient.isConfigured(),
     cancelWindowMinutes: Math.round(ORDER_CANCEL_WINDOW / 60000),
   });
 });
@@ -127,6 +131,9 @@ router.get('/settings', requireAuth, (_req, res) => {
   const cfg = readJSON(ORDERING_FILE, {});
   res.json({
     ...cfg,
+    // featureEnabled false ⇒ the panel shows the toggle as overridden by the
+    // server, so nobody wonders why "activado" is not taking orders.
+    featureEnabled: FEATURES.ordering,
     stripe: { configured: stripeClient.isConfigured(), mode: stripeClient.mode() },
   });
 });

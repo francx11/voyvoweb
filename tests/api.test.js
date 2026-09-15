@@ -144,6 +144,43 @@ test('reviews endpoint reports unconfigured without leaking anything', async () 
   assert.deepEqual(r.json, { configured: false, reviews: [] });
 });
 
+// ── Online ordering kill switch (ORDERING_ENABLED unset in this file) ──────
+
+test('features endpoint reports ordering off', async () => {
+  const r = await api('GET', '/api/features');
+  assert.equal(r.status, 200);
+  assert.equal(r.json.ordering, false);
+});
+
+test('ordering disabled: order routes are not mounted at all', async () => {
+  const post = await api('POST', '/api/orders', { items: [] });
+  assert.equal(post.status, 404);
+  const places = await api('GET', '/api/places/autocomplete?input=calle');
+  assert.equal(places.status, 404);
+});
+
+test('ordering disabled: public config says enabled:false but keeps prices', async () => {
+  fs.writeFileSync(
+    path.join(process.env.DATA_DIR, 'ordering.json'),
+    JSON.stringify({
+      enabled: true,
+      tiers: { clasica: { label: 'C', sizes: [{ id: 'peq', label: 'Peq', price: 7 }] } },
+    })
+  );
+  const r = await api('GET', '/api/ordering/config');
+  assert.equal(r.status, 200);
+  assert.equal(r.json.enabled, false, 'the env flag overrides ordering.json');
+  assert.equal(r.json.open, false);
+  // The carta still prices tier items, ordering or not.
+  assert.equal(r.json.tiers.clasica.sizes[0].price, 7);
+});
+
+test('ordering disabled: admin settings still editable, flagged as overridden', async () => {
+  const r = await api('GET', '/api/ordering/settings');
+  assert.equal(r.status, 200);
+  assert.equal(r.json.featureEnabled, false);
+});
+
 test('logout invalidates the session', async () => {
   await api('POST', '/api/logout');
   cookie = cookie.replace(/=.*/, '=deadbeef');

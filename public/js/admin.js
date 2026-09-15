@@ -71,11 +71,23 @@
     $('login-screen').style.display = 'flex';
   }
 
-  function showApp() {
+  // Deployment feature flags (/api/features). With ordering off the routes
+  // behind the Pedidos page do not exist, so the page is removed instead of
+  // left to fail: no nav item, no polling, no order alerts.
+  let FEATURES = { ordering: true };
+
+  async function showApp() {
     $('login-screen').style.display = 'none';
     $('app').style.display = 'block';
+    FEATURES = await api('GET', '/api/features').catch(() => ({ ordering: false }));
+    applyFeatureFlags();
     navigate('menu');
-    startGlobalOrdersPoll();
+    if (FEATURES.ordering) startGlobalOrdersPoll();
+  }
+
+  function applyFeatureFlags() {
+    const ordersNav = document.querySelector('.nav-item[data-page="orders"]');
+    if (ordersNav) ordersNav.style.display = FEATURES.ordering ? '' : 'none';
   }
 
   // ── Mobile sidebar ───────────────────────────────────────────────────────
@@ -1070,6 +1082,11 @@
 
   async function loadOrderingConfigPage() {
     const cfg = await api('GET', '/api/ordering/settings').catch(() => ({}));
+    // The env kill switch wins over this page's toggle: say so plainly rather
+    // than let someone flip "activados" and wonder why nothing happens.
+    $('ordering-feature-notice').innerHTML = cfg.featureEnabled === false
+      ? `<div class="notice notice-warn" style="margin-bottom:1.5rem"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div>Los pedidos online están <strong>desactivados en el servidor</strong> (falta <code>ORDERING_ENABLED=true</code>). Aquí puedes preparar tarifas y horarios: no se aceptará ningún pedido hasta activar la variable.</div></div>`
+      : '';
     ORDERING_DRAFT = {
       enabled: cfg.enabled !== false,
       forceOpen: cfg.forceOpen === true,

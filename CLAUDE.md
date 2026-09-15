@@ -4,6 +4,12 @@ Web + CMS de la Pizzería Voy Volando (Santa Fe, Granada). Node.js + Express, da
 con escritura atómica, sin frontend framework. Detalle completo en [README.md](README.md) y
 [docs/stack-tecnico.md](docs/stack-tecnico.md).
 
+**Fase actual:** web de escaparate estática en GitHub Pages (`pnpm build:static` → `dist/`), con
+los pedidos online apagados por `ORDERING_ENABLED` (`FEATURES.ordering` en `src/config.js`). El
+flag manda sobre el interruptor del panel; con él apagado no se montan `/api/orders`,
+`/api/places` ni el webhook de Stripe. Fases y checklist en
+[docs/plan-despliegue.md](docs/plan-despliegue.md).
+
 ## No negociable
 
 - **pnpm siempre.** Nunca `npm install` ni `npm run` en este repo (rompe el lockfile).

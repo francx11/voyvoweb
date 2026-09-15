@@ -2,7 +2,7 @@
 // app without opening a port; src/server.js is the real entry point.
 const path = require('path');
 const express = require('express');
-const { PROD, PUBLIC_DIR } = require('./config');
+const { PROD, PUBLIC_DIR, FEATURES } = require('./config');
 const { initAuth } = require('./services/passwords');
 const securityHeaders = require('./middleware/security-headers');
 const errorHandler = require('./middleware/error-handler');
@@ -18,7 +18,7 @@ function createApp() {
   app.use(securityHeaders);
   // Stripe verifies webhook signatures against the raw body, so this route
   // must be mounted before express.json consumes/reparses the stream.
-  app.use('/api/stripe/webhook', require('./routes/stripe-webhook'));
+  if (FEATURES.ordering) app.use('/api/stripe/webhook', require('./routes/stripe-webhook'));
   app.use(express.json({ limit: '1mb' }));
 
   // Clean URL for the admin panel: registered before static so
@@ -35,10 +35,17 @@ function createApp() {
   app.use('/api/gallery', require('./routes/gallery'));
   app.use('/api/site', require('./routes/site'));
   app.use('/api/reviews', require('./routes/reviews'));
-  app.use('/api/places', require('./routes/places'));
   app.use('/api/config', require('./routes/settings'));
-  app.use('/api/orders', require('./routes/orders'));
+  app.use('/api/features', require('./routes/features'));
+  // Ordering config stays mounted with the feature off: menu items reference
+  // its tiers, so the panel must keep editing them. What disappears is every
+  // route that could take money or an order — /api/ordering/config then
+  // reports enabled:false and the storefront renders with no cart at all.
   app.use('/api/ordering', require('./routes/ordering-config'));
+  if (FEATURES.ordering) {
+    app.use('/api/places', require('./routes/places')); // address autocomplete, checkout only
+    app.use('/api/orders', require('./routes/orders'));
+  }
 
   app.use(errorHandler);
   return app;

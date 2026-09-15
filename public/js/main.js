@@ -45,6 +45,15 @@
   VV.esc = esc;
   VV.formatPrice = formatPrice;
 
+  /* ── API endpoints ────────────────────────────────────
+     Two deployments share this file: the Express server, where /api/menu is
+     a live route, and the static export on GitHub Pages, where the same
+     payloads are frozen next to the HTML as /api/menu.json. window.VV_STATIC
+     is injected by scripts/build-static.mjs; everything below asks for URLs
+     through apiUrl() so neither build needs its own copy of the file. ── */
+  var STATIC = window.VV_STATIC === true;
+  function apiUrl(name) { return '/api/' + name + (STATIC ? '.json' : ''); }
+
   var SITE = {}; // editable content loaded from /api/site
   var orderingConfig = null; // /api/ordering/config, needed to price/render orderable items
 
@@ -365,7 +374,7 @@
     } else {
       pdfBox.hidden = true;
     }
-    fetch('/api/menu')
+    fetch(apiUrl('menu'))
       .then(function (r) { return r.json(); })
       .then(function (items) {
         if (!items.length) return;
@@ -379,7 +388,7 @@
 
   /* ── Monthly special ("pizza del mes") ──────────────── */
   function loadMonthlySpecial() {
-    fetch('/api/monthly-special')
+    fetch(apiUrl('monthly-special'))
       .then(function (r) { return r.json(); })
       .then(function (ms) {
         if (!ms.active || !ms.name) return;
@@ -395,7 +404,7 @@
 
   /* ── Gallery ────────────────────────────────────────── */
   function loadGallery() {
-    fetch('/api/gallery')
+    fetch(apiUrl('gallery'))
       .then(function (r) { return r.json(); })
       .then(function (files) {
         var grid = $('#gallery-grid');
@@ -420,7 +429,7 @@
     return '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r);
   }
   function loadReviews() {
-    fetch('/api/reviews')
+    fetch(apiUrl('reviews'))
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (!data.configured || !data.reviews || !data.reviews.length) return;
@@ -468,8 +477,8 @@
      rather than chained after it — the menu render needs both before
      it can decide what's orderable, but neither fetch depends on the
      other so there is no reason to serialize them. ── */
-  var sitePromise = fetch('/api/site').then(function (r) { return r.json(); }).catch(function () { return {}; });
-  var orderingConfigPromise = fetch('/api/ordering/config')
+  var sitePromise = fetch(apiUrl('site')).then(function (r) { return r.json(); }).catch(function () { return {}; });
+  var orderingConfigPromise = fetch(apiUrl('ordering/config'))
     .then(function (r) { return r.json(); })
     .catch(function () { return null; });
 

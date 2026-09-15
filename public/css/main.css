@@ -506,6 +506,8 @@ img { max-width: 100%; display: block; }
   min-width: 90px; padding-top: 0.2rem;
 }
 .info-item dd { font-size: 1rem; overflow-wrap: anywhere; }
+/* Hours come from the panel as one field with a line per block of days. */
+#hours-value { white-space: pre-line; }
 .info-item a { color: var(--ink); text-decoration-color: var(--tomato); }
 .info-item a:hover { color: var(--tomato); }
 
