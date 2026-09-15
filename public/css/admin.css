@@ -437,3 +437,48 @@ tr:hover td { background: rgba(255,255,255,0.02); }
   .main-content { padding: 1rem 0.75rem; padding-top: calc(56px + 1rem); }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
 }
+
+/* ── Tema ────────────────────────────────────────────────────────────────── */
+/* Este panel NO hereda el tema del sitio: es la herramienta con la que se
+   edita, así que heredarlo permitiría guardar una paleta ilegible y quedarse
+   sin forma de deshacerla. Ver public/css/theme.css para la del escaparate. */
+.theme-notes { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+.theme-modes { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+.theme-swatches { display: grid; gap: 0.5rem; }
+.theme-swatch {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.theme-swatch:hover { border-color: rgba(255,255,255,0.2); }
+.theme-swatch input[type="color"] {
+  width: 38px; height: 30px; padding: 0; border: none; background: none;
+  cursor: pointer; flex: none;
+}
+.theme-swatch span { font-size: 0.82rem; display: flex; flex-direction: column; }
+.theme-swatch small { color: var(--muted); font-size: 0.7rem; }
+.theme-advanced { margin-top: 0.7rem; }
+.theme-advanced summary {
+  cursor: pointer; font-size: 0.75rem; color: var(--muted);
+  padding: 0.3rem 0; list-style: revert;
+}
+.theme-advanced .theme-swatches { margin-top: 0.5rem; }
+.theme-contrast { width: 100%; margin-top: 1rem; border-collapse: collapse; font-size: 0.75rem; }
+.theme-contrast td { padding: 0.28rem 0; border-bottom: 1px solid var(--border); }
+.theme-contrast td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.theme-contrast .ok   { color: #4ade80; }
+.theme-contrast .warn { color: #fcd34d; }
+.theme-contrast .bad  { color: #f87171; font-weight: 600; }
+.theme-preview-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1rem; gap: 1rem;
+}
+.theme-preview-frame {
+  border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden;
+  background: var(--bg);
+}
+.theme-preview-frame iframe { width: 100%; height: 520px; border: none; display: block; }
+@media (max-width: 768px) {
+  .theme-modes { grid-template-columns: 1fr; gap: 1.5rem; }
+  .theme-preview-frame iframe { height: 380px; }
+}

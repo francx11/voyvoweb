@@ -84,6 +84,10 @@
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
         Config. pedidos
       </div>
+      <div class="nav-item" data-page="theme">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="19" cy="13" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="10" cy="19" r="2.5"/><path d="M12 2a10 10 0 000 20c1.1 0 2-.9 2-2 0-.5-.2-1-.6-1.4-.4-.4-.6-.9-.6-1.4 0-1.1.9-2 2-2h2.4A4.2 4.2 0 0022 11c0-4.97-4.48-9-10-9z"/></svg>
+        Tema
+      </div>
       <div class="nav-item" data-page="settings">
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
         Configuración
@@ -349,6 +353,90 @@
     </div>
 
     <!-- ── SETTINGS ───────────────────────────────────────────────────── -->
+    <div class="page" id="page-theme">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Tema</h1>
+          <p class="page-subtitle">La paleta de la web. Alinea los colores con la carta de la temporada</p>
+        </div>
+        <div style="display:flex;gap:0.5rem">
+          <button class="btn btn-ghost" id="theme-reset" type="button">Restaurar preset</button>
+          <button class="btn btn-red" id="theme-save" type="button">Guardar</button>
+        </div>
+      </div>
+
+      <div class="notice notice-warn">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>
+          Guardar cambia el tema <strong>de este servidor</strong> al instante. La web pública es el
+          export estático, así que para que se vea en voyvolandosantafe.com hay que reconstruirla:
+          <strong>pnpm build:static</strong> y subir los cambios.
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="form-field">
+          <label for="theme-preset">Preset</label>
+          <select id="theme-preset"></select>
+          <p class="theme-notes" id="theme-preset-notes"></p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="theme-modes">
+        <div>
+          <h4 style="font-size:0.82rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:0.9rem">Modo claro</h4>
+          <div class="theme-swatches" data-mode="light">
+            <label class="theme-swatch"><input type="color" data-token="paper"><span>Papel<small>fondo de la página</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="ink"><span>Tinta<small>texto</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="tomato"><span>Acento<small>enlaces y destacados</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="tomatoBtn"><span>Botón<small>relleno sólido</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="navy"><span>Estructura<small>bandas y cabeceras</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="gold"><span>Destello<small>sombras y sellos</small></span></label>
+          </div>
+          <details class="theme-advanced">
+            <summary>Ajuste fino</summary>
+            <div class="theme-swatches" data-mode="light">
+              <label class="theme-swatch"><input type="color" data-token="paper2"><span>Papel alterno<small>secciones intercaladas</small></span></label>
+              <label class="theme-swatch"><input type="color" data-token="inkSoft"><span>Tinta suave<small>texto secundario</small></span></label>
+            </div>
+          </details>
+          <table class="theme-contrast" id="theme-contrast-light"></table>
+        </div>
+        <div>
+          <h4 style="font-size:0.82rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:0.9rem">Modo oscuro</h4>
+          <div class="theme-swatches" data-mode="dark">
+            <label class="theme-swatch"><input type="color" data-token="paper"><span>Papel<small>fondo de la página</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="ink"><span>Tinta<small>texto</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="tomato"><span>Acento<small>enlaces y destacados</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="tomatoBtn"><span>Botón<small>relleno sólido</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="navy"><span>Estructura<small>bandas y cabeceras</small></span></label>
+            <label class="theme-swatch"><input type="color" data-token="gold"><span>Destello<small>sombras y sellos</small></span></label>
+          </div>
+          <details class="theme-advanced">
+            <summary>Ajuste fino</summary>
+            <div class="theme-swatches" data-mode="dark">
+              <label class="theme-swatch"><input type="color" data-token="paper2"><span>Papel alterno<small>secciones intercaladas</small></span></label>
+              <label class="theme-swatch"><input type="color" data-token="inkSoft"><span>Tinta suave<small>texto secundario</small></span></label>
+            </div>
+          </details>
+          <table class="theme-contrast" id="theme-contrast-dark"></table>
+        </div>
+        </div>
+        <div id="theme-warnings"></div>
+      </div>
+
+      <div class="card">
+        <div class="theme-preview-head">
+          <h3 style="font-size:1rem;font-weight:600">Vista previa</h3>
+          <button class="btn btn-ghost btn-sm" id="theme-preview-mode" type="button">Ver en oscuro</button>
+        </div>
+        <div class="theme-preview-frame">
+          <iframe id="theme-preview" src="/" title="Vista previa de la web"></iframe>
+        </div>
+      </div>
+    </div>
+
     <div class="page" id="page-settings">
       <div class="page-header">
         <div>
@@ -578,8 +666,9 @@
           <input type="text" id="item-tag" placeholder="Clásica, Gourmet...">
         </div>
         <div class="form-field">
-          <label>Color del tag (hex)</label>
-          <input type="text" id="item-color" placeholder="#C41E3A">
+          <label>Color del tag</label>
+          <input type="color" id="item-color">
+          <p class="theme-notes" id="item-color-contrast"></p>
         </div>
         <div class="form-field">
           <label>Categoría</label>

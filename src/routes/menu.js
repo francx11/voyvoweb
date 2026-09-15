@@ -6,6 +6,8 @@ const { readJSON, writeJSON } = require('../lib/json-store');
 const { saveWebp, removeImage } = require('../services/image-store');
 const requireAuth = require('../middleware/require-auth');
 const { pdfUpload, imageUpload } = require('../middleware/uploads');
+const { HEX_RE } = require('../lib/contrast');
+const { accent } = require('../services/theme-store');
 
 if (!fs.existsSync(MENU_IMG_DIR)) fs.mkdirSync(MENU_IMG_DIR, { recursive: true });
 
@@ -54,7 +56,9 @@ const sanitizeMenuItem = (p) => {
     name: String(p.name || '').slice(0, 80),
     description: String(p.description || '').slice(0, 500),
     tag: String(p.tag || '').slice(0, 40),
-    tagColor: /^#[0-9a-fA-F]{6}$/.test(p.tagColor || '') ? p.tagColor : '#C41E3A',
+    // HEX_RE is the project's single definition of a valid colour, and the
+    // default follows the active theme's accent instead of a stray red.
+    tagColor: HEX_RE.test(p.tagColor || '') ? p.tagColor : accent(),
     category: String(p.category || '').slice(0, 40),
     price: sanitizePrice(p.price),
     allergens: Array.isArray(p.allergens) ? p.allergens.map(String).slice(0, 14) : [],

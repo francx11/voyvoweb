@@ -205,7 +205,7 @@ function serialize(resolved) {
   return [
     '/* GENERADO por src/services/theme-store.js - no editar a mano.',
     '   Tema activo: "' + r.preset + '". Se regenera al arrancar, al guardar',
-    '   desde el panel y antes de cada build estatico. Para cambiarlo:',
+    '   desde el panel y antes de cada build estático. Para cambiarlo:',
     '   panel -> Tema, o data/theme.json. */',
     '',
     ':root {',

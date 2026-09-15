@@ -228,7 +228,9 @@
       '<div class="menu-card-media">' +
         '<img src="' + esc(p.image || MENU_PLACEHOLDER) + '" alt="' + esc(p.name) + '" loading="lazy">' +
         (p.tag
-          ? '<span class="menu-card-badge" style="background:' + esc(p.tagColor || '#C41E3A') + '">' +
+          ? '<span class="menu-card-badge"' +
+            (p.tagColor ? ' style="background:' + esc(p.tagColor) + '"' : '') +
+            '>' +
             esc(p.tag) + '</span>'
           : '') +
       '</div>' +
@@ -311,7 +313,9 @@
       '<div class="menu-detail-media">' +
         '<img src="' + esc(p.image || MENU_PLACEHOLDER) + '" alt="' + esc(p.name) + '">' +
         (p.tag
-          ? '<span class="menu-card-badge" style="background:' + esc(p.tagColor || '#C41E3A') + '">' +
+          ? '<span class="menu-card-badge"' +
+            (p.tagColor ? ' style="background:' + esc(p.tagColor) + '"' : '') +
+            '>' +
             esc(p.tag) + '</span>'
           : '') +
       '</div>' +
