@@ -33,7 +33,34 @@ test('el build estático reescribe el dominio en todas partes', () => {
   // El correo lleva el dominio dentro y no es una URL del sitio: no se toca.
   assert.ok(html.includes('info@voyvolandosantafe.com'), 'el email no debe reescribirse');
 
+  // Las páginas legales llevan su propio canonical absoluto: si la reescritura
+  // solo mirara index.html, se quedarían apuntando al dominio anterior.
+  for (const page of ['aviso-legal', 'privacidad']) {
+    const legal = fs.readFileSync(path.join(OUT, page, 'index.html'), 'utf-8');
+    assert.match(legal, new RegExp(`<link rel="canonical" href="https://${DOMAIN}/${page}/"`));
+    assert.ok(!legal.includes('voyvolandosantafe.com/'), `${page}: URL sin reescribir`);
+  }
+
+  // Las URLs del WordPress viejo siguen indexadas: cada una tiene que seguir
+  // llevando a algún sitio en vez de a un 404.
+  for (const [from, to] of [
+    ['carta', '/#menu'],
+    ['contacto', '/#contact'],
+    ['galeria', '/#gallery'],
+    ['quienes-somos', '/#story'],
+    ['resenas', '/'],
+  ]) {
+    const page = fs.readFileSync(path.join(OUT, from, 'index.html'), 'utf-8');
+    assert.match(page, new RegExp(`content="0; url=${to.replace('#', '#')}"`));
+    assert.ok(page.includes('noindex'), `${from}: la redirección debe ser noindex`);
+  }
+
   assert.strictEqual(fs.readFileSync(path.join(OUT, 'CNAME'), 'utf-8').trim(), DOMAIN);
   assert.ok(fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf-8').includes(`https://${DOMAIN}/`));
   assert.ok(fs.readFileSync(path.join(OUT, 'robots.txt'), 'utf-8').includes(`https://${DOMAIN}/`));
+
+  const sitemap = fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf-8');
+  for (const loc of ['/', '/aviso-legal/', '/privacidad/']) {
+    assert.ok(sitemap.includes(`<loc>https://${DOMAIN}${loc}</loc>`), `sitemap sin ${loc}`);
+  }
 });

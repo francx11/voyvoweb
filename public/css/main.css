@@ -444,6 +444,42 @@ img { max-width: 100%; display: block; }
   background: var(--paper);
 }
 
+/* ── Legal pages (aviso legal, privacidad) ──
+   Páginas sueltas, sin nav ni JS: el modo oscuro les llega igual porque el
+   tema vive en un @media prefers-color-scheme, no en el toggle. */
+.legal-header { border-bottom: 1px solid var(--line); padding: 1.1rem 0; }
+.legal-header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.legal-back { font-size: 0.86rem; color: var(--ink-soft); }
+.legal-back:hover { color: var(--tomato); }
+.legal-prose h1 { margin-bottom: 2rem; }
+.legal-prose h2 {
+  font-family: var(--display); font-weight: 600;
+  font-size: 1.25rem; margin: 2.2rem 0 0.7rem;
+}
+.legal-prose p, .legal-prose li { color: var(--ink-soft); margin-bottom: 0.9rem; }
+.legal-prose ul { padding-left: 1.2rem; }
+.legal-prose a { color: var(--tomato); text-decoration: underline; }
+.legal-prose code {
+  font-size: 0.88em; background: var(--paper-2);
+  padding: 0.1rem 0.35rem; border-radius: 0.25rem;
+}
+.legal-lead {
+  border-left: 3px solid var(--tomato);
+  padding: 0.2rem 0 0.2rem 1rem; margin-bottom: 2rem;
+}
+.legal-data {
+  display: grid; grid-template-columns: minmax(140px, auto) 1fr;
+  gap: 0.45rem 1.2rem; margin: 1.2rem 0 1.8rem;
+}
+.legal-data dt { font-weight: 700; font-size: 0.9rem; }
+.legal-data dd { color: var(--ink-soft); font-size: 0.95rem; }
+.legal-updated { font-size: 0.82rem; margin-top: 2.5rem; font-style: italic; }
+
+@media (max-width: 520px) {
+  .legal-data { grid-template-columns: 1fr; gap: 0.1rem 0; }
+  .legal-data dd { margin-bottom: 0.7rem; }
+}
+
 /* ── Offers ── */
 .offers-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);

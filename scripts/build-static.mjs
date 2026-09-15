@@ -59,38 +59,79 @@ async function copyPublic() {
   });
 }
 
-// Two build-time rewrites of the published index.html:
+// Two build-time rewrites of the published HTML:
 //
-//   1. window.VV_STATIC, so main.js asks for /api/menu.json instead of /api/menu
-//      — the one behavioural difference between the two deployments.
-//   2. SITE_DOMAIN in the handful of URLs that have to be absolute (canonical,
-//      og:url, og:image, JSON-LD). Asset paths are root-relative and carry no
-//      domain, but these cannot be: a relative canonical or og:image is ignored
-//      by Google and by WhatsApp. The domain they are written with in the
-//      source file is taken from <link rel="canonical">, so the value lives in
-//      one place and `SITE_DOMAIN=otro.com pnpm build:static` comes out whole.
-async function rewriteIndexHtml() {
-  const file = path.join(DIST_DIR, 'index.html');
-  let html = await fs.readFile(file, 'utf-8');
+//   1. window.VV_STATIC in index.html, so main.js asks for /api/menu.json
+//      instead of /api/menu — the one behavioural difference between the two
+//      deployments.
+//   2. SITE_DOMAIN in every absolute URL of every page. Asset paths are
+//      root-relative and carry no domain, but canonical, og:url, og:image and
+//      the JSON-LD cannot be: a relative canonical or og:image is ignored by
+//      Google and by WhatsApp. The domain they are written with in the source
+//      files is taken from index.html's <link rel="canonical">, so the value
+//      lives in one place and `SITE_DOMAIN=otro.com pnpm build:static` comes
+//      out whole — legal pages included.
+async function htmlFiles(dir) {
+  const out = [];
+  for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...(await htmlFiles(full)));
+    else if (entry.name.endsWith('.html')) out.push(full);
+  }
+  return out;
+}
+
+async function rewriteHtml() {
+  const index = path.join(DIST_DIR, 'index.html');
+  let html = await fs.readFile(index, 'utf-8');
 
   const marker = '<script src="/js/main.js"';
   if (!html.includes(marker)) throw new Error('index.html: main.js script tag not found');
   html = html.replace(marker, `<script>window.VV_STATIC = true;</script>\n  ${marker}`);
+  await fs.writeFile(index, html);
 
   const canonical = html.match(/<link rel="canonical" href="https:\/\/([^/"]+)\//);
   if (!canonical) throw new Error('index.html: <link rel="canonical"> not found');
   const sourceDomain = canonical[1];
+  if (sourceDomain === SITE_DOMAIN) return 0;
+
   let rewritten = 0;
-  if (sourceDomain !== SITE_DOMAIN) {
-    html = html.replaceAll(`https://${sourceDomain}`, () => {
+  for (const file of await htmlFiles(DIST_DIR)) {
+    const before = await fs.readFile(file, 'utf-8');
+    const after = before.replaceAll(`https://${sourceDomain}`, () => {
       rewritten += 1;
       return `https://${SITE_DOMAIN}`;
     });
-    if (!rewritten) throw new Error(`index.html: no absolute ${sourceDomain} URL to rewrite`);
+    if (after !== before) await fs.writeFile(file, after);
   }
-
-  await fs.writeFile(file, html);
+  if (!rewritten) throw new Error(`no absolute ${sourceDomain} URL to rewrite`);
   return rewritten;
+}
+
+// The old WordPress had real pages at these paths and Google has had them
+// indexed since 2024. GitHub Pages cannot issue a 30x, so each one becomes a
+// directory with a meta-refresh page: Google treats a 0-second refresh as a
+// permanent redirect and the canonical tells it which URL to keep, while a
+// visitor arriving from a stale search result lands on the right section
+// instead of on a 404.
+const LEGACY_PATHS = {
+  carta: '/#menu',
+  contacto: '/#contact',
+  galeria: '/#gallery',
+  'quienes-somos': '/#story',
+  resenas: '/',
+};
+
+async function writeLegacyRedirects() {
+  for (const [from, to] of Object.entries(LEGACY_PATHS)) {
+    const dir = path.join(DIST_DIR, from);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(
+      path.join(dir, 'index.html'),
+      `<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="UTF-8">\n  <title>Pizzería Voy Volando</title>\n  <link rel="canonical" href="https://${SITE_DOMAIN}${to.split('#')[0]}">\n  <meta http-equiv="refresh" content="0; url=${to}">\n  <meta name="robots" content="noindex, follow">\n</head>\n<body>\n  <p>Esta página se ha movido. <a href="${to}">Ir a la página actual</a>.</p>\n  <script>location.replace('${to}');</script>\n</body>\n</html>\n`
+    );
+  }
+  return Object.keys(LEGACY_PATHS).length;
 }
 
 // Crawlers must be able to fetch the frozen JSON — the menu is rendered from
@@ -104,9 +145,31 @@ async function writeHostingFiles() {
     path.join(DIST_DIR, 'robots.txt'),
     `User-agent: *\nAllow: /\n\nSitemap: https://${SITE_DOMAIN}/sitemap.xml\n`
   );
+  const urls = [
+    { loc: '/', changefreq: 'weekly', priority: '1.0' },
+    { loc: '/aviso-legal/', changefreq: 'yearly', priority: '0.3' },
+    { loc: '/privacidad/', changefreq: 'yearly', priority: '0.3' },
+  ]
+    .map(
+      (u) =>
+        `  <url>
+    <loc>https://${SITE_DOMAIN}${u.loc}</loc>
+` +
+        `    <lastmod>${today}</lastmod>
+    <changefreq>${u.changefreq}</changefreq>
+` +
+        `    <priority>${u.priority}</priority>
+  </url>
+`
+    )
+    .join('');
   await fs.writeFile(
     path.join(DIST_DIR, 'sitemap.xml'),
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://${SITE_DOMAIN}/</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n</urlset>\n`
+    `<?xml version="1.0" encoding="UTF-8"?>
+` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}</urlset>
+`
   );
   await fs.writeFile(
     path.join(DIST_DIR, '404.html'),
@@ -130,8 +193,10 @@ async function main() {
     server.close();
   }
 
-  const rewritten = await rewriteIndexHtml();
-  if (rewritten) log(`index.html: ${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
+  const rewritten = await rewriteHtml();
+  if (rewritten) log(`${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
+  const redirects = await writeLegacyRedirects();
+  log(`${redirects} redirecciones de URLs antiguas`);
   await writeHostingFiles();
   log(`CNAME ${SITE_DOMAIN}, robots.txt, sitemap.xml, 404.html, .nojekyll`);
   console.log('\nListo. Sirve dist/ con cualquier estático (GitHub Pages incluido).\n');
