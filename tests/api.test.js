@@ -13,6 +13,7 @@ process.env.PUBLIC_DIR = path.join(tmp, 'public');
 process.env.ADMIN_PASSWORD = 'test-password-123';
 fs.mkdirSync(process.env.DATA_DIR, { recursive: true });
 
+const sharp = require('sharp');
 const { createApp } = require('../src/app');
 
 let server;
@@ -111,6 +112,117 @@ test('monthly special round-trips and coerces active to boolean', async () => {
   const ms = (await api('GET', '/api/monthly-special')).json;
   assert.equal(ms.active, false); // only active === true counts
   assert.equal(ms.name, 'Trufa');
+});
+
+test('offers: public read, admin write, untitled cards dropped', async () => {
+  assert.deepEqual((await api('GET', '/api/offers')).json, {
+    active: false,
+    intro: '',
+    items: [],
+  });
+
+  const saved = await api('PUT', '/api/offers', {
+    active: true,
+    intro: 'Promos de la semana',
+    items: [
+      { id: 'familiares-10', title: 'Familiares a 10 EUR', description: 'Solo a recoger' },
+      { id: 'vacia', title: '', description: 'sin titulo, se descarta' },
+    ],
+  });
+  assert.equal(saved.status, 200);
+  assert.equal(saved.json.items.length, 1);
+  assert.equal(saved.json.items[0].id, 'familiares-10');
+  assert.equal((await api('GET', '/api/offers')).json.active, true);
+});
+
+// Photos are uploaded to their own endpoint, so the whole-document save has to
+// carry them across by id: without that, editing a title would blank the photo,
+// and deleting a card would leave its WebP orphaned in public/assets/ofertas.
+test('offers: the photo survives a text save and dies with its card', async () => {
+  const png = await sharp({
+    create: { width: 12, height: 12, channels: 3, background: '#c00' },
+  })
+    .png()
+    .toBuffer();
+
+  const fd = new FormData();
+  fd.append('image', new Blob([png], { type: 'image/png' }), 'oferta.png');
+  const up = await fetch(base + '/api/offers/familiares-10/image', {
+    method: 'POST',
+    headers: { Cookie: cookie },
+    body: fd,
+  });
+  const uploaded = await up.json();
+  assert.equal(up.status, 200);
+  assert.match(uploaded.image, /^\/assets\/ofertas\/\d+-\w+\.webp$/);
+
+  const onDisk = path.join(
+    process.env.PUBLIC_DIR,
+    'assets',
+    'ofertas',
+    path.basename(uploaded.image)
+  );
+  assert.ok(fs.existsSync(onDisk), 'la imagen tendria que estar en disco');
+
+  // Guardar solo texto no puede perder la foto.
+  const kept = await api('PUT', '/api/offers', {
+    active: true,
+    intro: 'Promos de la semana',
+    items: [{ id: 'familiares-10', title: 'Familiares a 10 EUR (editado)' }],
+  });
+  assert.equal(kept.json.items[0].image, uploaded.image);
+  assert.ok(fs.existsSync(onDisk));
+
+  // Quitar la tarjeta se lleva su fichero por delante.
+  await api('PUT', '/api/offers', { active: true, intro: '', items: [] });
+  assert.equal(fs.existsSync(onDisk), false, 'la imagen huerfana tendria que borrarse');
+});
+
+test('offers: uploading to an unknown card is a 404 and writes nothing', async () => {
+  const dir = path.join(process.env.PUBLIC_DIR, 'assets', 'ofertas');
+  const before = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+  const png = await sharp({
+    create: { width: 12, height: 12, channels: 3, background: '#00c' },
+  })
+    .png()
+    .toBuffer();
+  const fd = new FormData();
+  fd.append('image', new Blob([png], { type: 'image/png' }), 'x.png');
+  const r = await fetch(base + '/api/offers/no-existe/image', {
+    method: 'POST',
+    headers: { Cookie: cookie },
+    body: fd,
+  });
+  assert.equal(r.status, 404);
+  const after = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+  assert.deepEqual(after, before, 'no tendria que haber dejado ningun fichero');
+});
+
+test('monthly special: a text save keeps the photo', async () => {
+  const png = await sharp({
+    create: { width: 12, height: 12, channels: 3, background: '#0c0' },
+  })
+    .png()
+    .toBuffer();
+  const fd = new FormData();
+  fd.append('image', new Blob([png], { type: 'image/png' }), 'pizza.png');
+  const up = await fetch(base + '/api/monthly-special/image', {
+    method: 'POST',
+    headers: { Cookie: cookie },
+    body: fd,
+  });
+  const { image } = await up.json();
+  assert.match(image, /^\/assets\/especial\//);
+
+  await api('PUT', '/api/monthly-special', { active: true, name: 'Guanciale' });
+  assert.equal((await api('GET', '/api/monthly-special')).json.image, image);
+
+  await api('DELETE', '/api/monthly-special/image');
+  assert.equal((await api('GET', '/api/monthly-special')).json.image, undefined);
+  assert.equal(
+    fs.existsSync(path.join(process.env.PUBLIC_DIR, 'assets', 'especial', path.basename(image))),
+    false
+  );
 });
 
 test('password change validates current password and length', async () => {

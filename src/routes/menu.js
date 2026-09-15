@@ -1,16 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const { Router } = require('express');
-const sharp = require('sharp');
-const {
-  ASSETS_DIR,
-  PUBLIC_DIR,
-  MENU_IMG_DIR,
-  ORDERING_FILE,
-  IMAGE_MAX_DIMENSION,
-  IMAGE_WEBP_QUALITY,
-} = require('../config');
+const { ASSETS_DIR, PUBLIC_DIR, MENU_IMG_DIR, ORDERING_FILE } = require('../config');
 const { readJSON, writeJSON } = require('../lib/json-store');
+const { saveWebp, removeImage } = require('../services/image-store');
 const requireAuth = require('../middleware/require-auth');
 const { pdfUpload, imageUpload } = require('../middleware/uploads');
 
@@ -75,12 +68,6 @@ const sanitizeMenuItem = (p) => {
 
 // Deletes an item's uploaded photo from disk (basename guards against
 // traversal). No-op when the item has no image or the file is already gone.
-function unlinkItemImage(image) {
-  if (!image) return;
-  const fp = path.join(MENU_IMG_DIR, path.basename(image));
-  if (fs.existsSync(fp)) fs.unlinkSync(fp);
-}
-
 const router = Router();
 
 router.get('/', (_req, res) => {
@@ -127,7 +114,7 @@ router.post('/pdf', requireAuth, pdfUpload.single('menu'), (req, res) => {
   res.json({ ok: true, pdf: cfg.site.menu.pdf });
 });
 
-// Per-item photo: sharp → WebP into MENU_IMG_DIR, same pipeline as the gallery.
+// Per-item photo into MENU_IMG_DIR, same pipeline as the gallery.
 // The old photo is removed so replacements never orphan a file on disk.
 router.post('/:id/image', requireAuth, imageUpload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Imagen requerida' });
@@ -135,18 +122,8 @@ router.post('/:id/image', requireAuth, imageUpload.single('image'), async (req, 
   const idx = menu.findIndex((p) => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'No encontrada' });
   try {
-    const name = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
-    await sharp(req.file.buffer)
-      .rotate() // respects EXIF orientation
-      .resize({
-        width: IMAGE_MAX_DIMENSION,
-        height: IMAGE_MAX_DIMENSION,
-        fit: 'inside',
-        withoutEnlargement: true,
-      })
-      .webp({ quality: IMAGE_WEBP_QUALITY })
-      .toFile(path.join(MENU_IMG_DIR, name));
-    unlinkItemImage(menu[idx].image);
+    const name = await saveWebp(req.file.buffer, MENU_IMG_DIR);
+    removeImage(MENU_IMG_DIR, menu[idx].image);
     menu[idx].image = `/assets/menu/${name}`;
     writeJSON(MENU_FILE, menu);
     res.json({ ok: true, image: menu[idx].image });
@@ -159,7 +136,7 @@ router.delete('/:id/image', requireAuth, (req, res) => {
   const menu = readJSON(MENU_FILE, []);
   const idx = menu.findIndex((p) => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'No encontrada' });
-  unlinkItemImage(menu[idx].image);
+  removeImage(MENU_IMG_DIR, menu[idx].image);
   delete menu[idx].image;
   writeJSON(MENU_FILE, menu);
   res.json({ ok: true });
@@ -177,7 +154,7 @@ router.put('/:id', requireAuth, (req, res) => {
 router.delete('/:id', requireAuth, (req, res) => {
   const menu = readJSON(MENU_FILE, []);
   const removed = menu.find((p) => p.id === req.params.id);
-  if (removed) unlinkItemImage(removed.image);
+  if (removed) removeImage(MENU_IMG_DIR, removed.image);
   writeJSON(
     MENU_FILE,
     menu.filter((p) => p.id !== req.params.id)

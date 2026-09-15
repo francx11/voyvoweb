@@ -33,6 +33,7 @@ function createApp() {
   app.use('/api/menu', require('./routes/menu'));
   app.use('/api/monthly-special', require('./routes/monthly-special'));
   app.use('/api/gallery', require('./routes/gallery'));
+  app.use('/api/offers', require('./routes/offers'));
   app.use('/api/site', require('./routes/site'));
   app.use('/api/reviews', require('./routes/reviews'));
   app.use('/api/config', require('./routes/settings'));

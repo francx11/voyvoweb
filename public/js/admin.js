@@ -132,6 +132,7 @@
     },
     gallery: loadGallery,
     'monthly-special': loadMonthlySpecial,
+    offers: loadOffers,
     content: loadContent,
     reviews: loadReviews,
     settings: loadSettings,
@@ -604,6 +605,7 @@
     $('ms-badge-input').value = ms.badge || '';
     $('ms-cta-input').value = ms.cta || '';
     $('toggle-monthly-special').classList.toggle('on', !!ms.active);
+    setMsImageUI(ms.image || '');
   }
 
   $('toggle-monthly-special').addEventListener('click', function () {
@@ -626,6 +628,175 @@
     try {
       await api('PUT', '/api/monthly-special', data);
       toast('Pizza del mes guardada ✓');
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  });
+
+  // ── Monthly special photo (its own endpoints: uploads without saving) ────
+  const msImgInput = $('ms-img-input');
+  function setMsImageUI(image) {
+    $('ms-img-preview').src = image || '/assets/menu-placeholder.svg';
+    $('btn-ms-img-remove').style.display = image ? '' : 'none';
+  }
+  $('btn-ms-img').addEventListener('click', () => msImgInput.click());
+  msImgInput.addEventListener('change', async () => {
+    if (!msImgInput.files.length) return;
+    const fd = new FormData();
+    fd.append('image', msImgInput.files[0]);
+    toast('Subiendo foto...');
+    try {
+      const res = await apiUploadForm('/api/monthly-special/image', fd);
+      setMsImageUI(res.image);
+      toast('Foto subida ✓');
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+    msImgInput.value = '';
+  });
+  $('btn-ms-img-remove').addEventListener('click', async () => {
+    try {
+      await api('DELETE', '/api/monthly-special/image');
+      setMsImageUI('');
+      toast('Foto quitada ✓');
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  });
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // OFFERS
+  // ═════════════════════════════════════════════════════════════════════════
+  // The cards are edited inline and saved in one PUT. Photos are the exception:
+  // they go to their own endpoint and need the card to exist on the server, so
+  // a brand-new card asks to be saved first instead of silently losing the file.
+  let offers = { active: false, intro: '', items: [] };
+
+  function offerRow(o, i) {
+    const img = esc(o.image || '/assets/menu-placeholder.svg');
+    return [
+      '<div class="card" data-offer="' + i + '" style="margin-bottom:1rem">',
+      '  <div style="display:flex;gap:1rem;flex-wrap:wrap">',
+      '    <img alt="" src="' + img + '"',
+      '         style="width:120px;height:90px;object-fit:cover;border-radius:0.4rem;border:1px solid var(--line)">',
+      '    <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:0.6rem">',
+      '      <div class="form-field">',
+      '        <label>Título</label>',
+      '        <input type="text" class="offer-title" value="' + esc(o.title) + '" placeholder="Familiares a 10 €">',
+      '      </div>',
+      '      <div class="form-field">',
+      '        <label>Descripción</label>',
+      '        <textarea class="offer-desc" rows="2" placeholder="Todos los días, solo a recoger.">' + esc(o.description) + '</textarea>',
+      '      </div>',
+      '      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">',
+      '        <button type="button" class="btn btn-ghost offer-img-btn">' + (o.image ? 'Cambiar foto' : 'Subir foto') + '</button>',
+      o.image ? '        <button type="button" class="btn btn-ghost offer-img-remove">Quitar foto</button>' : '',
+      '        <button type="button" class="btn btn-ghost offer-delete" style="margin-left:auto">Eliminar</button>',
+      '        <input type="file" class="offer-img-input" accept="image/*" style="display:none">',
+      '      </div>',
+      o.saved === false
+        ? '      <span style="font-size:0.78rem;color:var(--muted)">Guarda las ofertas para poder subirle la foto.</span>'
+        : '',
+      '    </div>',
+      '  </div>',
+      '</div>',
+    ]
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  function renderOffers() {
+    $('offers-list').innerHTML = offers.items.length
+      ? offers.items.map(offerRow).join('')
+      : '<p style="color:var(--muted);font-size:0.85rem">Todavía no hay ofertas. Añade la primera.</p>';
+  }
+
+  // Reads the inputs back into `offers` so nothing typed is lost on a re-render.
+  function collectOffers() {
+    document.querySelectorAll('#offers-list [data-offer]').forEach((row) => {
+      const o = offers.items[Number(row.dataset.offer)];
+      if (!o) return;
+      o.title = row.querySelector('.offer-title').value;
+      o.description = row.querySelector('.offer-desc').value;
+    });
+    offers.active = $('toggle-offers').classList.contains('on');
+    offers.intro = $('offers-intro-input').value;
+  }
+
+  async function loadOffers() {
+    const data = await api('GET', '/api/offers').catch(() => ({}));
+    offers = { active: !!data.active, intro: data.intro || '', items: data.items || [] };
+    $('toggle-offers').classList.toggle('on', offers.active);
+    $('offers-intro-input').value = offers.intro;
+    renderOffers();
+  }
+
+  async function saveOffers() {
+    collectOffers();
+    try {
+      offers = await api('PUT', '/api/offers', offers);
+      renderOffers();
+      toast('Ofertas guardadas ✓');
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  }
+
+  $('toggle-offers').addEventListener('click', function () {
+    this.classList.toggle('on');
+  });
+  $('toggle-offers-label').addEventListener('click', () => $('toggle-offers').click());
+  $('btn-offers-save').addEventListener('click', saveOffers);
+
+  $('btn-offer-add').addEventListener('click', () => {
+    collectOffers();
+    offers.items.push({ id: String(Date.now()), title: '', description: '', saved: false });
+    renderOffers();
+  });
+
+  $('offers-list').addEventListener('click', async (e) => {
+    const row = e.target.closest('[data-offer]');
+    if (!row) return;
+    const idx = Number(row.dataset.offer);
+    const offer = offers.items[idx];
+
+    if (e.target.closest('.offer-delete')) {
+      collectOffers();
+      offers.items.splice(idx, 1);
+      renderOffers();
+      toast('Eliminada — pulsa "Guardar ofertas" para confirmar');
+      return;
+    }
+    if (e.target.closest('.offer-img-btn')) {
+      if (offer.saved === false) return toast('Guarda las ofertas primero', 'err');
+      row.querySelector('.offer-img-input').click();
+      return;
+    }
+    if (e.target.closest('.offer-img-remove')) {
+      try {
+        await api('DELETE', '/api/offers/' + offer.id + '/image');
+        delete offer.image;
+        renderOffers();
+        toast('Foto quitada ✓');
+      } catch (err) {
+        toast(err.message, 'err');
+      }
+    }
+  });
+
+  $('offers-list').addEventListener('change', async (e) => {
+    const input = e.target.closest('.offer-img-input');
+    if (!input || !input.files.length) return;
+    const offer = offers.items[Number(e.target.closest('[data-offer]').dataset.offer)];
+    const fd = new FormData();
+    fd.append('image', input.files[0]);
+    toast('Subiendo foto...');
+    try {
+      const res = await apiUploadForm('/api/offers/' + offer.id + '/image', fd);
+      collectOffers();
+      offer.image = res.image;
+      renderOffers();
+      toast('Foto subida ✓');
     } catch (err) {
       toast(err.message, 'err');
     }

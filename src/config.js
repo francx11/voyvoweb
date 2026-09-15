@@ -27,6 +27,8 @@ module.exports = {
   ASSETS_DIR: path.join(PUBLIC_DIR, 'assets'),
   GALLERY_DIR: path.join(PUBLIC_DIR, 'assets', 'gallery'),
   MENU_IMG_DIR: path.join(PUBLIC_DIR, 'assets', 'menu'),
+  OFFERS_IMG_DIR: path.join(PUBLIC_DIR, 'assets', 'ofertas'),
+  SPECIAL_IMG_DIR: path.join(PUBLIC_DIR, 'assets', 'especial'),
 
   SESSION_TTL: 8 * 60 * 60 * 1000, // 8h, sliding
   SESSION_COOKIE: 'vv_sess',

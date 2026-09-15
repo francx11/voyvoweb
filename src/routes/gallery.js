@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const { Router } = require('express');
-const sharp = require('sharp');
-const { GALLERY_DIR, IMAGE_MAX_DIMENSION, IMAGE_WEBP_QUALITY } = require('../config');
+const { GALLERY_DIR } = require('../config');
 const gallery = require('../services/gallery-store');
+const { saveWebp } = require('../services/image-store');
 const requireAuth = require('../middleware/require-auth');
 const { imageUpload } = require('../middleware/uploads');
 
@@ -17,17 +17,7 @@ router.post('/upload', requireAuth, imageUpload.array('photos', 30), async (req,
   try {
     const saved = [];
     for (const file of req.files || []) {
-      const name = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
-      await sharp(file.buffer)
-        .rotate() // respects EXIF orientation
-        .resize({
-          width: IMAGE_MAX_DIMENSION,
-          height: IMAGE_MAX_DIMENSION,
-          fit: 'inside',
-          withoutEnlargement: true,
-        })
-        .webp({ quality: IMAGE_WEBP_QUALITY })
-        .toFile(path.join(GALLERY_DIR, name));
+      const name = await saveWebp(file.buffer, GALLERY_DIR);
       saved.push({ filename: name, url: `/assets/gallery/${name}` });
     }
     gallery.saveOrder(gallery.list()); // folds new files in at the end

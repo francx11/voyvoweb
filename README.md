@@ -53,15 +53,17 @@ src/
     sessions.js          sesiones en memoria + cookies
     login-limiter.js     rate limit de login por IP
     gallery-store.js     reconciliación disco ↔ gallery.json
+    image-store.js       pipeline única de imágenes (EXIF + resize + WebP)
     google-reviews.js    Places API con caché (10 min)
   middleware/          security headers, requireAuth, multer, error handler JSON
   routes/              un router por dominio: auth, menu, gallery, site,
-                       monthly-special, reviews, settings
+                       monthly-special, offers, reviews, settings
 tests/api.test.js      Tests de integración contra la app real (datos en tmp)
 public/index.html      Web pública (+ css/main.css, js/main.js)
 public/admin.html      Panel de administración, servido en /admin (+ css/admin.css, js/admin.js)
 public/assets/gallery/ Fotos subidas (optimizadas a WebP)
-data/*.json            Contenido editable (carta, config, pizza del mes, orden de galería)
+public/assets/ofertas/ Fotos de las ofertas · assets/especial/ foto de la pizza del mes
+data/*.json            Contenido editable (carta, config, pizza del mes, ofertas, galería)
 data/auth.json         Hash de contraseña (gitignored, se autogenera)
 docs/                  Análisis de competencia, stack y plan de despliegue
 scripts/backup.mjs     Backup de datos y galería
