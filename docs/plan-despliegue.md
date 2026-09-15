@@ -35,6 +35,12 @@ pnpm build:static     # → dist/  (CNAME, .nojekyll, 404.html, robots, sitemap 
 `public/js/main.js` pide `/api/menu.json` en lugar de `/api/menu` cuando detecta
 `window.VV_STATIC`, bandera que el build inyecta en `dist/index.html`.
 
+El dominio vive en un único sitio, `SITE_DOMAIN`. Las rutas de CSS, JS e imágenes son absolutas
+desde la raíz (`/css/main.css`) y no llevan dominio, así que valen en cualquier host; las cinco
+que sí tienen que ser completas (`canonical`, `og:url`, `og:image` y dos del JSON-LD) las reescribe
+el build con el valor de `SITE_DOMAIN`, igual que el CNAME, el sitemap y el robots. Cambiar de
+dominio es, por tanto, `SITE_DOMAIN=nuevo.com pnpm build:static` (y la variable del workflow).
+
 ## Qué se pierde en fase 1 (y es aceptable)
 
 | Función           | Estado en estático                                                               |

@@ -58,17 +58,38 @@ async function copyPublic() {
   });
 }
 
-// The one build-time difference between the two deployments: main.js then
-// asks for /api/menu.json instead of /api/menu.
-async function flagStaticHtml() {
+// Two build-time rewrites of the published index.html:
+//
+//   1. window.VV_STATIC, so main.js asks for /api/menu.json instead of /api/menu
+//      — the one behavioural difference between the two deployments.
+//   2. SITE_DOMAIN in the handful of URLs that have to be absolute (canonical,
+//      og:url, og:image, JSON-LD). Asset paths are root-relative and carry no
+//      domain, but these cannot be: a relative canonical or og:image is ignored
+//      by Google and by WhatsApp. The domain they are written with in the
+//      source file is taken from <link rel="canonical">, so the value lives in
+//      one place and `SITE_DOMAIN=otro.com pnpm build:static` comes out whole.
+async function rewriteIndexHtml() {
   const file = path.join(DIST_DIR, 'index.html');
-  const html = await fs.readFile(file, 'utf-8');
+  let html = await fs.readFile(file, 'utf-8');
+
   const marker = '<script src="/js/main.js"';
   if (!html.includes(marker)) throw new Error('index.html: main.js script tag not found');
-  await fs.writeFile(
-    file,
-    html.replace(marker, `<script>window.VV_STATIC = true;</script>\n  ${marker}`)
-  );
+  html = html.replace(marker, `<script>window.VV_STATIC = true;</script>\n  ${marker}`);
+
+  const canonical = html.match(/<link rel="canonical" href="https:\/\/([^/"]+)\//);
+  if (!canonical) throw new Error('index.html: <link rel="canonical"> not found');
+  const sourceDomain = canonical[1];
+  let rewritten = 0;
+  if (sourceDomain !== SITE_DOMAIN) {
+    html = html.replaceAll(`https://${sourceDomain}`, () => {
+      rewritten += 1;
+      return `https://${SITE_DOMAIN}`;
+    });
+    if (!rewritten) throw new Error(`index.html: no absolute ${sourceDomain} URL to rewrite`);
+  }
+
+  await fs.writeFile(file, html);
+  return rewritten;
 }
 
 // Crawlers must be able to fetch the frozen JSON — the menu is rendered from
@@ -108,7 +129,8 @@ async function main() {
     server.close();
   }
 
-  await flagStaticHtml();
+  const rewritten = await rewriteIndexHtml();
+  if (rewritten) log(`index.html: ${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
   await writeHostingFiles();
   log(`CNAME ${SITE_DOMAIN}, robots.txt, sitemap.xml, 404.html, .nojekyll`);
   console.log('\nListo. Sirve dist/ con cualquier estático (GitHub Pages incluido).\n');
