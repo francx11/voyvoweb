@@ -200,6 +200,8 @@ img { max-width: 100%; display: block; }
   padding: 0.6rem 1.2rem; border-radius: var(--radius-pill);
 }
 .site-nav .nav-cta:hover { background: var(--tomato-btn-hover); color: var(--on-tomato); }
+.site-nav a[aria-current="page"] { color: var(--tomato); }
+.site-nav .nav-cta[aria-current="page"] { color: var(--on-tomato); }
 
 /* ── Buttons ── */
 .btn {
@@ -241,7 +243,8 @@ img { max-width: 100%; display: block; }
   color: var(--ink-soft);
   max-width: 46ch; margin: 0 auto 2.2rem;
 }
-.hero-actions { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+.hero-actions, .actions-row { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+.actions-row { margin-top: 1.5rem; }
 .hero-since {
   margin-top: 3rem;
   font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
@@ -825,25 +828,6 @@ body.cart-scroll-lock { overflow: hidden; }
 .order-cancel-countdown { font-size: 0.82rem; color: var(--ink-soft); }
 .order-cancel-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ── Navegación de las páginas estáticas (/carta/, /contacto/) ──
-   No llevan JavaScript, así que no hay botón hamburguesa que abrir: los
-   enlaces se quedan siempre visibles y envuelven cuando no caben. */
-.page-nav ul {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 1.4rem; list-style: none;
-}
-.page-nav a {
-  color: var(--ink-soft); text-decoration: none;
-  font-size: 0.8rem; font-weight: 700;
-  letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 0.5rem 0;
-}
-.page-nav a:hover { color: var(--tomato); }
-.page-nav .nav-cta {
-  color: var(--on-tomato); background: var(--tomato-btn);
-  padding: 0.5rem 1.1rem; border-radius: var(--radius-pill);
-}
-.page-nav .nav-cta:hover { background: var(--tomato-btn-hover); color: var(--on-tomato); }
-
 /* ── Carta estática (/carta/) ──
    La portada pinta la carta en el navegador; /carta/ la sirve ya escrita en el
    HTML para que Google la indexe. Sin tarjetas ni fotos: es una lista legible
@@ -925,5 +909,5 @@ body.cart-scroll-lock { overflow: hidden; }
   .form-row { grid-template-columns: 1fr; }
   .menu-line { flex-wrap: wrap; }
   .menu-dots { min-width: 1rem; }
-  .hero-actions .btn { width: 100%; }
+  .hero-actions .btn, .actions-row .btn { width: 100%; }
 }

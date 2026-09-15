@@ -7,10 +7,12 @@
  * otros 21, así que esas dos rutas necesitan seguir siendo URLs de verdad con
  * el contenido dentro del HTML, no una redirección al ancla.
  *
- * Estas páginas no llevan JavaScript a propósito: se generan en el build a
+ * Su contenido no lo pinta JavaScript a propósito: se genera en el build a
  * partir de los mismos JSON congelados que consume la portada, así que no hay
- * un segundo renderizador que pueda desincronizarse. Reutilizan main.css, que
- * ya resuelve el modo oscuro por prefers-color-scheme sin ayuda del toggle.
+ * un segundo renderizador que pueda desincronizarse. Lo único que cargan es
+ * js/ui.js —el mismo de la portada— para que la cabecera se comporte igual:
+ * botón de modo oscuro y menú hamburguesa. Sin él siguen siendo legibles y
+ * navegables, porque main.css ya resuelve el tema por prefers-color-scheme.
  */
 
 const escapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
@@ -83,6 +85,49 @@ const jsonLdBlock = (data) =>
     '\\u003c'
   )}\n  </script>`;
 
+// Misma cabecera que public/index.html: mismo marcado, mismas clases y los
+// mismos dos botones (tema y hamburguesa), que js/ui.js activa en las dos
+// páginas. Los enlaces de sección van en absoluto ("/#story") porque desde
+// aquí el ancla sola apuntaría a esta misma página. /carta/ y /contacto/ son
+// páginas de verdad, así que la barra enlaza la URL y no el ancla.
+const NAV_ITEMS = [
+  { href: '/#story', label: 'Nosotros' },
+  { href: '/carta/', label: 'Carta' },
+  { href: '/#offers', label: 'Ofertas' },
+  { href: '/#services', label: 'Servicios' },
+  { href: '/#gallery', label: 'Galería' },
+  { href: '/contacto/', label: 'Contacto' },
+];
+
+function siteHeader(path) {
+  const links = NAV_ITEMS.map((item) => {
+    const current = item.href === path ? ' aria-current="page"' : '';
+    return `            <li><a href="${item.href}"${current}>${esc(item.label)}</a></li>`;
+  }).join('\n');
+
+  return `  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="brand">Voy <em>Volando</em></a>
+      <div class="header-right">
+        <nav id="site-nav" class="site-nav" aria-label="Principal">
+          <ul>
+${links}
+            <li><a href="tel:958442847" class="nav-cta">Pedir ahora</a></li>
+          </ul>
+        </nav>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Activar modo oscuro">
+          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+        <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú de navegación">
+          <svg class="icon-open" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>`;
+}
+
 function shell({ domain, path, title, description, jsonLd, body }) {
   const url = `https://${domain}${path}`;
   return `<!DOCTYPE html>
@@ -125,19 +170,7 @@ ${jsonLd.map(jsonLdBlock).join('\n')}
 
   <a class="skip-link" href="#content">Saltar al contenido</a>
 
-  <header class="site-header">
-    <div class="header-inner">
-      <a href="/" class="brand">Voy <em>Volando</em></a>
-      <nav class="page-nav" aria-label="Principal">
-        <ul>
-          <li><a href="/">Portada</a></li>
-          <li><a href="/carta/">Carta</a></li>
-          <li><a href="/contacto/">Contacto</a></li>
-          <li><a href="tel:958442847" class="nav-cta">Pedir ahora</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+${siteHeader(path)}
 
   <main id="content">
 ${body}
@@ -163,6 +196,8 @@ ${body}
       <p>© 2026 Pizzería Voy Volando</p>
     </div>
   </footer>
+
+  <script src="/js/ui.js" defer></script>
 
 </body>
 </html>
@@ -237,19 +272,19 @@ ${group.items.map((item) => renderItem(item, tiers)).join('\n')}
           <span class="eyebrow">Nuestras pizzas</span>
           <h1 class="section-title">La carta de Voy Volando en Santa Fe</h1>
           <div class="ornament" aria-hidden="true"><span>◆</span></div>
-          <p class="section-intro" style="margin:0 auto">Clásicas y gourmet, con masa artesanal hecha cada mañana. Pídelas a domicilio en Santa Fe y alrededores, para recoger o para comer en el local: <a href="tel:958442847">958 44 28 47</a>.</p>
+          <p class="section-intro" style="margin:0 auto">Clásicas y gourmet, con masa artesanal hecha cada mañana. Pídelas a domicilio en Santa Fe y alrededores o pasa a recogerlas por el local.</p>
         </header>
 
 ${sections}
 
         <div class="ornament" aria-hidden="true"><span>◆</span></div>
-        <p style="text-align:center">
+        <p class="actions-row">
           <a href="tel:958442847" class="btn btn-primary">Pedir por teléfono · 958 44 28 47</a>
-        </p>
-        <p style="text-align:center">
-          <a href="/#menu">Ver la carta con fotos y filtro de alérgenos</a>${
+          <a href="/#menu" class="btn btn-outline">Ver la carta con fotos</a>${
             pdf
-              ? `\n          · <a href="${esc(pdf)}" target="_blank" rel="noopener">Carta en PDF</a>`
+              ? `\n          <a href="${esc(
+                  pdf
+                )}" class="btn btn-outline" target="_blank" rel="noopener">Carta en PDF</a>`
               : ''
           }
         </p>
@@ -261,7 +296,7 @@ ${sections}
     path: '/carta/',
     title: 'Carta y precios — Pizzería Voy Volando, Santa Fe (Granada)',
     description:
-      'Carta completa de Pizzería Voy Volando en Santa Fe (Granada): pizzas clásicas y especiales, pastas, ensaladas y postres con sus precios. A domicilio, para recoger o en el local.',
+      'Carta completa de Pizzería Voy Volando en Santa Fe (Granada): pizzas clásicas y especiales, pastas, ensaladas y postres con sus precios. A domicilio o para recoger.',
     jsonLd,
     body,
   });
@@ -334,7 +369,7 @@ export function renderContacto({ domain, site, ordering, business }) {
       <div class="container-narrow">
         <span class="eyebrow">Encuéntranos</span>
         <h1 class="section-title">Pizzería Voy Volando en Santa Fe: dónde estamos y cómo pedir</h1>
-        <p class="section-intro">Estamos en el centro de Santa Fe (Granada). Puedes pedir a domicilio, pasar a recoger o comer en el local. Los pedidos se hacen por teléfono, sin intermediarios ni comisiones.</p>
+        <p class="section-intro">Estamos en el centro de Santa Fe (Granada). Trabajamos solo a domicilio y para recoger: los pedidos se hacen por teléfono, sin intermediarios ni comisiones.</p>
 
         <dl>
           <div class="info-item">
@@ -366,7 +401,7 @@ export function renderContacto({ domain, site, ordering, business }) {
         </dl>
 
         <div class="ornament" aria-hidden="true"><span>◆</span></div>
-        <p style="text-align:center">
+        <p class="actions-row">
           <a href="tel:958442847" class="btn btn-primary">Llamar · 958 44 28 47</a>
           <a href="/carta/" class="btn btn-outline">Ver la carta</a>
         </p>
