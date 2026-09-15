@@ -170,7 +170,11 @@ async function writeContentPages() {
     await fs.mkdir(path.join(DIST_DIR, dir), { recursive: true });
     await fs.writeFile(path.join(DIST_DIR, dir, 'index.html'), html);
   }
-  return { pages: Object.keys(pages).length, items: menu.filter((i) => i.active !== false).length };
+  // Cuenta lo que acaba en la página, no lo que hay en menu.json: la carta
+  // deja fuera las promos duplicadas de #offers cuando los pedidos están
+  // apagados, que es siempre en el build estático.
+  const items = (pages.carta.match(/class="carta-item"/g) || []).length;
+  return { pages: Object.keys(pages).length, items };
 }
 
 // Crawlers must be able to fetch the frozen JSON — the menu is rendered from

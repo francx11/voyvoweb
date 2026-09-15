@@ -178,9 +178,19 @@ const breadcrumb = (domain, name, path) => ({
   ],
 });
 
+// Misma regla que renderMenu() en public/js/main.js: la categoría "Ofertas"
+// repite palabra por palabra las promos de la sección #offers de la portada, y
+// solo existe para poder añadirlas al carrito. Con los pedidos apagados es
+// copia muerta — y aquí además sería contenido duplicado en otra URL, que es
+// justo lo que esta página viene a evitar.
+const PROMO_CATEGORY = 'Ofertas';
+
 export function renderCarta({ domain, menu, ordering, site }) {
   const tiers = (ordering && ordering.tiers) || {};
-  const items = menu.filter((item) => item.active !== false);
+  const orderingOn = !!(ordering && ordering.enabled);
+  const items = menu.filter(
+    (item) => item.active !== false && (orderingOn || item.category !== PROMO_CATEGORY)
+  );
   const groups = groupByCategory(items);
   const pdf = site && site.menu && site.menu.pdf;
 

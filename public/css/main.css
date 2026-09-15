@@ -840,7 +840,7 @@ body.cart-scroll-lock { overflow: hidden; }
 .page-nav a:hover { color: var(--tomato); }
 .page-nav .nav-cta {
   color: var(--on-tomato); background: var(--tomato-btn);
-  padding: 0.5rem 1.1rem; border-radius: 999px;
+  padding: 0.5rem 1.1rem; border-radius: var(--radius-pill);
 }
 .page-nav .nav-cta:hover { background: var(--tomato-btn-hover); color: var(--on-tomato); }
 

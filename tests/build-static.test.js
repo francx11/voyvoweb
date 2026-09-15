@@ -70,10 +70,17 @@ test('el build estático reescribe el dominio en todas partes', () => {
   // se perdía al redirigir /carta/ a un fragmento (#menu no se indexa aparte).
   const carta = fs.readFileSync(path.join(OUT, 'carta', 'index.html'), 'utf-8');
   const menu = JSON.parse(fs.readFileSync(path.join(OUT, 'api', 'menu.json'), 'utf-8'));
-  const activos = menu.filter((item) => item.active !== false);
+  // Con los pedidos apagados —que es como sale el build estático— la categoría
+  // "Ofertas" no entra: repite las promos de #offers y aquí sería contenido
+  // duplicado en otra URL.
+  const activos = menu.filter((item) => item.active !== false && item.category !== 'Ofertas');
+  const promos = menu.filter((item) => item.active !== false && item.category === 'Ofertas');
   assert.ok(activos.length > 0, 'la carta de prueba está vacía');
   for (const item of activos) {
     assert.ok(carta.includes(item.name), `la carta no incluye "${item.name}"`);
+  }
+  for (const item of promos) {
+    assert.ok(!carta.includes(item.name), `la carta duplica la oferta "${item.name}"`);
   }
   assert.ok(carta.includes('"@type": "Menu"'), 'falta el JSON-LD de tipo Menu');
   assert.match(carta, /\d+,\d{2} €/, 'la carta no muestra ningún precio');
