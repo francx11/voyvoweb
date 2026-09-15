@@ -53,6 +53,7 @@ function createApp() {
   app.use('/api/site', require('./routes/site'));
   app.use('/api/reviews', require('./routes/reviews'));
   app.use('/api/config', require('./routes/settings'));
+  app.use('/api/theme', require('./routes/theme'));
   app.use('/api/features', require('./routes/features'));
   // Ordering config stays mounted with the feature off: menu items reference
   // its tiers, so the panel must keep editing them. What disappears is every

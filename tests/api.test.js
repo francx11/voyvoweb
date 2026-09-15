@@ -293,6 +293,97 @@ test('ordering disabled: admin settings still editable, flagged as overridden', 
   assert.equal(r.json.featureEnabled, false);
 });
 
+// ── theme ────────────────────────────────────────────────────────────────────
+// DATA_DIR is a temp dir with no presets, so the engine falls back to its
+// built-in one. Writing a preset here exercises the real lookup path.
+const writePreset = (id, extra = {}) => {
+  const dir = path.join(process.env.DATA_DIR, 'themes');
+  fs.mkdirSync(dir, { recursive: true });
+  const base = {
+    paper: '#faf2e2',
+    ink: '#16181d',
+    tomato: '#b00e14',
+    tomatoBtn: '#b00e14',
+    navy: '#0a2a6b',
+    gold: '#f0c24b',
+  };
+  fs.writeFileSync(
+    path.join(dir, `${id}.json`),
+    JSON.stringify({ id, name: id, light: { ...base, ...extra }, dark: { ...base, ...extra } })
+  );
+};
+
+test('GET /api/theme is public and resolves both modes', async () => {
+  const saved = cookie;
+  cookie = '';
+  const r = await api('GET', '/api/theme', undefined, { keepCookie: false });
+  cookie = saved;
+  assert.equal(r.status, 200);
+  assert.ok(r.json.light.paper.startsWith('#'));
+  assert.ok(r.json.dark.paper.startsWith('#'));
+  assert.ok(r.json.preset);
+});
+
+test('theme writes require the session', async () => {
+  const saved = cookie;
+  cookie = '';
+  const put = await api('PUT', '/api/theme', { preset: 'x' }, { keepCookie: false });
+  const presets = await api('GET', '/api/theme/presets', undefined, { keepCookie: false });
+  cookie = saved;
+  assert.equal(put.status, 401);
+  assert.equal(put.json.error, 'No autorizado');
+  assert.equal(presets.status, 401);
+});
+
+test('PUT /api/theme rejects an unknown preset and invalid colours', async () => {
+  const unknown = await api('PUT', '/api/theme', { preset: 'no-existe' });
+  assert.equal(unknown.status, 400);
+  assert.match(unknown.json.error, /no-existe/);
+
+  writePreset('prueba');
+  // Junk overrides are dropped, not fatal: the save succeeds using the preset.
+  const ok = await api('PUT', '/api/theme', {
+    preset: 'prueba',
+    overrides: { light: { ink: 'rojo', desconocido: '#000000' }, dark: {} },
+  });
+  assert.equal(ok.status, 200);
+  const after = await api('GET', '/api/theme');
+  assert.deepEqual(after.json.overrides.light, {});
+});
+
+test('PUT /api/theme refuses a palette that would make the site unreadable', async () => {
+  writePreset('prueba');
+  const r = await api('PUT', '/api/theme', {
+    preset: 'prueba',
+    // Ink on paper would be 1:1 — text would vanish.
+    overrides: { light: { ink: '#faf2e2' }, dark: {} },
+  });
+  assert.equal(r.status, 400);
+  assert.match(r.json.error, /[Cc]ontraste/);
+});
+
+test('a saved theme rewrites public/css/theme.css', async () => {
+  writePreset('verde', { tomato: '#0f6b2f', tomatoBtn: '#0f6b2f' });
+  const r = await api('PUT', '/api/theme', { preset: 'verde' });
+  assert.equal(r.status, 200);
+  const css = fs.readFileSync(path.join(process.env.PUBLIC_DIR, 'css', 'theme.css'), 'utf-8');
+  assert.ok(css.includes('--tomato: #0f6b2f'), 'theme.css no refleja el preset guardado');
+});
+
+test('preview returns css and contrast without writing anything', async () => {
+  writePreset('prueba');
+  const before = fs.readFileSync(path.join(process.env.PUBLIC_DIR, 'css', 'theme.css'), 'utf-8');
+  const r = await api('POST', '/api/theme/preview', {
+    preset: 'prueba',
+    overrides: { light: { paper: '#102030' }, dark: {} },
+  });
+  assert.equal(r.status, 200);
+  assert.ok(r.json.css.includes('--paper: #102030'));
+  assert.ok(typeof r.json.contrast.light.hard['ink/paper'] === 'number');
+  const after = fs.readFileSync(path.join(process.env.PUBLIC_DIR, 'css', 'theme.css'), 'utf-8');
+  assert.equal(before, after, 'preview no debe tocar el disco');
+});
+
 test('logout invalidates the session', async () => {
   await api('POST', '/api/logout');
   cookie = cookie.replace(/=.*/, '=deadbeef');
