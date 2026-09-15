@@ -123,15 +123,6 @@
       $('#hours-value').textContent = s.hours;
       $('#hours-item').hidden = false;
     }
-    // Differentiator: WhatsApp ordering when a number is configured
-    if (s.whatsapp) {
-      var wa = 'https://wa.me/' + s.whatsapp + '?text=' +
-        encodeURIComponent('Hola, quiero hacer un pedido');
-      $$('.js-order').forEach(function (a) {
-        a.href = wa; a.target = '_blank'; a.rel = 'noopener';
-        if (a.dataset.waLabel) a.textContent = a.dataset.waLabel;
-      });
-    }
   }
 
   /* ── Menu: products or PDF ──────────────────────────── */
@@ -197,6 +188,19 @@
 
   var MENU_PLACEHOLDER = '/assets/menu-placeholder.svg';
 
+  /* The carta carries an "Ofertas" category whose cards repeat, word for word,
+     the promos already published in the #offers section. #offers is the
+     canonical one: it has its own heading, an intro and a photo per promo,
+     while these cards exist only to be added to the cart. So they earn their
+     place in the carta only while ordering is on; with it off they are dead
+     copy competing with #offers for the same words on the same page. The items
+     stay in menu.json either way, so turning ordering back on brings them back. */
+  var PROMO_CATEGORY = 'Ofertas';
+  function isDuplicatePromo(p) {
+    return (p.category || '') === PROMO_CATEGORY &&
+      !(orderingConfig && orderingConfig.enabled);
+  }
+
   // Compact price for the card face: fixed → exact; tier/sizes (many prices)
   // → "Desde X" so the multi-size line never blows up the card. The full
   // breakdown lives in the "Ver más" modal via priceDisplay().
@@ -248,6 +252,7 @@
   function renderMenu(items) {
     var wrap = $('#menu-cards');
     var visible = items.filter(function (p) { return p.active !== false; })
+      .filter(function (p) { return !isDuplicatePromo(p); })
       .filter(function (p) {
         var al = p.allergens || [];
         for (var a of excludedAllergens) if (al.indexOf(a) !== -1) return false;
@@ -484,7 +489,7 @@
       .catch(function () {});
   }
 
-  /* ── Contact form: composes a WhatsApp or email message ─ */
+  /* ── Contact form: composes an email message ────────── */
   $('#contact-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var name = $('#f-name').value.trim();
@@ -493,15 +498,10 @@
     var msg = $('#f-message').value.trim();
     var text = 'Hola, soy ' + name + (phone ? ' (' + phone + ')' : '') + '.\n' +
       (reason ? 'Motivo: ' + reason + '.\n' : '') + (msg || '');
-    if (SITE.whatsapp) {
-      window.open('https://wa.me/' + SITE.whatsapp + '?text=' + encodeURIComponent(text),
-        '_blank', 'noopener');
-    } else {
-      var email = SITE.email || 'info@voyvolandosantafe.com';
-      window.location.href = 'mailto:' + email +
-        '?subject=' + encodeURIComponent('Consulta desde la web — ' + (reason || 'general')) +
-        '&body=' + encodeURIComponent(text);
-    }
+    var email = SITE.email || 'info@voyvolandosantafe.com';
+    window.location.href = 'mailto:' + email +
+      '?subject=' + encodeURIComponent('Consulta desde la web — ' + (reason || 'general')) +
+      '&body=' + encodeURIComponent(text);
   });
 
   /* ── Init ─────────────────────────────────────────────
