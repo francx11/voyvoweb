@@ -294,16 +294,16 @@ function slug(value) {
     .replace(/^-|-$/g, '');
 }
 
-export function renderContacto({ domain, site, ordering }) {
+export function renderContacto({ domain, site, ordering, business }) {
   const zones = (ordering && ordering.delivery && ordering.delivery.zones) || [];
   const hours = String((site && site.hours) || '')
     .split('\n')
     .filter(Boolean);
   const address = (site && site.address) || 'C. Cristóbal Colón, 7';
   const city = (site && site.city) || '18320 Santa Fe, Granada';
-  const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    `Pizzería Voy Volando ${address} ${city}`
-  )}`;
+  // Enlace por Place ID: apunta a esta ficha concreta, no a una búsqueda que
+  // podría resolver en otro de los Voy Volando de la provincia.
+  const maps = business.mapsUrl;
 
   const jsonLd = [
     {
@@ -323,7 +323,9 @@ export function renderContacto({ domain, site, ordering }) {
         addressCountry: 'ES',
       },
       ...(zones.length ? { areaServed: zones.map((z) => ({ '@type': 'Place', name: z })) } : {}),
-      hasMap: maps,
+      geo: { '@type': 'GeoCoordinates', ...business.geo },
+      hasMap: business.mapsUrl,
+      sameAs: business.sameAs,
     },
     breadcrumb(domain, 'Contacto', '/contacto/'),
   ];

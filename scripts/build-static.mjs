@@ -22,7 +22,7 @@ import { renderCarta, renderContacto } from './lib/pages.mjs';
 process.env.ORDERING_ENABLED = 'false';
 
 const require = createRequire(import.meta.url);
-const { PUBLIC_DIR, DIST_DIR, SITE_DOMAIN, STATIC_EXCLUDE } = require('../src/config');
+const { PUBLIC_DIR, DIST_DIR, SITE_DOMAIN, STATIC_EXCLUDE, BUSINESS } = require('../src/config');
 const { createApp } = require('../src/app');
 
 // Public GETs the storefront makes, mirroring apiUrl() in public/js/main.js.
@@ -155,6 +155,27 @@ async function readSnapshot(name) {
   return JSON.parse(await fs.readFile(path.join(DIST_DIR, 'api', `${name}.json`), 'utf-8'));
 }
 
+// La portada lleva su JSON-LD escrito a mano en el HTML y /carta/ y /contacto/
+// lo generan desde BUSINESS. Son dos sitios para el mismo dato, y para Google
+// una discrepancia ahí son dos negocios distintos. Si alguien mueve las
+// coordenadas o cambia la ficha en un lado y se olvida del otro, el build para
+// aquí en vez de publicar la contradicción.
+async function assertBusinessData() {
+  const html = await fs.readFile(path.join(DIST_DIR, 'index.html'), 'utf-8');
+  const expected = [
+    `"latitude": ${BUSINESS.geo.latitude}`,
+    `"longitude": ${BUSINESS.geo.longitude}`,
+    BUSINESS.placeId,
+    ...BUSINESS.sameAs,
+  ];
+  const missing = expected.filter((value) => !html.includes(value));
+  if (missing.length) {
+    throw new Error(
+      `index.html no coincide con BUSINESS (src/config.js). Falta: ${missing.join(', ')}`
+    );
+  }
+}
+
 async function writeContentPages() {
   const [menu, ordering, site] = await Promise.all([
     readSnapshot('menu'),
@@ -164,7 +185,7 @@ async function writeContentPages() {
 
   const pages = {
     carta: renderCarta({ domain: SITE_DOMAIN, menu, ordering, site }),
-    contacto: renderContacto({ domain: SITE_DOMAIN, site, ordering }),
+    contacto: renderContacto({ domain: SITE_DOMAIN, site, ordering, business: BUSINESS }),
   };
   for (const [dir, html] of Object.entries(pages)) {
     await fs.mkdir(path.join(DIST_DIR, dir), { recursive: true });
@@ -240,6 +261,7 @@ async function main() {
 
   const rewritten = await rewriteHtml();
   if (rewritten) log(`${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
+  await assertBusinessData();
   const content = await writeContentPages();
   log(`${content.pages} páginas indexables (carta con ${content.items} platos)`);
   const redirects = await writeLegacyRedirects();

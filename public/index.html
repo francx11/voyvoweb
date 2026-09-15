@@ -32,10 +32,10 @@
   <meta name="twitter:card" content="summary_large_image">
 
   <!-- Structured data: local business (SEO + GEO)
-       Faltan dos datos que no están en el repositorio: "geo" (coordenadas
-       exactas del local, se copian de Google Maps) y "sameAs" (URL de la ficha
-       de Google y de las redes sociales). Sin ellos Google tiene que adivinar
-       cuál de los negocios llamados Voy Volando de la provincia es este. -->
+       "geo" y "sameAs" son los que desempatan frente a los otros negocios
+       llamados Voy Volando de la provincia. Los mismos valores están en
+       BUSINESS (src/config.js), que es lo que usan /carta/ y /contacto/; el
+       build estático falla si los dos sitios dejan de coincidir. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -55,6 +55,16 @@
       { "@type": "Place", "name": "Belicena" },
       { "@type": "Place", "name": "Purchil" },
       { "@type": "Place", "name": "Ambroz" }
+    ],
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 37.19014,
+      "longitude": -3.71875
+    },
+    "hasMap": "https://www.google.com/maps/place/?q=place_id:ChIJk6fHXwz_cQ0R2Wk0sAhpZ9s",
+    "sameAs": [
+      "https://www.google.com/maps/place/?q=place_id:ChIJk6fHXwz_cQ0R2Wk0sAhpZ9s",
+      "https://www.instagram.com/voy_volando_santafe/"
     ],
     "address": {
       "@type": "PostalAddress",
