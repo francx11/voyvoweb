@@ -118,13 +118,32 @@ test('every preset clears the hard contrast bars in both modes', () => {
   }
 });
 
-test('gold is never used as a text colour', () => {
-  // The brand document's only outright prohibition: gold on cream is 1,5:1.
-  // Cheaper and more reliable as a lint than as a contrast calculation,
-  // because it catches the mistake at the point where it would be made.
-  const colourRules = [...MAIN_CSS.matchAll(/(?<!-)\bcolor\s*:\s*([^;}]+)/g)].map((m) => m[1]);
-  const offenders = colourRules.filter((v) => v.includes('--gold'));
-  assert.deepEqual(offenders, [], 'gold is a fill and an accent, never a text colour');
+test('gold is never used as a text colour over a light background', () => {
+  // The brand document's only outright prohibition is specifically gold on
+  // CREAM: 1,5:1. Over the navy it is 7,8:1 and the same table approves it,
+  // which is why the storefront uses it for the hero's accents.
+  //
+  // So the lint is scoped rather than absolute: gold as a text colour is only
+  // allowed inside a selector that establishes a navy background. Anywhere
+  // else it is unreadable, and it is cheaper to catch here than to compute,
+  // because a stylesheet cannot know statically what is painted behind a rule.
+  const NAVY_CONTEXTS = ['.hero', '.section-navy'];
+
+  const offenders = [];
+  for (const m of MAIN_CSS.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    const [, selector, body] = m;
+    for (const decl of body.matchAll(/(?<![-\w])color\s*:\s*([^;}]+)/g)) {
+      if (!decl[1].includes('--gold')) continue;
+      const sel = selector.trim();
+      if (!NAVY_CONTEXTS.some((ctx) => sel.includes(ctx)))
+        offenders.push(`${sel} { color: …--gold }`);
+    }
+  }
+  assert.deepEqual(
+    offenders,
+    [],
+    'gold as text is only readable over the navy; over cream it is 1,5:1'
+  );
 });
 
 test("the active preset's fonts are actually loaded on every page", () => {

@@ -180,16 +180,27 @@
     <!-- HERO -->
     <section class="hero" aria-label="Presentación">
       <div class="hero-inner">
-        <span class="eyebrow" id="hero-eyebrow">Santa Fe, Granada · Desde siempre</span>
-        <h1 id="hero-title">Pizza artesanal en Santa Fe <em>a domicilio.</em></h1>
-        <p class="hero-sub" id="hero-sub">Masa hecha cada mañana y horno tradicional. Reparto en Santa Fe y alrededores, para recoger o en el local.</p>
-        <div class="hero-actions">
-          <a href="tel:958442847" class="btn btn-primary js-order js-tel-link">Llamar · <span class="js-phone">958 44 28 47</span></a>
-          <a href="#menu" class="btn btn-outline">Ver la carta</a>
+        <div class="hero-text">
+          <span class="eyebrow" id="hero-eyebrow">Santa Fe, Granada · Desde siempre</span>
+          <h1 id="hero-title">Pizza artesanal en Santa Fe <em>a domicilio.</em></h1>
+          <p class="hero-sub" id="hero-sub">Masa hecha cada mañana y horno tradicional. Reparto en Santa Fe y alrededores, para recoger o en el local.</p>
+          <div class="hero-actions">
+            <a href="tel:958442847" class="btn btn-primary js-order js-tel-link">Llamar · <span class="js-phone">958 44 28 47</span></a>
+            <a href="#menu" class="btn btn-outline">Ver la carta</a>
+          </div>
+          <p class="hero-since">Horno tradicional · Masa hecha cada mañana</p>
         </div>
-        <p class="hero-since">Horno tradicional · Masa hecha cada mañana</p>
+        <div class="hero-mark" aria-hidden="true">
+          <img src="/assets/logo-voyvolando.png" alt="" width="260" height="260" class="hero-logo">
+          <span class="stamp stamp-word">
+            <span class="stamp-top">Pizzería en</span>
+            <span class="stamp-mid">Santa Fe</span>
+            <span class="stamp-bot">Granada</span>
+          </span>
+        </div>
       </div>
     </section>
+    <div class="airmail-rule" aria-hidden="true"></div>
 
     <!-- STORY -->
     <section class="section" id="story" aria-labelledby="story-title">
@@ -201,8 +212,12 @@
           <p id="story-p2">Nuestro secreto está en la masa: elaborada artesanalmente cada mañana, fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro.</p>
         </div>
         <div class="story-card reveal">
-          <div class="big">30+</div>
-          <div class="big-label">años haciendo pizza</div>
+          <span class="stamp stamp-lg" aria-hidden="true">
+            <span class="stamp-top">Más de</span>
+            <span class="stamp-mid">30</span>
+            <span class="stamp-bot">años</span>
+          </span>
+          <div class="big-label">haciendo pizza</div>
           <hr>
           <address>
             <strong>Pizzería Voy Volando</strong><br>
@@ -282,23 +297,23 @@
     </section>
 
     <!-- SERVICES -->
-    <section class="section" id="services" aria-labelledby="services-title">
+    <section class="section section-navy" id="services" aria-labelledby="services-title">
       <div class="container">
         <span class="eyebrow">Cómo pedir</span>
         <h2 class="section-title" id="services-title">Como quieras, donde quieras</h2>
         <div class="services-grid">
           <article class="service reveal">
-            <span class="num">I.</span>
+            <span class="stamp stamp-sm" aria-hidden="true"><span class="stamp-mid">1</span></span>
             <h3>A domicilio</h3>
             <p>Te la llevamos a casa. Llama al <a href="tel:958442847" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a> y te la enviamos lo antes posible.</p>
           </article>
           <article class="service reveal">
-            <span class="num">II.</span>
+            <span class="stamp stamp-sm" aria-hidden="true"><span class="stamp-mid">2</span></span>
             <h3>Para llevar</h3>
             <p>Pide por teléfono y recoge en unos minutos, sin esperas. Tu pizza lista cuando llegues.</p>
           </article>
           <article class="service reveal">
-            <span class="num">III.</span>
+            <span class="stamp stamp-sm" aria-hidden="true"><span class="stamp-mid">3</span></span>
             <h3>En el local</h3>
             <p>Disfruta en nuestro comedor de <span class="js-address">C. Cristóbal Colón, 7</span>, en Santa Fe. Reserva o ven sin cita.</p>
           </article>
@@ -307,8 +322,8 @@
     </section>
 
     <!-- GALLERY -->
-    <section class="section section-alt" id="gallery" aria-labelledby="gallery-title">
-      <div class="container">
+    <section class="section section-flush" id="gallery" aria-labelledby="gallery-title">
+      <div class="container gallery-head">
         <span class="eyebrow">Galería</span>
         <h2 class="section-title" id="gallery-title">Momentos en Voy Volando</h2>
         <div class="gallery-grid" id="gallery-grid" hidden></div>
