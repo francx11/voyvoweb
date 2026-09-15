@@ -1,8 +1,9 @@
 {
   "active": true,
   "emoji": "🔥",
-  "name": "Speciale del Chef",
-  "description": "Cada mes el chef crea una pizza exclusiva con ingredientes de temporada. Este mes: base de crema de trufa, mozzarella de búfala, champiñones salteados y jamón ibérico.",
+  "name": "Guanciale",
+  "description": "Base cremosa de nata, mozzarella fundida, guanciale crujiente, champiñones, cebolla, huevo y grana padano con pimienta negra para culminar.",
   "badge": "Edición limitada",
-  "cta": "Llama para pedirla"
+  "cta": "Llama para pedirla",
+  "image": "/assets/especial/1789456703811-0fbao.webp"
 }

@@ -68,6 +68,10 @@
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         Pizza del Mes
       </div>
+      <div class="nav-item" data-page="offers">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Ofertas
+      </div>
       <div class="nav-item" data-page="content">
         <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         Contenido web
@@ -201,11 +205,53 @@
               <label>Texto del botón CTA</label>
               <input type="text" id="ms-cta-input" placeholder="Llama para pedirla">
             </div>
+            <div class="form-field full">
+              <label>Foto de la pizza (opcional)</label>
+              <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+                <img id="ms-img-preview" alt="" src="/assets/menu-placeholder.svg"
+                     style="width:120px;height:90px;object-fit:cover;border-radius:0.4rem;border:1px solid var(--line)">
+                <div style="display:flex;flex-direction:column;gap:0.5rem">
+                  <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+                    <button type="button" class="btn btn-ghost" id="btn-ms-img">Subir foto</button>
+                    <button type="button" class="btn btn-ghost" id="btn-ms-img-remove" style="display:none">Quitar foto</button>
+                    <input type="file" id="ms-img-input" accept="image/*" style="display:none">
+                  </div>
+                  <span style="font-size:0.78rem;color:var(--muted)">La foto se sube al momento; el resto del formulario se guarda con el botón de abajo.</span>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-red">Guardar pizza del mes</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- ── OFFERS ────────────────────────────────────────────────────── -->
+    <div class="page" id="page-offers">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Ofertas</h1>
+          <p class="page-subtitle">Las promociones que salen en la web, con su foto</p>
+        </div>
+        <button class="btn btn-red" id="btn-offer-add">+ Añadir oferta</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem">
+          <div class="toggle" id="toggle-offers"></div>
+          <label style="font-size:0.85rem;cursor:pointer" id="toggle-offers-label">
+            Mostrar sección "Ofertas" en la web
+          </label>
+        </div>
+        <div class="form-field full" style="margin-bottom:1.5rem">
+          <label>Texto de entrada</label>
+          <textarea id="offers-intro-input" rows="2" placeholder="Descubre nuestras ofertas..."></textarea>
+        </div>
+        <div id="offers-list"></div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-red" id="btn-offers-save">Guardar ofertas</button>
+        </div>
       </div>
     </div>
 

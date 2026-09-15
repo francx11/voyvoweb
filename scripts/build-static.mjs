@@ -29,6 +29,7 @@ const ENDPOINTS = [
   'site',
   'menu',
   'monthly-special',
+  'offers',
   'gallery',
   'reviews',
   'ordering/config',

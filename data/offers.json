@@ -1,0 +1,36 @@
+{
+  "active": true,
+  "intro": "Descubre nuestras ofertas: promociones que cambian según el día de la semana. Desde descuentos en pizzas hasta combos especiales, siempre hay algo nuevo.",
+  "items": [
+    {
+      "id": "familiares-10",
+      "title": "Familiares a 10 €",
+      "description": "Todos los días, solo a recoger.",
+      "image": "/assets/ofertas/1789456702024-xulmz.webp"
+    },
+    {
+      "id": "tres-pizzas-18",
+      "title": "3 pizzas por 18 €",
+      "description": "Tamaño pequeño, especiales incluidas. Para recoger.",
+      "image": "/assets/ofertas/1789456702402-kvds8.webp"
+    },
+    {
+      "id": "dia-de-la-pizza",
+      "title": "Día de la Pizza",
+      "description": "Todos los miércoles, por pedidos superiores a 12 € ¡bebida gratis!",
+      "image": "/assets/ofertas/1789456702674-7fbyf.webp"
+    },
+    {
+      "id": "dia-de-las-papas",
+      "title": "Día de las Papas",
+      "description": "Todos los martes, por pedidos superiores a 13 € unas papas pequeñas a elegir gratis.",
+      "image": "/assets/ofertas/1789456703038-x7is6.webp"
+    },
+    {
+      "id": "familiares-especiales-12",
+      "title": "Familiares especiales a 12 €",
+      "description": "Todas nuestras pizzas especiales de tamaño familiar por 12 €, solo a recoger.",
+      "image": "/assets/ofertas/1789456703275-kyn0j.webp"
+    }
+  ]
+}

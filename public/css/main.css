@@ -426,6 +426,46 @@ img { max-width: 100%; display: block; }
 }
 .monthly-special-text p { color: var(--ink-soft); margin-bottom: 1.2rem; max-width: 58ch; }
 
+/* The stamp sits in the first column on its own; with a photo it moves on top
+   of it, so the box keeps the same two-column shape either way. */
+.ms-visual { position: relative; display: flex; align-items: center; justify-content: center; }
+/* Natural ratio, no crop: the owner uploads whatever the promo graphic is
+   (square, portrait, a flyer with text at the top) and cropping it to a fixed
+   box beheaded the wording. The card grid does crop, but there consistency
+   between cells matters more. */
+.ms-photo {
+  width: 100%; height: auto; display: block;
+  border: 1px solid var(--line-strong);
+}
+.monthly-special-box.has-image { grid-template-columns: minmax(0, 0.95fr) 1fr; }
+.has-image .monthly-special-stamp {
+  position: absolute; right: -14px; bottom: -14px;
+  width: clamp(76px, 10vw, 104px); height: clamp(76px, 10vw, 104px);
+  background: var(--paper);
+}
+
+/* ── Offers ── */
+.offers-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.6rem; margin-top: 2.5rem;
+}
+.offer {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--line-strong); background: var(--paper);
+}
+.offer-media { aspect-ratio: 4 / 3; overflow: hidden; }
+.offer-media img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.5s ease;
+}
+.offer:hover .offer-media img { transform: scale(1.04); }
+.offer-body { padding: 1.2rem 1.3rem 1.4rem; }
+.offer-body h3 {
+  font-family: var(--display); font-weight: 600;
+  font-size: 1.25rem; margin-bottom: 0.4rem;
+}
+.offer-body p { color: var(--ink-soft); font-size: 0.92rem; margin: 0; }
+
 /* ── Services ── */
 .services-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
@@ -783,9 +823,12 @@ body.cart-scroll-lock { overflow: hidden; }
   .gallery-cell:first-child { grid-column: span 2; grid-row: span 1; min-height: 200px; }
   .monthly-special-box { grid-template-columns: 1fr; text-align: center; }
   .monthly-special-stamp { margin: 0 auto; }
+  .monthly-special-box.has-image { grid-template-columns: 1fr; }
+  .offers-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 520px) {
+  .offers-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
   .menu-line { flex-wrap: wrap; }
   .menu-dots { min-width: 1rem; }

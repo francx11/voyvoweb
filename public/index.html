@@ -125,6 +125,7 @@
           <ul>
             <li><a href="#story">Nosotros</a></li>
             <li><a href="#menu">Carta</a></li>
+            <li><a href="#offers">Ofertas</a></li>
             <li><a href="#services">Servicios</a></li>
             <li><a href="#gallery">Galería</a></li>
             <li><a href="#contact">Contacto</a></li>
@@ -167,7 +168,6 @@
           <h2 class="section-title" id="story-title">Pasión por la pizza auténtica</h2>
           <p id="story-p1">En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.</p>
           <p id="story-p2">Nuestro secreto está en la masa: elaborada artesanalmente cada mañana, fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro.</p>
-          <a href="tel:958442847" class="btn btn-primary js-tel-link" style="margin-top:1rem">Reservar mesa</a>
         </div>
         <div class="story-card reveal">
           <div class="big">30+</div>
@@ -220,9 +220,12 @@
     <section class="section" id="monthly-special" aria-labelledby="ms-name" hidden>
       <div class="container-narrow">
         <div class="monthly-special-box reveal">
-          <div class="monthly-special-stamp" aria-hidden="true">
-            <span class="st-top">Pizza del</span>
-            <span class="st-mid">Mes</span>
+          <div class="ms-visual">
+            <img class="ms-photo" id="ms-image" alt="" hidden loading="lazy">
+            <div class="monthly-special-stamp" aria-hidden="true">
+              <span class="st-top">Pizza del</span>
+              <span class="st-mid">Mes</span>
+            </div>
           </div>
           <div class="monthly-special-text">
             <span class="ms-badge" id="ms-badge" hidden></span>
@@ -231,6 +234,16 @@
             <a href="tel:958442847" class="btn btn-primary js-tel-link" id="ms-cta">Llamar para pedirla</a>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- OFFERS (hidden until enabled from the panel) -->
+    <section class="section section-alt" id="offers" aria-labelledby="offers-title" hidden>
+      <div class="container">
+        <span class="eyebrow">Promociones</span>
+        <h2 class="section-title" id="offers-title">Ofertas</h2>
+        <p class="section-intro" id="offers-intro"></p>
+        <div class="offers-grid" id="offers-grid"></div>
       </div>
     </section>
 

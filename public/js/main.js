@@ -396,8 +396,40 @@
         $('#ms-desc').textContent = ms.description || '';
         if (ms.badge) { $('#ms-badge').textContent = ms.badge; $('#ms-badge').hidden = false; }
         if (ms.cta) $('#ms-cta').textContent = ms.cta;
+        if (ms.image) {
+          var img = $('#ms-image');
+          img.src = ms.image;
+          img.alt = 'Pizza del mes: ' + ms.name;
+          img.hidden = false;
+          $('#monthly-special .monthly-special-box').classList.add('has-image');
+        }
         $('#monthly-special').hidden = false;
         observeReveals('#monthly-special');
+      })
+      .catch(function () {});
+  }
+
+  /* ── Offers ("ofertas") ─────────────────────────────── */
+  function loadOffers() {
+    fetch(apiUrl('offers'))
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var items = (data && data.items) || [];
+        if (!data.active || !items.length) return;
+        if (data.intro) $('#offers-intro').textContent = data.intro;
+        $('#offers-grid').innerHTML = items.map(function (o) {
+          return '<article class="offer reveal">' +
+            (o.image
+              ? '<div class="offer-media"><img src="' + esc(o.image) + '" alt="' + esc(o.title) + '" loading="lazy"></div>'
+              : '') +
+            '<div class="offer-body">' +
+              '<h3>' + esc(o.title) + '</h3>' +
+              (o.description ? '<p>' + esc(o.description) + '</p>' : '') +
+            '</div>' +
+          '</article>';
+        }).join('');
+        $('#offers').hidden = false;
+        observeReveals('#offers');
       })
       .catch(function () {});
   }
@@ -489,6 +521,7 @@
     VV.orderingConfig = orderingConfig;
     loadMenu();
     loadMonthlySpecial();
+    loadOffers();
     loadGallery();
     loadReviews();
   });
