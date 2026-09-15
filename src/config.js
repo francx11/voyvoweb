@@ -20,6 +20,14 @@ module.exports = {
     ordering: process.env.ORDERING_ENABLED === 'true',
   },
 
+  // El despliegue de Node ya solo sirve el panel: el escaparate vive en GitHub
+  // Pages. Search Console encontró gestion.voyvolandosantafe.com indexado (el
+  // PDF de la carta y las fotos en crudo de la galería), compitiendo con el
+  // sitio bueno. Con NOINDEX=true ese despliegue pide a los rastreadores que no
+  // entren; public/robots.txt no sirve para esto, porque solo vale para el host
+  // desde el que se sirve y allí dice Allow: /.
+  NOINDEX: process.env.NOINDEX === 'true',
+
   ROOT,
   PUBLIC_DIR,
   DATA_DIR,
