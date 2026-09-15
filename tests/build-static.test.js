@@ -85,6 +85,23 @@ test('el build estático reescribe el dominio en todas partes', () => {
   assert.ok(carta.includes('"@type": "Menu"'), 'falta el JSON-LD de tipo Menu');
   assert.match(carta, /\d+,\d{2} €/, 'la carta no muestra ningún precio');
 
+  // geo y sameAs son los que le dicen a Google cuál de los negocios llamados
+  // Voy Volando de la provincia es este. Tienen que estar en las tres páginas
+  // y decir lo mismo: una discrepancia cuenta como dos negocios.
+  const contacto = fs.readFileSync(path.join(OUT, 'contacto', 'index.html'), 'utf-8');
+  const { BUSINESS } = require(path.join(ROOT, 'src', 'config'));
+  for (const [name, page] of [
+    ['portada', html],
+    ['contacto', contacto],
+  ]) {
+    assert.ok(page.includes(String(BUSINESS.geo.latitude)), `${name}: sin latitud`);
+    assert.ok(page.includes(String(BUSINESS.geo.longitude)), `${name}: sin longitud`);
+    assert.ok(page.includes(BUSINESS.placeId), `${name}: sin Place ID de la ficha`);
+    for (const profile of BUSINESS.sameAs) {
+      assert.ok(page.includes(profile), `${name}: sameAs sin ${profile}`);
+    }
+  }
+
   // Sin enlaces desde la portada las dos páginas quedan huérfanas y Google
   // tarda mucho más en encontrarlas.
   assert.ok(html.includes('href="/carta/"'), 'la portada no enlaza /carta/');

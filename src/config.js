@@ -20,6 +20,26 @@ module.exports = {
     ordering: process.env.ORDERING_ENABLED === 'true',
   },
 
+  // Quién es este negocio en las fuentes de fuera. Vive aquí y no en
+  // data/config.json porque no se edita desde el panel, y porque el JSON-LD de
+  // public/index.html tiene que llevar exactamente lo mismo: el build falla si
+  // los dos se separan (assertBusinessData en scripts/build-static.mjs).
+  //
+  // Las coordenadas son las que Google tiene para la ficha, no las de un clic
+  // en el mapa: así el `geo` del schema refuerza la ficha en vez de discutirle
+  // dónde está el local. La URL de Maps va por Place ID, que es la forma
+  // estable — el enlace de "Compartir" es un acortador y la URL larga arrastra
+  // parámetros de sesión.
+  BUSINESS: {
+    placeId: 'ChIJk6fHXwz_cQ0R2Wk0sAhpZ9s',
+    geo: { latitude: 37.19014, longitude: -3.71875 },
+    mapsUrl: 'https://www.google.com/maps/place/?q=place_id:ChIJk6fHXwz_cQ0R2Wk0sAhpZ9s',
+    sameAs: [
+      'https://www.google.com/maps/place/?q=place_id:ChIJk6fHXwz_cQ0R2Wk0sAhpZ9s',
+      'https://www.instagram.com/voy_volando_santafe/',
+    ],
+  },
+
   // El despliegue de Node ya solo sirve el panel: el escaparate vive en GitHub
   // Pages. Search Console encontró gestion.voyvolandosantafe.com indexado (el
   // PDF de la carta y las fotos en crudo de la galería), compitiendo con el
