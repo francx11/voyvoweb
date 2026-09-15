@@ -22,6 +22,16 @@
   --on-tomato: #fff;       /* text on --tomato-btn: fixed, theme-independent */
   --line: rgba(43, 38, 32, 0.18);
   --line-strong: rgba(43, 38, 32, 0.55);
+  /* Tripletes de color (sin alpha) para sombras y velos: la geometría de cada
+     sombra vive en su regla, aquí solo viaja el color.
+     --shadow-rgb no puede seguir a --ink: en tema oscuro --ink es casi blanco
+     y la sombra sería un halo. Tampoco a --paper, que es la superficie misma:
+     una sombra del color del fondo no se ve. La regla es "más oscuro que el
+     fondo" — la tinta en tema claro, negro en tema oscuro.
+     --scrim-rgb es oscuro en ambos temas — un velo de modal aclara el fondo
+     jamás, lo oscurece siempre. */
+  --shadow-rgb: 43 38 32;
+  --scrim-rgb: 20 16 12;
   --display: 'Fraunces', Georgia, serif;
   --body: 'Karla', 'Segoe UI', sans-serif;
   /* Radios: una sola escala para toda la web. Nada de cajas ni botones
@@ -51,6 +61,8 @@
     --tomato-btn-hover: #d13a24;
     --line: rgba(242, 236, 225, 0.14);
     --line-strong: rgba(242, 236, 225, 0.4);
+    --shadow-rgb: 0 0 0;  /* negro: --paper ya es oscuro, solo algo MÁS oscuro lee como sombra */
+    --scrim-rgb: 20 16 12;
     color-scheme: dark;
   }
 }
@@ -65,6 +77,8 @@
   --tomato-btn-hover: #d13a24;
   --line: rgba(242, 236, 225, 0.14);
   --line-strong: rgba(242, 236, 225, 0.4);
+  --shadow-rgb: 0 0 0;  /* negro: --paper ya es oscuro, solo algo MÁS oscuro lee como sombra */
+  --scrim-rgb: 20 16 12;
   color-scheme: dark;
 }
 
@@ -347,17 +361,21 @@ img { max-width: 100%; display: block; }
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: var(--radius); overflow: hidden;
-  box-shadow: 0 1px 3px rgba(43, 38, 32, 0.06);
+  box-shadow: 0 1px 3px rgb(var(--shadow-rgb) / 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(43, 38, 32, 0.13); }
+.menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgb(var(--shadow-rgb) / 0.13); }
 .menu-card-media { position: relative; aspect-ratio: 4 / 3; background: var(--paper-2); }
 .menu-card-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .menu-card-badge {
   position: absolute; top: 0.7rem; left: 0.7rem;
   font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  /* #fff literal a propósito: el fondo es el tagColor que el panel elige por
+     plato, un color arbitrario que ningún token puede predecir. El contrato es
+     "blanco sobre fondo arbitrario" y se garantiza validando el contraste del
+     tagColor en el panel, no tokenizando esto. */
   color: #fff; padding: 0.3rem 0.75rem; border-radius: var(--radius-pill);
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 1px 5px rgb(var(--shadow-rgb) / 0.28);
 }
 .menu-card-body { padding: 1rem 1.1rem 0.4rem; flex: 1; display: flex; flex-direction: column; }
 .menu-card-name {
@@ -388,9 +406,11 @@ img { max-width: 100%; display: block; }
 .menu-detail .menu-detail-close {
   position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2;
   width: 2.2rem; height: 2.2rem; padding: 0; margin: 0; border-radius: var(--radius-round);
-  background: rgba(20, 16, 12, 0.5); color: #fff;
+  /* #fff literal a propósito: encima va un velo oscuro sobre la foto del plato,
+     no una superficie del tema. */
+  background: rgb(var(--scrim-rgb) / 0.5); color: #fff;
 }
-.menu-detail .menu-detail-close:hover { background: rgba(20, 16, 12, 0.72); color: #fff; }
+.menu-detail .menu-detail-close:hover { background: rgb(var(--scrim-rgb) / 0.72); color: #fff; }
 .menu-detail-media {
   position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); overflow: hidden;
   background: var(--paper-2);
@@ -637,7 +657,7 @@ body.cart-scroll-lock { overflow: hidden; }
   background: var(--tomato-btn); color: var(--on-tomato); border: none;
   display: flex; align-items: center; justify-content: center;
   font-size: 1.5rem; cursor: pointer;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 6px 20px rgb(var(--shadow-rgb) / 0.25);
   transition: background 0.2s, transform 0.2s;
 }
 .cart-fab:hover { background: var(--tomato-btn-hover); transform: translateY(-2px); }
@@ -653,7 +673,7 @@ body.cart-scroll-lock { overflow: hidden; }
 /* Generic overlay/modal (also used by the item-customization modal) */
 .modal-overlay, .cart-drawer-overlay {
   position: fixed; inset: 0; z-index: 200;
-  background: rgba(20, 16, 12, 0.55);
+  background: rgb(var(--scrim-rgb) / 0.55);
   display: none; align-items: flex-end; justify-content: center;
   padding: 0;
 }
@@ -775,7 +795,7 @@ body.cart-scroll-lock { overflow: hidden; }
   position: absolute; z-index: 10; left: 0; right: 0; top: calc(100% + 2px);
   background: var(--paper); border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
   list-style: none; max-height: 240px; overflow-y: auto;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 20px rgb(var(--shadow-rgb) / 0.15);
 }
 .cart-address-suggestions li {
   padding: 0.7rem 0.9rem; font-size: 0.9rem; cursor: pointer; min-height: 44px; display: flex; align-items: center;
