@@ -6,6 +6,17 @@
 
   const $ = (id) => document.getElementById(id);
 
+  // Colour a new menu badge gets by default: the active theme's accent, so a
+  // badge created after a palette change follows the new carta instead of a
+  // hardcoded red. Falls back only if /api/theme is unreachable.
+  let themeAccent = '#a83226';
+  fetch('/api/theme')
+    .then((r) => r.json())
+    .then((t) => {
+      if (t && t.light && t.light.tomato) themeAccent = t.light.tomato;
+    })
+    .catch(() => {});
+
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;')
@@ -135,6 +146,7 @@
     offers: loadOffers,
     content: loadContent,
     reviews: loadReviews,
+    theme: loadTheme,
     settings: loadSettings,
     orders: loadOrdersPage,
     'ordering-config': loadOrderingConfigPage,
@@ -181,7 +193,7 @@
           <div style="display:flex;align-items:center;gap:0.6rem">
             <span style="font-size:1.4rem">${p.emoji || '🍕'}</span>
             <strong style="font-size:0.9rem">${esc(p.name)}</strong>
-            <span class="pill" style="color:${p.tagColor || '#C41E3A'};border-color:${p.tagColor || '#C41E3A'}">${esc(p.tag || '')}</span>
+            <span class="pill" style="color:${p.tagColor || themeAccent};border-color:${p.tagColor || themeAccent}">${esc(p.tag || '')}</span>
           </div>
         </td>
         <td data-label="Descripción" style="color:var(--muted);max-width:280px;font-size:0.82rem">${esc(p.description || '')}</td>
@@ -462,7 +474,8 @@
     $('item-name').value = p.name || '';
     $('item-desc').value = p.description || '';
     $('item-tag').value = p.tag || '';
-    $('item-color').value = p.tagColor || '#C41E3A';
+    $('item-color').value = p.tagColor || themeAccent;
+    checkTagContrast();
     $('item-price').value = p.price != null ? p.price : '';
     $('item-category').value = p.category || '';
     $('item-pickup-only').checked = p.fulfillment === 'pickup_only';
@@ -496,7 +509,7 @@
       name: $('item-name').value,
       description: $('item-desc').value,
       tag: $('item-tag').value,
-      tagColor: $('item-color').value || '#C41E3A',
+      tagColor: $('item-color').value || themeAccent,
       price: $('item-price').value,
       category: $('item-category').value,
       allergens: getAllergens(),
@@ -848,6 +861,186 @@
   }
 
   $('btn-refresh-reviews').addEventListener('click', loadReviews);
+
+  // The menu badge always prints white text over tagColor (see the annotated
+  // #fff in main.css), so an arbitrary colour picked here can quietly make the
+  // label unreadable. Warn where the mistake is made.
+  function relLum(hex) {
+    const v = [1, 3, 5].map((i) => {
+      const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+  }
+
+  function checkTagContrast() {
+    const el = $('item-color-contrast');
+    if (!el) return;
+    const value = $('item-color').value;
+    if (!/^#[0-9a-fA-F]{6}$/.test(value)) return void (el.textContent = '');
+    const ratio = 1.05 / (relLum(value) + 0.05);
+    el.textContent =
+      ratio >= 4.5
+        ? `Texto blanco sobre este color: ${ratio.toFixed(1)}:1 ✓`
+        : `Texto blanco sobre este color: ${ratio.toFixed(1)}:1 — se lee mal, usa un tono más oscuro`;
+    el.style.color = ratio >= 4.5 ? '#4ade80' : '#fcd34d';
+  }
+
+  $('item-color').addEventListener('input', checkTagContrast);
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // THEME
+  // ═════════════════════════════════════════════════════════════════════════
+  // The draft lives here until Guardar. Every picker move asks the server to
+  // resolve it, so the preview shows the same CSS that would be published —
+  // deriving tokens a second time in the browser would be a second source of
+  // truth, and the two would drift.
+  let themeDraft = { preset: '', overrides: { light: {}, dark: {} } };
+  let themePreviewMode = 'light';
+  let themePreviewTimer = null;
+
+  const CONTRAST_LABELS = {
+    'ink/paper': 'Tinta sobre papel',
+    'ink/paper-2': 'Tinta sobre papel alterno',
+    'on-tomato/tomato-btn': 'Texto sobre botón',
+    'ink-soft/paper': 'Tinta suave sobre papel',
+    'tomato/paper': 'Acento sobre papel',
+    'on-navy/navy': 'Texto sobre estructura',
+  };
+
+  function renderContrast(mode, report) {
+    const rows = [];
+    for (const [group, pairs] of [
+      ['hard', report.hard],
+      ['soft', report.soft],
+    ]) {
+      for (const [pair, value] of Object.entries(pairs)) {
+        // Below 4.5:1 a hard pair blocks the save; a soft one only warns.
+        const cls = value >= 4.5 ? 'ok' : group === 'hard' ? 'bad' : 'warn';
+        rows.push(
+          `<tr><td>${esc(CONTRAST_LABELS[pair] || pair)}</td>` +
+            `<td class="${cls}">${value.toFixed(2)}:1</td></tr>`
+        );
+      }
+    }
+    $(`theme-contrast-${mode}`).innerHTML = rows.join('');
+  }
+
+  function paintSwatches(resolved) {
+    document.querySelectorAll('#page-theme .theme-swatches').forEach((group) => {
+      const mode = group.dataset.mode;
+      group.querySelectorAll('input[type="color"]').forEach((input) => {
+        input.value = resolved[mode][input.dataset.token];
+      });
+    });
+  }
+
+  // Applies the draft's CSS inside the preview iframe without saving. The page
+  // is the real storefront, so what you see is what gets published.
+  function paintPreview(css) {
+    const frame = $('theme-preview');
+    const doc = frame.contentDocument;
+    if (!doc) return;
+    let tag = doc.getElementById('vv-theme-preview');
+    if (!tag) {
+      tag = doc.createElement('style');
+      tag.id = 'vv-theme-preview';
+      doc.head.appendChild(tag);
+    }
+    // The generated CSS targets :root; inside the iframe it has to beat the
+    // page's own theme.css, hence the extra :root specificity bump.
+    tag.textContent = css.replace(/:root/g, ':root:root');
+    doc.documentElement.setAttribute('data-theme', themePreviewMode);
+  }
+
+  async function refreshThemePreview() {
+    try {
+      const r = await api('POST', '/api/theme/preview', themeDraft);
+      renderContrast('light', r.contrast.light);
+      renderContrast('dark', r.contrast.dark);
+      const msgs = [...r.failures.map((f) => ['bad', f]), ...r.warnings.map((w) => ['warn', w])];
+      $('theme-warnings').innerHTML = msgs.length
+        ? msgs
+            .map(
+              ([cls, m]) =>
+                `<div class="notice notice-${cls === 'bad' ? 'warn' : 'info'}" style="margin-top:1rem"><div>${esc(m)}</div></div>`
+            )
+            .join('')
+        : '';
+      paintPreview(r.css);
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  }
+
+  const queueThemePreview = () => {
+    clearTimeout(themePreviewTimer);
+    themePreviewTimer = setTimeout(refreshThemePreview, 150);
+  };
+
+  async function loadTheme() {
+    const [presets, active] = await Promise.all([
+      api('GET', '/api/theme/presets').catch(() => []),
+      api('GET', '/api/theme'),
+    ]);
+
+    const select = $('theme-preset');
+    select.innerHTML = presets
+      .map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`)
+      .join('');
+    select.value = active.preset;
+    const notes = (presets.find((p) => p.id === active.preset) || {}).notes || '';
+    $('theme-preset-notes').textContent = notes;
+
+    themeDraft = { preset: active.preset, overrides: active.overrides };
+    paintSwatches(active);
+    refreshThemePreview();
+  }
+
+  $('theme-preset').addEventListener('change', async (e) => {
+    // A new preset is a clean slate: keeping the old overrides would silently
+    // paint the previous palette's colours over the new one.
+    themeDraft = { preset: e.target.value, overrides: { light: {}, dark: {} } };
+    const presets = await api('GET', '/api/theme/presets').catch(() => []);
+    $('theme-preset-notes').textContent =
+      (presets.find((p) => p.id === e.target.value) || {}).notes || '';
+    const r = await api('POST', '/api/theme/preview', themeDraft).catch(() => null);
+    if (r) paintSwatches(r);
+    refreshThemePreview();
+  });
+
+  document.querySelectorAll('#page-theme .theme-swatches input[type="color"]').forEach((input) => {
+    input.addEventListener('input', () => {
+      const mode = input.closest('.theme-swatches').dataset.mode;
+      themeDraft.overrides[mode][input.dataset.token] = input.value;
+      queueThemePreview();
+    });
+  });
+
+  $('theme-preview-mode').addEventListener('click', () => {
+    themePreviewMode = themePreviewMode === 'light' ? 'dark' : 'light';
+    $('theme-preview-mode').textContent =
+      themePreviewMode === 'light' ? 'Ver en oscuro' : 'Ver en claro';
+    refreshThemePreview();
+  });
+
+  $('theme-reset').addEventListener('click', async () => {
+    themeDraft.overrides = { light: {}, dark: {} };
+    const r = await api('POST', '/api/theme/preview', themeDraft).catch(() => null);
+    if (r) paintSwatches(r);
+    refreshThemePreview();
+    toast('Ajustes descartados — vuelve el preset tal cual');
+  });
+
+  $('theme-save').addEventListener('click', async () => {
+    try {
+      await api('PUT', '/api/theme', themeDraft);
+      toast('Tema guardado ✓ Reconstruye con pnpm build:static para publicarlo');
+      $('theme-preview').contentWindow.location.reload();
+    } catch (err) {
+      toast(err.message, 'err');
+    }
+  });
 
   // ═════════════════════════════════════════════════════════════════════════
   // SETTINGS

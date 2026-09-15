@@ -75,7 +75,11 @@ test('menu CRUD: create, sanitize, reorder, update, delete', async () => {
   const a = await api('POST', '/api/menu', { name: 'Margarita', price: '8.5', tagColor: 'red' });
   assert.equal(a.status, 200);
   assert.equal(a.json.price, 8.5);
-  assert.equal(a.json.tagColor, '#C41E3A'); // invalid hex falls back to brand color
+  // An invalid hex falls back to the active theme's accent, so a badge created
+  // after a palette change follows the new carta instead of a stray hardcoded
+  // red that belonged to no palette at all.
+  const { accent } = require('../src/services/theme-store');
+  assert.equal(a.json.tagColor, accent());
 
   const b = await api('POST', '/api/menu', { name: 'Diavola', price: 10 });
   const list = (await api('GET', '/api/menu')).json;
