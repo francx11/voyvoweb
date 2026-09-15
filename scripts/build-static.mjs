@@ -15,6 +15,7 @@
 import { createRequire } from 'node:module';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { renderCarta, renderContacto } from './lib/pages.mjs';
 
 // Must be set before src/config is required: the flag is read at load time,
 // and an ordering-enabled .env must never leak into a backendless build.
@@ -114,9 +115,14 @@ async function rewriteHtml() {
 // permanent redirect and the canonical tells it which URL to keep, while a
 // visitor arriving from a stale search result lands on the right section
 // instead of on a 404.
+//
+// /carta/ and /contacto/ are NOT here: Search Console shows they still earn
+// real traffic (534 and 21 clicks a year), so they keep their own indexable
+// page with the content inside — see writeContentPages().
+//
+// No `noindex` on these stubs on purpose: Google asks not to combine a
+// redirect with noindex, because the noindex can end up applied to the target.
 const LEGACY_PATHS = {
-  carta: '/#menu',
-  contacto: '/#contact',
   galeria: '/#gallery',
   'quienes-somos': '/#story',
   resenas: '/',
@@ -128,10 +134,43 @@ async function writeLegacyRedirects() {
     await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(
       path.join(dir, 'index.html'),
-      `<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="UTF-8">\n  <title>Pizzería Voy Volando</title>\n  <link rel="canonical" href="https://${SITE_DOMAIN}${to.split('#')[0]}">\n  <meta http-equiv="refresh" content="0; url=${to}">\n  <meta name="robots" content="noindex, follow">\n</head>\n<body>\n  <p>Esta página se ha movido. <a href="${to}">Ir a la página actual</a>.</p>\n  <script>location.replace('${to}');</script>\n</body>\n</html>\n`
+      `<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="UTF-8">\n  <title>Pizzería Voy Volando</title>\n  <link rel="canonical" href="https://${SITE_DOMAIN}${to.split('#')[0]}">\n  <meta http-equiv="refresh" content="0; url=${to}">\n</head>\n<body>\n  <p>Esta página se ha movido. <a href="${to}">Ir a la página actual</a>.</p>\n  <script>location.replace('${to}');</script>\n</body>\n</html>\n`
     );
   }
   return Object.keys(LEGACY_PATHS).length;
+}
+
+// /carta/ and /contacto/ as real, indexable pages.
+//
+// The storefront is one page with anchored sections and the menu is painted in
+// the browser from /api/menu.json, so for Google the whole site is a single
+// URL — a #fragment is not indexable on its own. Search Console says /carta/
+// brought 534 clicks in 12 months (30 % of the site) and /contacto/ another 21,
+// which is more than enough to justify two real URLs.
+//
+// They are rendered from the JSON snapshot that snapshot() just froze, not
+// from data/ directly: whatever the storefront shows is exactly what these
+// pages say, with no second source of truth to drift.
+async function readSnapshot(name) {
+  return JSON.parse(await fs.readFile(path.join(DIST_DIR, 'api', `${name}.json`), 'utf-8'));
+}
+
+async function writeContentPages() {
+  const [menu, ordering, site] = await Promise.all([
+    readSnapshot('menu'),
+    readSnapshot('ordering/config'),
+    readSnapshot('site'),
+  ]);
+
+  const pages = {
+    carta: renderCarta({ domain: SITE_DOMAIN, menu, ordering, site }),
+    contacto: renderContacto({ domain: SITE_DOMAIN, site, ordering }),
+  };
+  for (const [dir, html] of Object.entries(pages)) {
+    await fs.mkdir(path.join(DIST_DIR, dir), { recursive: true });
+    await fs.writeFile(path.join(DIST_DIR, dir, 'index.html'), html);
+  }
+  return { pages: Object.keys(pages).length, items: menu.filter((i) => i.active !== false).length };
 }
 
 // Crawlers must be able to fetch the frozen JSON — the menu is rendered from
@@ -147,6 +186,8 @@ async function writeHostingFiles() {
   );
   const urls = [
     { loc: '/', changefreq: 'weekly', priority: '1.0' },
+    { loc: '/carta/', changefreq: 'weekly', priority: '0.9' },
+    { loc: '/contacto/', changefreq: 'monthly', priority: '0.7' },
     { loc: '/aviso-legal/', changefreq: 'yearly', priority: '0.3' },
     { loc: '/privacidad/', changefreq: 'yearly', priority: '0.3' },
   ]
@@ -195,6 +236,8 @@ async function main() {
 
   const rewritten = await rewriteHtml();
   if (rewritten) log(`${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
+  const content = await writeContentPages();
+  log(`${content.pages} páginas indexables (carta con ${content.items} platos)`);
   const redirects = await writeLegacyRedirects();
   log(`${redirects} redirecciones de URLs antiguas`);
   await writeHostingFiles();

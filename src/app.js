@@ -2,7 +2,7 @@
 // app without opening a port; src/server.js is the real entry point.
 const path = require('path');
 const express = require('express');
-const { PROD, PUBLIC_DIR, FEATURES } = require('./config');
+const { PROD, PUBLIC_DIR, FEATURES, NOINDEX } = require('./config');
 const { initAuth } = require('./services/passwords');
 const securityHeaders = require('./middleware/security-headers');
 const errorHandler = require('./middleware/error-handler');
@@ -20,6 +20,18 @@ function createApp() {
   // must be mounted before express.json consumes/reparses the stream.
   if (FEATURES.ordering) app.use('/api/stripe/webhook', require('./routes/stripe-webhook'));
   app.use(express.json({ limit: '1mb' }));
+
+  // Registered before express.static so this robots.txt wins over the one in
+  // public/, which says Allow: / for the GitHub Pages deployment.
+  if (NOINDEX) {
+    app.use((_req, res, next) => {
+      res.set('X-Robots-Tag', 'noindex, nofollow');
+      next();
+    });
+    app.get('/robots.txt', (_req, res) =>
+      res.type('text/plain').send('User-agent: *\nDisallow: /\n')
+    );
+  }
 
   // Clean URL for the admin panel: registered before static so
   // express.static never serves admin.html directly. Old links/bookmarks

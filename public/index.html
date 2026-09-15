@@ -31,16 +31,31 @@
   <meta property="og:image:alt" content="Pizza artesanal de Voy Volando recién salida del horno">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Structured data: local business (SEO + GEO) -->
+  <!-- Structured data: local business (SEO + GEO)
+       Faltan dos datos que no están en el repositorio: "geo" (coordenadas
+       exactas del local, se copian de Google Maps) y "sameAs" (URL de la ficha
+       de Google y de las redes sociales). Sin ellos Google tiene que adivinar
+       cuál de los negocios llamados Voy Volando de la provincia es este. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Restaurant",
+    "@id": "https://voyvolandosantafe.com/#restaurant",
     "name": "Pizzería Voy Volando",
+    "alternateName": "Voy Volando Santa Fe",
     "url": "https://voyvolandosantafe.com/",
+    "image": "https://voyvolandosantafe.com/assets/og-image.jpg",
     "telephone": "+34958442847",
     "email": "info@voyvolandosantafe.com",
+    "priceRange": "€€",
     "servesCuisine": ["Pizza", "Cocina italiana"],
+    "areaServed": [
+      { "@type": "Place", "name": "Santa Fe" },
+      { "@type": "Place", "name": "Jau" },
+      { "@type": "Place", "name": "Belicena" },
+      { "@type": "Place", "name": "Purchil" },
+      { "@type": "Place", "name": "Ambroz" }
+    ],
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "C. Cristóbal Colón, 7",
@@ -49,7 +64,7 @@
       "postalCode": "18320",
       "addressCountry": "ES"
     },
-    "hasMenu": "https://voyvolandosantafe.com/#menu",
+    "hasMenu": "https://voyvolandosantafe.com/carta/",
     "acceptsReservations": "True",
     "openingHoursSpecification": [
       {
@@ -150,8 +165,8 @@
     <section class="hero" aria-label="Presentación">
       <div class="hero-inner">
         <span class="eyebrow" id="hero-eyebrow">Santa Fe, Granada · Desde siempre</span>
-        <h1 id="hero-title">Pizza <em>auténtica.</em></h1>
-        <p class="hero-sub" id="hero-sub">Ingredientes frescos, recetas de siempre y el sabor que no se olvida.</p>
+        <h1 id="hero-title">Pizza artesanal en Santa Fe <em>a domicilio.</em></h1>
+        <p class="hero-sub" id="hero-sub">Masa hecha cada mañana y horno tradicional. Reparto en Santa Fe y alrededores, para recoger o en el local.</p>
         <div class="hero-actions">
           <a href="tel:958442847" class="btn btn-primary js-order js-tel-link">Llamar · <span class="js-phone">958 44 28 47</span></a>
           <a href="#menu" class="btn btn-outline">Ver la carta</a>
@@ -211,6 +226,9 @@
           <div class="ornament" aria-hidden="true"><span>◆</span></div>
           <p style="text-align:center">
             <a href="tel:958442847" class="btn btn-outline js-order js-tel-link">Pedir por teléfono</a>
+          </p>
+          <p style="text-align:center">
+            <a href="/carta/">Ver la carta completa con precios</a>
           </p>
         </div>
       </div>
@@ -389,6 +407,8 @@
         <a href="mailto:info@voyvolandosantafe.com" class="js-email-link"><span class="js-email">info@voyvolandosantafe.com</span></a>
       </p>
       <p>
+        <a href="/carta/">Carta</a> ·
+        <a href="/contacto/">Contacto</a> ·
         <a href="/aviso-legal/">Aviso legal</a> ·
         <a href="/privacidad/">Privacidad</a>
       </p>
