@@ -5,32 +5,9 @@
   var $ = function (sel) { return document.querySelector(sel); };
   var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
 
-  /* ── Dark mode: follows the system unless manually overridden (localStorage) ── */
-  (function initTheme() {
-    var KEY = 'vv_theme';
-    var root = document.documentElement;
-    var btn = $('#theme-toggle');
-    var saved = null;
-    try { saved = localStorage.getItem(KEY); } catch (e) { /* storage blocked */ }
-    if (saved === 'dark' || saved === 'light') {
-      root.setAttribute('data-theme', saved);
-      syncToggle(saved === 'dark');
-    } else {
-      syncToggle(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    }
-    function syncToggle(isDark) {
-      btn.setAttribute('aria-pressed', String(isDark));
-      btn.setAttribute('aria-label', isDark ? 'Activar modo claro' : 'Activar modo oscuro');
-    }
-    btn.addEventListener('click', function () {
-      var current = root.getAttribute('data-theme') ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      var next = current === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      syncToggle(next === 'dark');
-      try { localStorage.setItem(KEY, next); } catch (e) { /* storage blocked */ }
-    });
-  })();
+  /* El modo oscuro y el menú hamburguesa viven en js/ui.js: los comparten la
+     portada y las páginas estáticas (/carta/, /contacto/), que llevan la misma
+     cabecera pero ninguno del contenido que se pinta aquí. */
 
   function esc(s) {
     return String(s == null ? '' : s)
@@ -56,20 +33,6 @@
 
   var SITE = {}; // editable content loaded from /api/site
   var orderingConfig = null; // /api/ordering/config, needed to price/render orderable items
-
-  /* ── Accessible mobile nav ──────────────────────────── */
-  var navToggle = $('#nav-toggle');
-  var nav = $('#site-nav');
-  navToggle.addEventListener('click', function () {
-    var open = nav.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', String(open));
-  });
-  nav.addEventListener('click', function (e) {
-    if (e.target.tagName === 'A') {
-      nav.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
-    }
-  });
 
   /* ── Subtle reveals ─────────────────────────────────── */
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

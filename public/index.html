@@ -6,7 +6,7 @@
 
   <!-- SEO -->
   <title>Pizzería Voy Volando — Pizza artesanal en Santa Fe, Granada</title>
-  <meta name="description" content="Pizzería artesanal en Santa Fe (Granada). Masa hecha cada mañana, ingredientes frescos y horno tradicional. A domicilio, para recoger o en el local. Llama al 958 44 28 47.">
+  <meta name="description" content="Pizzería artesanal en Santa Fe (Granada). Masa hecha cada mañana, ingredientes frescos y horno tradicional. A domicilio o para recoger. Llama al 958 44 28 47.">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://voyvolandosantafe.com/">
   <meta name="theme-color" content="#faf6ee">
@@ -23,7 +23,7 @@
   <meta property="og:locale" content="es_ES">
   <meta property="og:site_name" content="Pizzería Voy Volando">
   <meta property="og:title" content="Pizzería Voy Volando — Pizza artesanal en Santa Fe, Granada">
-  <meta property="og:description" content="Masa artesanal, ingredientes frescos y el sabor de siempre. A domicilio, para recoger o en nuestro local de Santa Fe.">
+  <meta property="og:description" content="Masa artesanal, ingredientes frescos y el sabor de siempre. A domicilio en Santa Fe y alrededores, o pasa a recogerla.">
   <meta property="og:url" content="https://voyvolandosantafe.com/">
   <meta property="og:image" content="https://voyvolandosantafe.com/assets/og-image.jpg">
   <meta property="og:image:width" content="1200">
@@ -75,7 +75,7 @@
       "addressCountry": "ES"
     },
     "hasMenu": "https://voyvolandosantafe.com/carta/",
-    "acceptsReservations": "True",
+    "acceptsReservations": "False",
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",
@@ -124,7 +124,7 @@
         "name": "¿Dónde está la pizzería Voy Volando?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "En C. Cristóbal Colón, 7, 18320 Santa Fe (Granada). Puedes comer en el local, reservar mesa o venir sin cita."
+          "text": "En C. Cristóbal Colón, 7, 18320 Santa Fe (Granada). Trabajamos solo a domicilio y para recoger: no hay comedor, así que pide por teléfono y pasa a por ella cuando esté lista."
         }
       }
     ]
@@ -176,7 +176,7 @@
       <div class="hero-inner">
         <span class="eyebrow" id="hero-eyebrow">Santa Fe, Granada · Desde siempre</span>
         <h1 id="hero-title">Pizza artesanal en Santa Fe <em>a domicilio.</em></h1>
-        <p class="hero-sub" id="hero-sub">Masa hecha cada mañana y horno tradicional. Reparto en Santa Fe y alrededores, para recoger o en el local.</p>
+        <p class="hero-sub" id="hero-sub">Masa hecha cada mañana y horno tradicional. Reparto en Santa Fe y alrededores, o pasa a recogerla por el local.</p>
         <div class="hero-actions">
           <a href="tel:958442847" class="btn btn-primary js-order js-tel-link">Llamar · <span class="js-phone">958 44 28 47</span></a>
           <a href="#menu" class="btn btn-outline">Ver la carta</a>
@@ -234,11 +234,9 @@
           </div>
 
           <div class="ornament" aria-hidden="true"><span>◆</span></div>
-          <p style="text-align:center">
-            <a href="tel:958442847" class="btn btn-outline js-order js-tel-link">Pedir por teléfono</a>
-          </p>
-          <p style="text-align:center">
-            <a href="/carta/">Ver la carta completa con precios</a>
+          <p class="actions-row">
+            <a href="tel:958442847" class="btn btn-primary js-order js-tel-link">Pedir por teléfono</a>
+            <a href="/carta/" class="btn btn-outline">Ver la carta completa con precios</a>
           </p>
         </div>
       </div>
@@ -293,8 +291,8 @@
           </article>
           <article class="service reveal">
             <span class="num">III.</span>
-            <h3>En el local</h3>
-            <p>Disfruta en nuestro comedor de <span class="js-address">C. Cristóbal Colón, 7</span>, en Santa Fe. Reserva o ven sin cita.</p>
+            <h3>Sin intermediarios</h3>
+            <p>Pides directamente a la pizzería, sin apps ni comisiones: el precio es el de la carta y el pedido lo prepara quien lo coge.</p>
           </article>
         </div>
       </div>
@@ -342,7 +340,7 @@
           </details>
           <details>
             <summary>¿Dónde está la pizzería?</summary>
-            <p>En <span class="js-address">C. Cristóbal Colón, 7</span>, <span class="js-city">18320 Santa Fe, Granada</span>. Puedes comer en el local, reservar mesa o venir sin cita.</p>
+            <p>En <span class="js-address">C. Cristóbal Colón, 7</span>, <span class="js-city">18320 Santa Fe, Granada</span>. Trabajamos solo a domicilio y para recoger: no hay comedor.</p>
           </details>
         </div>
       </div>
@@ -389,7 +387,6 @@
             <select id="f-reason" name="reason">
               <option value="">Selecciona una opción</option>
               <option>Hacer un pedido</option>
-              <option>Reservar mesa</option>
               <option>Consulta general</option>
               <option>Evento o grupo</option>
             </select>
@@ -426,6 +423,7 @@
     </div>
   </footer>
 
+  <script src="/js/ui.js" defer></script>
   <script src="/js/main.js" defer></script>
   <script src="/js/cart.js" defer></script>
 </body>
