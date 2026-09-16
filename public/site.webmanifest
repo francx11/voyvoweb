@@ -1,7 +1,7 @@
 {
   "name": "Pizzería Voy Volando",
   "short_name": "Voy Volando",
-  "description": "Pizzería artesanal en Santa Fe (Granada). Masa hecha cada mañana e ingredientes frescos.",
+  "description": "Pizzería artesanal en Santa Fe (Granada). Ingredientes frescos y recetas de siempre.",
   "start_url": "/",
   "display": "browser",
   "theme_color": "#faf2e2",
