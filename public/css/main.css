@@ -26,14 +26,15 @@
   --heading: 'Barlow Condensed', 'Arial Narrow', sans-serif;
   --body: 'Barlow', 'Segoe UI', sans-serif;
 
-  /* Radios: el sistema es plano y recto. El único redondeo que sobrevive es
-     el de los sellos circulares, que son un recurso de marca. Las variables
-     se conservan aunque valgan 0 para no tocar las ~40 reglas que las usan;
-     cambiar de dirección gráfica vuelve a ser cambiar estas cinco líneas. */
-  --radius-sm: 0;
-  --radius: 0;
-  --radius-lg: 0;
-  --radius-pill: 0;
+  /* Radios: un único valor de redondeo para botones, tarjetas y campos de
+     formulario (preferencia de marca). Los sellos circulares conservan su
+     propio radio al 50%, aparte. Las cuatro variables comparten valor para
+     no tocar las ~40 reglas que las usan; cambiar de dirección gráfica
+     vuelve a ser cambiar estas cinco líneas. */
+  --radius-sm: 10px;
+  --radius: 10px;
+  --radius-lg: 10px;
+  --radius-pill: 10px;
   --radius-round: 50%;     /* sellos y botones-icono circulares */
 
   /* Sombra dura de la marca: sin blur, desplazada, en oro. Es el gesto de
