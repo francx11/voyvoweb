@@ -286,7 +286,7 @@ ${group.items.map((item) => renderItem(item, tiers)).join('\n')}
           <span class="eyebrow">Nuestras pizzas</span>
           <h1 class="section-title">La carta de Voy Volando en Santa Fe</h1>
           <div class="airmail-rule" aria-hidden="true"></div>
-          <p class="section-intro" style="margin:0 auto">Clásicas y gourmet, con masa artesanal hecha cada mañana. Pídelas a domicilio en Santa Fe y alrededores o pasa a recogerlas por el local.</p>
+          <p class="section-intro" style="margin:0 auto">Clásicas y gourmet, con ingredientes frescos. Pídelas a domicilio en Santa Fe y alrededores o pasa a recogerlas por el local.</p>
         </header>
 
 ${sections}
