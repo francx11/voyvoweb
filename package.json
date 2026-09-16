@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test": "node --test \"tests/**/*.test.js\"",
+    "test": "node --test tests/api.test.js tests/build-static.test.js tests/orders.test.js tests/theme.test.js",
     "lint": "eslint src scripts tests public/js",
     "format": "prettier --write \"src/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\" \"*.json\" \"docs/**/*.md\"",
-    "check": "eslint src scripts tests public/js && prettier --check \"src/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\" && node --test \"tests/**/*.test.js\"",
+    "check": "eslint src scripts tests public/js && prettier --check \"src/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\" && node --test tests/api.test.js tests/build-static.test.js tests/orders.test.js tests/theme.test.js",
     "backup": "node scripts/backup.mjs",
     "build:static": "node scripts/build-static.mjs",
     "theme:sync": "node scripts/sync-theme.mjs"
