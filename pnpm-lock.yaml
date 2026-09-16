@@ -18,8 +18,8 @@ importers:
         specifier: ^1.4.5-lts.1
         version: 1.4.5-lts.2
       nodemailer:
-        specifier: ^9.0.3
-        version: 9.0.3
+        specifier: ^9.1.1
+        version: 9.1.1
       sharp:
         specifier: ^0.35.3
         version: 0.35.3
@@ -652,8 +652,8 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
 
-  nodemailer@9.0.3:
-    resolution: {integrity: sha512-n+YP+NKwR5zRWa60k3GiQ6Q3B4KXCoAw40dAKeCtYn020iNN74aWK2liXIC3ZEATeGql7we3tE3t8QwhY0eskw==}
+  nodemailer@9.1.1:
+    resolution: {integrity: sha512-izw9mVKFix6YSnC9eLgV6g1opl9DUlRio9ZNcq+Wu9Ujn2UwF+8Nl0B8nz22kEC+CTZCvinkxwJ0DeFbb6NwcQ==}
     engines: {node: '>=6.0.0'}
 
   object-assign@4.1.1:
@@ -1425,7 +1425,7 @@ snapshots:
 
   negotiator@0.6.3: {}
 
-  nodemailer@9.0.3: {}
+  nodemailer@9.1.1: {}
 
   object-assign@4.1.1: {}
 
