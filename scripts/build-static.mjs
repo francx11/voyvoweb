@@ -187,8 +187,16 @@ async function assertThemeColor() {
   const wrong = [];
 
   // pedido.html y el panel no se exportan (STATIC_EXCLUDE): theme:sync sí los
-  // sincroniza, para el despliegue Node, pero aquí no existen.
-  const published = HTML_PAGES.filter((p) => !STATIC_EXCLUDE.includes(p));
+  // sincroniza, para el despliegue Node, pero aquí no existen. /carta/ y
+  // /contacto/ no están en HTML_PAGES porque no son un fichero estático que
+  // theme:sync reescriba — pages.mjs los genera en build time leyendo
+  // themeColor() directamente, así que nunca deberían desajustarse. Se
+  // comprueban igual: es la misma invariante y el coste es cero.
+  const published = [
+    ...HTML_PAGES.filter((p) => !STATIC_EXCLUDE.includes(p)),
+    'carta/index.html',
+    'contacto/index.html',
+  ];
 
   for (const page of published) {
     const html = await fs.readFile(path.join(DIST_DIR, page), 'utf-8');
@@ -306,9 +314,11 @@ async function main() {
   const rewritten = await rewriteHtml();
   if (rewritten) log(`${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
   await assertBusinessData();
-  await assertThemeColor();
   const content = await writeContentPages();
   log(`${content.pages} páginas indexables (carta con ${content.items} platos)`);
+  // Después de writeContentPages: comprueba también carta/index.html y
+  // contacto/index.html, que hasta ahora no existen en dist/.
+  await assertThemeColor();
   const redirects = await writeLegacyRedirects();
   log(`${redirects} redirecciones de URLs antiguas`);
   await writeHostingFiles();

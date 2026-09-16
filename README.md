@@ -60,6 +60,7 @@ src/
                        monthly-special, offers, reviews, settings
 tests/api.test.js      Tests de integración contra la app real (datos en tmp)
 public/index.html      Web pública (+ css/main.css, js/main.js)
+public/js/ui.js        Cabecera compartida: modo oscuro y menú móvil (portada + /carta/, /contacto/)
 public/admin.html      Panel de administración, servido en /admin (+ css/admin.css, js/admin.js)
 public/assets/gallery/ Fotos subidas (optimizadas a WebP)
 public/assets/ofertas/ Fotos de las ofertas · assets/especial/ foto de la pizza del mes

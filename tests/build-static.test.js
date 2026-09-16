@@ -85,14 +85,45 @@ test('el build estático reescribe el dominio en todas partes', () => {
   assert.ok(carta.includes('"@type": "Menu"'), 'falta el JSON-LD de tipo Menu');
   assert.match(carta, /\d+,\d{2} €/, 'la carta no muestra ningún precio');
 
+  // La cabecera es la misma en las tres páginas: mismo marcado, mismo id y el
+  // mismo js/ui.js que enciende el botón de tema y el hamburguesa. Si alguien
+  // vuelve a darle a /carta/ una barra propia, el móvil se queda sin menú.
+  const contactoHtml = fs.readFileSync(path.join(OUT, 'contacto', 'index.html'), 'utf-8');
+  for (const [name, page] of [
+    ['portada', html],
+    ['carta', carta],
+    ['contacto', contactoHtml],
+  ]) {
+    assert.ok(page.includes('id="site-nav"'), `${name}: sin la barra de navegación común`);
+    assert.ok(page.includes('id="nav-toggle"'), `${name}: sin el botón de menú móvil`);
+    assert.ok(page.includes('id="theme-toggle"'), `${name}: sin el botón de modo oscuro`);
+    assert.ok(page.includes('src="/js/ui.js"'), `${name}: no carga js/ui.js`);
+    for (const label of ['Nosotros', 'Carta', 'Ofertas', 'Servicios', 'Galería', 'Contacto']) {
+      assert.ok(page.includes(`>${label}</a>`), `${name}: la barra no lleva "${label}"`);
+    }
+  }
+  assert.ok(fs.existsSync(path.join(OUT, 'js', 'ui.js')), 'js/ui.js no llega al build');
+
+  // El negocio es solo domicilio y recogida: no hay comedor. Si vuelve a
+  // colarse en el copy, Google y el cliente leen que se puede comer allí.
+  for (const [name, page] of [
+    ['portada', html],
+    ['carta', carta],
+    ['contacto', contactoHtml],
+  ]) {
+    for (const frase of ['comer en el local', 'reservar mesa', 'Reservar mesa']) {
+      assert.ok(!page.includes(frase), `${name}: sigue diciendo "${frase}"`);
+    }
+  }
+  assert.ok(html.includes('"acceptsReservations": "False"'), 'la portada sigue aceptando reservas');
+
   // geo y sameAs son los que le dicen a Google cuál de los negocios llamados
   // Voy Volando de la provincia es este. Tienen que estar en las tres páginas
   // y decir lo mismo: una discrepancia cuenta como dos negocios.
-  const contacto = fs.readFileSync(path.join(OUT, 'contacto', 'index.html'), 'utf-8');
   const { BUSINESS } = require(path.join(ROOT, 'src', 'config'));
   for (const [name, page] of [
     ['portada', html],
-    ['contacto', contacto],
+    ['contacto', contactoHtml],
   ]) {
     assert.ok(page.includes(String(BUSINESS.geo.latitude)), `${name}: sin latitud`);
     assert.ok(page.includes(String(BUSINESS.geo.longitude)), `${name}: sin longitud`);
@@ -137,7 +168,7 @@ test('el build estático reescribe el dominio en todas partes', () => {
   for (const [name, page] of [
     ['portada', html],
     ['carta', carta],
-    ['contacto', contacto],
+    ['contacto', contactoHtml],
     ['404', fs.readFileSync(path.join(OUT, '404.html'), 'utf-8')],
   ]) {
     const t = page.indexOf('/css/theme.css');
