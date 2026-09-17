@@ -253,10 +253,24 @@
     const menu = s.menu || {};
     const mode = ['pdf', 'both'].includes(menu.mode) ? menu.mode : 'products';
     $(`mode-${mode}`).checked = true;
+    const photos = ['always', 'never'].includes(menu.photos) ? menu.photos : 'auto';
+    $(`photos-${photos}`).checked = true;
     $('pdf-current').innerHTML = menu.pdf
       ? `PDF actual: <a href="${menu.pdf}" target="_blank" rel="noopener" style="color:var(--text)">${menu.pdf.split('/').pop()}</a>`
       : 'Ningún PDF subido todavía';
   }
+
+  document.querySelectorAll('input[name=menu-photos]').forEach((r) => {
+    r.addEventListener('change', async () => {
+      const photos = document.querySelector('input[name=menu-photos]:checked').value;
+      try {
+        await api('PUT', '/api/site', { menu: { photos } });
+        toast('Fotos de la carta guardadas ✓ La web ya lo muestra');
+      } catch (err) {
+        toast(err.message || 'No se pudo guardar', 'err');
+      }
+    });
+  });
 
   document.querySelectorAll('input[name=menu-mode]').forEach((r) => {
     r.addEventListener('change', async () => {
@@ -305,7 +319,7 @@
     $('btn-item-img-remove').disabled = disabled;
     $('item-img-hint').textContent = disabled
       ? 'Guarda la pizza primero para poder añadir una foto.'
-      : 'Si no subes foto, se usa un placeholder de pizza.';
+      : 'Si no subes foto, la tarjeta sale solo con el texto del plato.';
   }
   $('btn-item-img').addEventListener('click', () => {
     if ($('item-id').value) itemImgInput.click();

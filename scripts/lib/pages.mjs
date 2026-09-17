@@ -242,6 +242,13 @@ export function renderCarta({ domain, menu, ordering, site }) {
   );
   const groups = groupByCategory(items);
   const pdf = site && site.menu && site.menu.pdf;
+  /* El CTA de vuelta a la portada prometía "con fotos" cuando ningún plato
+     tiene foto subida. La condición no es la bandera sola: con "auto" el hueco
+     aparece plato a plato, así que lo que decide es si hay alguna foto de
+     verdad. Sin ellas, la portada sigue ofreciendo algo que esta página no
+     tiene —el filtro por alérgenos—, y eso es lo que se anuncia. */
+  const photos = (site && site.menu && site.menu.photos) || 'auto';
+  const hasPhotos = photos !== 'never' && (photos === 'always' || items.some((item) => item.image));
 
   const sections = groups
     .map(
@@ -294,7 +301,9 @@ ${sections}
         <div class="airmail-rule" aria-hidden="true"></div>
         <p class="actions-row">
           <a href="tel:958442847" class="btn btn-primary">Pedir por teléfono · 958 44 28 47</a>
-          <a href="/#menu" class="btn btn-outline">Ver la carta con fotos</a>${
+          <a href="/#menu" class="btn btn-outline">${
+            hasPhotos ? 'Ver la carta con fotos' : 'Ver la carta y filtrar por alérgenos'
+          }</a>${
             pdf
               ? `\n          <a href="${esc(
                   pdf

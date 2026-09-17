@@ -253,6 +253,21 @@ test('malformed JSON body gets a JSON 400, not an HTML error page', async () => 
   assert.equal((await res.json()).error, 'JSON inválido');
 });
 
+test('PUT /api/site rejects an unknown photos mode and keeps mode and PDF', async () => {
+  await api('PUT', '/api/site', { menu: { pdf: '/assets/menu-1.pdf', mode: 'both' } });
+  await api('PUT', '/api/site', { menu: { photos: 'never' } });
+  let site = (await api('GET', '/api/site')).json;
+  assert.equal(site.menu.photos, 'never');
+  // El modo de fotos es un ajuste más dentro de site.menu: guardarlo no puede
+  // llevarse por delante el PDF ni el modo de carta.
+  assert.equal(site.menu.pdf, '/assets/menu-1.pdf');
+  assert.equal(site.menu.mode, 'both');
+
+  await api('PUT', '/api/site', { menu: { photos: 'banana' } });
+  site = (await api('GET', '/api/site')).json;
+  assert.equal(site.menu.photos, 'auto');
+});
+
 test('reviews endpoint reports unconfigured without leaking anything', async () => {
   delete process.env.GOOGLE_API_KEY;
   const r = await api('GET', '/api/reviews');
