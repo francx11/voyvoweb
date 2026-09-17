@@ -131,6 +131,21 @@
             <span><strong>Ambos</strong> (tarjetas de productos y, debajo, un botón para ver la carta en PDF)</span>
           </label>
         </div>
+        <h3 style="font-size:1rem;font-weight:600;margin:1.4rem 0 0.8rem">Fotos de los platos</h3>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1rem">
+          <label style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;cursor:pointer">
+            <input type="radio" name="menu-photos" value="auto" id="photos-auto" style="margin-top:0.25rem">
+            <span><strong>Automático</strong> (recomendado: cada plato enseña su foto solo si la tiene subida; mientras no haya ninguna, la carta se ve compacta y en cuanto subas una, aparece sola)</span>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;cursor:pointer">
+            <input type="radio" name="menu-photos" value="always" id="photos-always" style="margin-top:0.25rem">
+            <span><strong>Siempre</strong> (hueco de foto en todos los platos, con un dibujo genérico en los que no tengan)</span>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;cursor:pointer">
+            <input type="radio" name="menu-photos" value="never" id="photos-never" style="margin-top:0.25rem">
+            <span><strong>Nunca</strong> (solo texto, aunque haya fotos subidas)</span>
+          </label>
+        </div>
         <div style="display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap">
           <button type="button" class="btn btn-ghost" id="btn-upload-pdf">Subir carta en PDF</button>
           <input type="file" id="pdf-input" accept="application/pdf" style="display:none">
@@ -657,7 +672,7 @@
                 <button type="button" class="btn btn-ghost" id="btn-item-img-remove" style="display:none">Quitar foto</button>
                 <input type="file" id="item-img-input" accept="image/*" style="display:none">
               </div>
-              <span id="item-img-hint" style="font-size:0.78rem;color:var(--muted)">Si no subes foto, se usa un placeholder de pizza.</span>
+              <span id="item-img-hint" style="font-size:0.78rem;color:var(--muted)">Si no subes foto, la tarjeta sale solo con el texto del plato.</span>
             </div>
           </div>
         </div>

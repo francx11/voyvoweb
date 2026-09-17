@@ -151,6 +151,54 @@
 
   var MENU_PLACEHOLDER = '/assets/menu-placeholder.svg';
 
+  /* Cuándo una tarjeta reserva su hueco de foto. Lo fija site.menu.photos desde
+     el panel (ver MENU_PHOTOS en src/routes/site.js); loadMenu() lo rellena.
+       auto   — hueco solo si el plato tiene foto. Es el defecto, y el motivo de
+                serlo: sin fotos subidas la carta sale compacta, y en cuanto el
+                panel sube la primera, esa tarjeta la enseña sin tocar ajustes.
+       always — hueco siempre, con el placeholder donde falte (lo de antes).
+       never  — nunca, aunque haya foto subida. */
+  var photosMode = 'auto';
+  function mediaSrc(p) {
+    if (photosMode === 'never') return '';
+    if (p.image) return p.image;
+    return photosMode === 'always' ? MENU_PLACEHOLDER : '';
+  }
+
+  /* Mismo algoritmo que el slug() de scripts/lib/pages.mjs — duplicado a
+     propósito: main.js es un IIFE vanilla sin imports y /carta/ se genera en
+     Node. Los ids de ancla de las dos vistas tienen que coincidir, así que si
+     tocas uno, toca el otro. */
+  function slug(value) {
+    return String(value)
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  /* El tag repite el título de su categoría en 27 de los 30 platos que lo
+     llevan ("Clásica" bajo "Pizzas Clásicas"). Sobre la foto ese badge era
+     decoración; sin foto es una etiqueta de más encima del nombre. Solo
+     sobrevive el que informa de algo que la categoría no dice ("Solo
+     recogida"). */
+  function tagAddsInfo(p) {
+    if (!p.tag) return false;
+    return slug(p.category || '').indexOf(slug(p.tag)) === -1;
+  }
+
+  /* Categorías largas: se pintan enteras, pero plegadas a COLLAPSE_TO platos
+     hasta que alguien pulse el botón. Con la carta actual solo alcanza a
+     Clásicas (14) y Especiales (13), que entre las dos son casi la mitad del
+     scroll de la sección. El recorte es visual (CSS), no del DOM: lo que se
+     pliega sigue ahí para Ctrl+F y para el filtro de alérgenos.
+     Cuántos platos quedan a la vista se decide aquí y solo aquí: el render
+     marca los sobrantes con .menu-card--overflow y el CSS se limita a
+     ocultarlos mientras el grupo esté plegado. */
+  var COLLAPSE_OVER = 8;
+  var COLLAPSE_TO = 6;
+
   /* The carta carries an "Ofertas" category whose cards repeat, word for word,
      the promos already published in the #offers section. #offers is the
      canonical one: it has its own heading, an intro and a photo per promo,
@@ -183,25 +231,37 @@
     return p.price != null ? formatPrice(p.price) : '';
   }
 
-  function renderMenuItem(p) {
+  function badge(p, extraClass) {
+    return '<span class="menu-card-badge' + (extraClass ? ' ' + extraClass : '') + '"' +
+      (p.tagColor ? ' style="background:' + esc(p.tagColor) + '"' : '') +
+      '>' + esc(p.tag) + '</span>';
+  }
+
+  function renderMenuItem(p, overflow) {
     var canOrder = orderingConfig && orderingConfig.enabled && isOrderable(p);
     var priceStr = priceShort(p);
-    var hasDetail = !!(p.description || (p.allergens && p.allergens.length));
-    return '<article class="menu-card">' +
-      '<div class="menu-card-media">' +
-        '<img src="' + esc(p.image || MENU_PLACEHOLDER) + '" alt="' + esc(p.name) + '" loading="lazy">' +
-        (p.tag
-          ? '<span class="menu-card-badge"' +
-            (p.tagColor ? ' style="background:' + esc(p.tagColor) + '"' : '') +
-            '>' +
-            esc(p.tag) + '</span>'
-          : '') +
-      '</div>' +
+    var src = mediaSrc(p);
+    /* Sin foto la descripción cabe entera (la más larga son 94 caracteres), así
+       que el modal ya no aporta el texto recortado: solo vale la pena abrirlo
+       por los alérgenos o por el desglose de tallas que "Desde X" resume. */
+    var hasDetail = src
+      ? !!(p.description || (p.allergens && p.allergens.length))
+      : !!((p.allergens && p.allergens.length) || priceDisplay(p) !== priceStr);
+    return '<article class="menu-card' + (src ? '' : ' menu-card--flat') +
+      (overflow ? ' menu-card--overflow' : '') + '">' +
+      (src
+        ? '<div class="menu-card-media">' +
+            '<img src="' + esc(src) + '" alt="' + esc(p.name) + '" loading="lazy">' +
+            (p.tag ? badge(p) : '') +
+          '</div>'
+        : '') +
       '<div class="menu-card-body">' +
-        '<h4 class="menu-card-name">' + esc(p.name) + '</h4>' +
+        '<h4 class="menu-card-name">' + esc(p.name) +
+          (!src && tagAddsInfo(p) ? ' ' + badge(p, 'menu-card-badge--inline') : '') +
+        '</h4>' +
         (p.description ? '<p class="menu-card-desc">' + esc(p.description) + '</p>' : '') +
         (hasDetail
-          ? '<button type="button" class="menu-card-more" data-detail-id="' + esc(p.id) + '">Ver más</button>'
+          ? '<button type="button" class="menu-card-more" data-detail-id="' + esc(p.id) + '">Detalles</button>'
           : '') +
       '</div>' +
       '<div class="menu-card-foot">' +
@@ -228,14 +288,59 @@
         'Llámanos y te la preparamos a medida.</p>';
       return;
     }
-    wrap.innerHTML = groupByCategory(visible).map(function (group) {
-      return '<div class="menu-cat-group">' +
+    /* La forma de la tarjeta es una decisión de la rejilla entera, no de cada
+       plato: durante la transición (unos con foto y otros sin ella) una rejilla
+       que mezclase filas de 410px con filas de 115px se vería peor que
+       cualquiera de las dos puras. Basta una foto para conservar la clásica. */
+    var groups = groupByCategory(visible);
+    wrap.classList.toggle('menu-cards--flat', !visible.some(function (p) { return !!mediaSrc(p); }));
+    wrap.innerHTML = groups.map(function (group) {
+      var id = group.category ? slug(group.category) : '';
+      // El conteo del botón sale de los platos que quedan tras el filtro de
+      // alérgenos, no de los que hay en menu.json.
+      var collapsible = !!id && group.items.length > COLLAPSE_OVER;
+      var gridId = 'menu-grid-' + id;
+      return '<div class="menu-cat-group' + (collapsible ? ' is-collapsed' : '') + '"' +
+        (id ? ' id="cat-' + esc(id) + '"' : '') + '>' +
         (group.category
           ? '<h3 class="menu-category-title">' + esc(group.category) + '</h3>'
           : '') +
-        '<div class="menu-grid">' + group.items.map(renderMenuItem).join('') + '</div>' +
+        '<div class="menu-grid"' + (collapsible ? ' id="' + esc(gridId) + '"' : '') + '>' +
+          group.items.map(function (p, i) {
+            return renderMenuItem(p, collapsible && i >= COLLAPSE_TO);
+          }).join('') +
+        '</div>' +
+        (collapsible
+          ? '<button type="button" class="menu-cat-toggle" aria-expanded="false"' +
+            ' aria-controls="' + esc(gridId) + '" data-cat-toggle="' + esc(id) + '">' +
+            'Ver ' + group.items.length + ' de ' + esc(group.category) + '</button>'
+          : '') +
       '</div>';
     }).join('');
+    renderJumpNav(groups);
+  }
+
+  /* Atajos a cada categoría. Anclan, no filtran: la fila de arriba
+     (#allergen-filters) ya filtra, y dos filas de píldoras que filtran a la vez
+     —una excluyendo, otra incluyendo— dan estados combinados que nadie razona.
+     Son <a href="#cat-…">, no <button aria-pressed>, así que la diferencia la
+     lleva la semántica y no hay que explicarla con copy. Los ids de ancla son
+     los mismos que emite /carta/, así que /#cat-pizzas-clasicas vale en las dos
+     vistas. */
+  function renderJumpNav(groups) {
+    var nav = $('#menu-jump');
+    if (!nav) return;
+    var named = groups.filter(function (g) { return !!g.category; });
+    // Con una o dos categorías el atajo no ahorra nada: es una fila de ruido.
+    if (named.length < 3) { nav.hidden = true; nav.innerHTML = ''; return; }
+    nav.innerHTML = '<span class="menu-jump-label">Ir a</span>' +
+      '<div class="menu-jump-track">' +
+      named.map(function (g) {
+        return '<a class="jump-link" href="#cat-' + esc(slug(g.category)) + '">' +
+          esc(g.category) + '</a>';
+      }).join('') +
+      '</div>';
+    nav.hidden = false;
   }
 
   /* ── "Ver más" detail modal (reuses the shared .modal-overlay skeleton) ── */
@@ -272,17 +377,18 @@
     ensureDetailModal();
     var canOrder = orderingConfig && orderingConfig.enabled && isOrderable(p);
     var priceStr = priceDisplay(p);
+    var src = mediaSrc(p);
+    /* Aquí el tag se pinta siempre que exista: el modal no lleva el título de
+       la categoría encima, así que nunca es una repetición de él. */
+    var tag = p.tag ? badge(p, src ? '' : 'menu-card-badge--inline') : '';
     $('#vv-detail-body').innerHTML =
-      '<div class="menu-detail-media">' +
-        '<img src="' + esc(p.image || MENU_PLACEHOLDER) + '" alt="' + esc(p.name) + '">' +
-        (p.tag
-          ? '<span class="menu-card-badge"' +
-            (p.tagColor ? ' style="background:' + esc(p.tagColor) + '"' : '') +
-            '>' +
-            esc(p.tag) + '</span>'
-          : '') +
-      '</div>' +
+      (src
+        ? '<div class="menu-detail-media">' +
+            '<img src="' + esc(src) + '" alt="' + esc(p.name) + '">' + tag +
+          '</div>'
+        : '') +
       '<h2 class="modal-title" id="vv-detail-title">' + esc(p.name) + '</h2>' +
+      (src ? '' : (tag ? '<p class="menu-detail-tags">' + tag + '</p>' : '')) +
       (p.description ? '<p class="menu-detail-desc">' + esc(p.description) + '</p>' : '') +
       (priceStr
         ? '<p class="menu-detail-price' + (priceStr.indexOf('·') !== -1 ? ' menu-price--multi' : '') +
@@ -295,13 +401,36 @@
         ? '<div class="menu-detail-actions"><button type="button" class="btn btn-primary btn-add-item" ' +
           'data-item-id="' + esc(p.id) + '">Pedir</button></div>'
         : '');
+    /* .menu-detail-close va en absolute sobre la foto, con velo oscuro. Sin
+       foto no hay nada debajo que lo justifique: quedaría flotando encima del
+       título, así que el CSS lo devuelve al flujo con esta clase. */
+    $('#vv-detail-overlay').querySelector('.menu-detail')
+      .classList.toggle('menu-detail--flat', !src);
     detailOverlay.classList.add('open');
     document.body.classList.add('cart-scroll-lock');
   }
   document.addEventListener('click', function (e) {
-    var more = e.target.closest && e.target.closest('[data-detail-id]');
-    if (more) openDetail(more.getAttribute('data-detail-id'));
+    if (!e.target.closest) return;
+    var more = e.target.closest('[data-detail-id]');
+    if (more) { openDetail(more.getAttribute('data-detail-id')); return; }
+    var toggle = e.target.closest('[data-cat-toggle]');
+    if (toggle) toggleCategory(toggle);
   });
+
+  /* Plegar y desplegar es un cambio de clase, sin volver a pintar: si se
+     re-renderizara, el botón que acaba de pulsarse desaparecería del DOM y el
+     foco se iría al <body>. */
+  function toggleCategory(btn) {
+    var group = btn.closest('.menu-cat-group');
+    if (!group) return;
+    var collapsed = group.classList.toggle('is-collapsed');
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    var total = group.querySelectorAll('.menu-card').length;
+    var name = group.querySelector('.menu-category-title');
+    btn.textContent = collapsed
+      ? 'Ver ' + total + ' de ' + (name ? name.textContent : 'esta categoría')
+      : 'Mostrar menos';
+  }
 
   function initAllergenFilters(items) {
     var all = [];
@@ -329,6 +458,10 @@
 
   function loadMenu() {
     var mode = (SITE.menu && SITE.menu.mode) || 'products';
+    var photos = SITE.menu && SITE.menu.photos;
+    // GET /api/site devuelve config.json sin normalizar, así que el defecto se
+    // aplica aquí (igual que con mode, justo arriba).
+    photosMode = ['auto', 'always', 'never'].indexOf(photos) !== -1 ? photos : 'auto';
     var pdf = SITE.menu && SITE.menu.pdf;
     var pdfBox = $('#menu-pdf');
     // PDF-only: the client uploaded their menu as a PDF; skip the products fetch

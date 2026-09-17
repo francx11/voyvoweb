@@ -5,6 +5,11 @@ const requireAuth = require('../middleware/require-auth');
 
 const CONFIG_FILE = 'config.json';
 const MENU_MODES = ['products', 'pdf', 'both'];
+// Cuándo la carta reserva hueco de foto por plato. "auto" es el defecto en todas
+// partes (cliente y build estático) y no necesita que este valor exista en
+// config.json: con auto, cada plato enseña su foto solo si la tiene subida, así
+// que subir la primera foto desde el panel la publica sin tocar ajustes.
+const MENU_PHOTOS = ['auto', 'always', 'never'];
 
 const router = Router();
 
@@ -22,6 +27,9 @@ router.put('/', requireAuth, (req, res) => {
     cfg.site.menu = { ...(previous.menu || {}), ...req.body.menu };
     if (req.body.menu.mode !== undefined && !MENU_MODES.includes(cfg.site.menu.mode)) {
       cfg.site.menu.mode = 'products';
+    }
+    if (req.body.menu.photos !== undefined && !MENU_PHOTOS.includes(cfg.site.menu.photos)) {
+      cfg.site.menu.photos = 'auto';
     }
   }
   writeJSON(CONFIG_FILE, cfg);

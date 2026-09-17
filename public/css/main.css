@@ -447,6 +447,99 @@ img { max-width: 100%; display: block; }
 .menu-card-price { font-family: var(--display); font-weight: 400; font-size: 1.05rem; }
 .menu-card-foot .btn-add-item { min-height: 40px; padding: 0.5rem 1.4rem; font-size: 0.85rem; }
 
+/* ── Carta sin fotos ──
+   Mientras los platos no tengan foto subida, la tarjeta deja de reservar el
+   hueco 4/3 (que es lo que la estiraba hasta ~410px en móvil) y se lee como una
+   fila: texto a la izquierda, precio a la derecha. En 360px el marco de la
+   carta y la sección dejan ~260px útiles, así que partirlos en dos columnas
+   dejaría 83px de texto y trocearía nombres y descripciones — de ahí que aquí
+   la fila ocupe el ancho entero y las columnas no lleguen hasta 720px.
+   Lo activa renderMenu() poniendo .menu-cards--flat en #menu-cards. */
+.menu-cards--flat .menu-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+@media (min-width: 720px) { .menu-cards--flat .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .menu-cards--flat .menu-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.menu-card--flat { flex-direction: row; align-items: stretch; gap: 0.6rem; }
+.menu-card--flat .menu-card-body { padding: 0.75rem 0 0.75rem 0.95rem; justify-content: center; }
+/* La columna de texto de la fila es estrecha (~150px en un móvil de 390px):
+   al tamaño de tarjeta con foto, nombres de dos palabras como "Cuatro quesos"
+   partían en dos líneas y estiraban toda la fila. */
+.menu-card--flat .menu-card-name { font-size: 1.05rem; margin-bottom: 0.25rem; }
+.menu-card--flat .menu-card-desc { font-size: 0.85rem; line-height: 1.4; }
+.menu-card--flat .menu-card-more { margin-top: 0.35rem; font-size: 0.8rem; }
+/* Sin foto sobra alto: la descripción más larga son 94 caracteres, así que cabe
+   entera y el modal deja de hacer falta solo para leerla. */
+.menu-card--flat .menu-card-desc { -webkit-line-clamp: none; display: block; overflow: visible; }
+.menu-card--flat .menu-card-foot {
+  flex-direction: column; align-items: flex-end; justify-content: center;
+  gap: 0.35rem; margin-top: 0; padding: 0.75rem 0.95rem 0.75rem 0;
+  text-align: right; flex: none;
+}
+.menu-card--flat .menu-card-price { white-space: nowrap; }
+/* El tag vuelve al flujo, junto al nombre: sin foto no hay nada sobre lo que
+   superponerlo. Hereda el color de fondo que el panel fija por plato. */
+.menu-card-badge--inline {
+  position: static; display: inline-block; vertical-align: 0.18em;
+  margin-left: 0.45rem; box-shadow: none;
+}
+.menu-detail-tags { margin-top: 0.5rem; }
+
+/* Plegado de categorías largas. Cuántos platos se ven lo decide COLLAPSE_TO en
+   main.js, que marca los sobrantes; aquí solo se ocultan, así que el número no
+   vive duplicado en las dos hojas. */
+.menu-cat-group.is-collapsed .menu-card--overflow { display: none; }
+.menu-cat-toggle {
+  display: block; margin: 0.9rem auto 0; padding: 0.5rem 1.3rem;
+  min-height: 40px; cursor: pointer;
+  background: transparent; color: var(--tomato);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+  font-family: var(--heading); font-size: 0.9rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.menu-cat-toggle:hover { background: var(--tomato-btn); border-color: var(--tomato-btn); color: var(--on-tomato); }
+
+/* ── Atajos por categoría ──
+   Una sola línea deslizable en móvil; las máscaras de los extremos son las que
+   dicen que hay más categorías fuera de vista. Deliberadamente NO reutiliza
+   .chip: los chips de alérgenos filtran y estos anclan, y compartir clase
+   ataría el día que uno de los dos cambie de aspecto. Tampoco es sticky: la
+   cabecera ya lo es y en un móvil de 640px dos barras fijas se comen el
+   viewport. */
+.menu-jump { margin: 0 0 1.4rem; }
+.menu-jump-label {
+  display: block; font-family: var(--heading); font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-soft); margin-bottom: 0.4rem;
+}
+.menu-jump-track {
+  display: flex; gap: 0.5rem; overflow-x: auto;
+  scroll-snap-type: x proximity; scroll-padding-inline: 1.2rem;
+  scrollbar-width: none; padding-bottom: 0.2rem;
+  /* En una máscara solo cuenta el canal alfa, no el tono: currentColor es
+     siempre opaco y evita clavar un color literal en esta hoja. */
+  mask-image: linear-gradient(90deg, transparent 0, currentColor 1.2rem,
+                              currentColor calc(100% - 1.2rem), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, currentColor 1.2rem,
+                              currentColor calc(100% - 1.2rem), transparent 100%);
+}
+.menu-jump-track::-webkit-scrollbar { display: none; }
+.jump-link {
+  scroll-snap-align: start; white-space: nowrap; flex: none;
+  font-family: var(--heading); font-size: 0.9rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none;
+  padding: 0.4rem 0.9rem; border: 1px solid var(--line);
+  border-radius: var(--radius-pill); color: var(--ink-soft);
+}
+.jump-link:hover { color: var(--ink); border-color: var(--ink); }
+/* Desde aquí las categorías caben en una línea: sin overflow, una máscara
+   difuminando los bordes mentiría sobre que hay más contenido al lado. */
+@media (min-width: 900px) {
+  .menu-jump-track {
+    flex-wrap: wrap; overflow: visible;
+    mask-image: none; -webkit-mask-image: none;
+  }
+}
+
 /* "Ver más" detail modal (reuses .modal skeleton) */
 .menu-detail { position: relative; }
 /* Doble clase: .modal-close se define más abajo y ganaría por orden de cascada. */
@@ -458,6 +551,14 @@ img { max-width: 100%; display: block; }
   background: rgb(var(--scrim-rgb) / 0.5); color: #fff;
 }
 .menu-detail .menu-detail-close:hover { background: rgb(var(--scrim-rgb) / 0.72); color: #fff; }
+/* Sin foto no hay velo oscuro debajo del aspa: sale del absolute y se apoya en
+   una superficie del tema, para no quedar flotando sobre el título. Va después
+   de la regla de arriba a propósito — misma especificidad, gana el orden. */
+.menu-detail--flat .menu-detail-close {
+  position: static; float: right; margin: 0 0 0.3rem 0.6rem;
+  background: var(--paper-2); color: var(--ink);
+}
+.menu-detail--flat .menu-detail-close:hover { background: var(--line); color: var(--ink); }
 .menu-detail-media {
   position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius); overflow: hidden;
   background: var(--paper-2);

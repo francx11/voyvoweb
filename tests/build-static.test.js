@@ -83,6 +83,15 @@ test('el build estático reescribe el dominio en todas partes', () => {
     assert.ok(!carta.includes(item.name), `la carta duplica la oferta "${item.name}"`);
   }
   assert.ok(carta.includes('"@type": "Menu"'), 'falta el JSON-LD de tipo Menu');
+
+  // El placeholder de pizza no puede colarse en lo que se publica mientras no
+  // haya fotos de verdad. Se comprueba el invariante contra los datos reales en
+  // vez de una cadena fija: el día que suban una foto, el assert se adapta solo.
+  const conFoto = menu.filter((item) => item.active !== false && item.image);
+  if (!conFoto.length) {
+    assert.ok(!carta.includes('con fotos'), '/carta/ promete fotos que no existen');
+    assert.ok(!carta.includes('menu-placeholder.svg'), '/carta/ sirve el placeholder de pizza');
+  }
   assert.match(carta, /\d+,\d{2} €/, 'la carta no muestra ningún precio');
 
   // La cabecera es la misma en las tres páginas: mismo marcado, mismo id y el
