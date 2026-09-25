@@ -53,6 +53,18 @@ dominio es, por tanto, `SITE_DOMAIN=nuevo.com pnpm build:static` (y la variable 
 **Editar contenido en fase 1:** `pnpm dev` → panel en local → editar → commit de `data/*.json` y
 `public/assets/` → push a `main` → GitHub Actions reconstruye y publica (~1 min).
 
+## Analítica (Google Analytics 4 + Tag Manager)
+
+Solo va en el build estático: `injectAnalytics()` en `scripts/build-static.mjs` añade
+`js/consent.js` a cada página publicada (no a las redirecciones antiguas). Ese script muestra el
+banner de cookies y **no carga nada de Google hasta que el visitante acepta**, como piden la LSSI
+y la AEPD; la decisión se guarda en `localStorage` (`vv_consent`) y se cambia desde
+`/privacidad/#cookies`. Los IDs están en `ANALYTICS` (`src/config.js`): GA4 `G-3RFQEGM4YJ` por
+defecto; GTM se enciende con `GTM_CONTAINER_ID=GTM-XXXXXXX` (en el workflow de Pages).
+
+⚠️ Si el contenedor de GTM también lleva una etiqueta de GA4 con el mismo ID, cada visita se cuenta
+dos veces: o GA4 directo o GA4 dentro de GTM, no los dos.
+
 ## Checklist GitHub Pages
 
 1. [ ] Repo en GitHub (puede ser privado con Pages en plan Pro; si es gratuito, público).
