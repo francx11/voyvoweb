@@ -185,4 +185,36 @@ test('el build estático reescribe el dominio en todas partes', () => {
     assert.ok(t !== -1, `${name}: no enlaza theme.css`);
     assert.ok(t < m, `${name}: theme.css debe ir antes que main.css`);
   }
+
+  // Analítica: la etiqueta de consent.js va en todas las páginas que ve un
+  // visitante, con el ID de GA4 de config. Y ninguna página puede cargar Google
+  // directamente desde el HTML: eso instalaría cookies antes del banner.
+  const { ANALYTICS } = require(path.join(ROOT, 'src', 'config'));
+  for (const page of [
+    'index.html',
+    'carta/index.html',
+    'contacto/index.html',
+    'aviso-legal/index.html',
+    'privacidad/index.html',
+    '404.html',
+  ]) {
+    const source = fs.readFileSync(path.join(OUT, page), 'utf-8');
+    const tags = source.match(/<script src="\/js\/consent\.js"[^>]*>/g) || [];
+    assert.strictEqual(tags.length, 1, `${page}: consent.js debe aparecer una vez`);
+    if (ANALYTICS.ga4)
+      assert.ok(tags[0].includes(`data-ga4="${ANALYTICS.ga4}"`), `${page}: sin GA4`);
+    if (ANALYTICS.gtm)
+      assert.ok(tags[0].includes(`data-gtm="${ANALYTICS.gtm}"`), `${page}: sin GTM`);
+    assert.ok(source.indexOf(tags[0]) < source.indexOf('</head>'), `${page}: fuera del <head>`);
+    assert.ok(!source.includes('googletagmanager.com'), `${page}: carga Google sin consentimiento`);
+  }
+  // Las redirecciones no cuentan visitas: el visitante nunca llega a verlas.
+  for (const from of ['galeria', 'quienes-somos', 'resenas']) {
+    const page = fs.readFileSync(path.join(OUT, from, 'index.html'), 'utf-8');
+    assert.ok(!page.includes('consent.js'), `${from}: la redirección no debe medir`);
+  }
+  assert.ok(fs.existsSync(path.join(OUT, 'js', 'consent.js')), 'js/consent.js no llega al build');
+  const privacidad = fs.readFileSync(path.join(OUT, 'privacidad', 'index.html'), 'utf-8');
+  assert.ok(privacidad.includes('data-cookie-settings'), '/privacidad/ sin botón de cookies');
+  assert.ok(privacidad.includes('id="cookies"'), '/privacidad/ sin ancla #cookies del banner');
 });
