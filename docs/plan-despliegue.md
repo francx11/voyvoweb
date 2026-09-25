@@ -59,15 +59,16 @@ Solo va en el build estático: `injectAnalytics()` en `scripts/build-static.mjs`
 `js/consent.js` a cada página publicada (no a las redirecciones antiguas). Ese script muestra el
 banner de cookies y **no carga nada de Google hasta que el visitante acepta**, como piden la LSSI
 y la AEPD; la decisión se guarda en `localStorage` (`vv_consent`) y se cambia desde
-`/privacidad/#cookies`. Los IDs están en `ANALYTICS` (`src/config.js`): GA4 `G-3RFQEGM4YJ` y GTM
-`GTM-T3G79KW8`; cualquiera se apaga con su variable vacía (`GA_MEASUREMENT_ID=`,
-`GTM_CONTAINER_ID=`).
+`/privacidad/#cookies`. La web carga solo GTM (`GTM-T3G79KW8`, en `ANALYTICS` de `src/config.js`), y GA4
+(`G-3RFQEGM4YJ`) vive dentro del contenedor como **Etiqueta de Google** con el activador
+**Initialization – All Pages**. Nuevas mediciones (eventos, píxeles) se añaden en GTM y se
+publican desde allí, sin commit ni despliegue.
 
 El `<noscript>` con el iframe de GTM que propone Google **no se incluye a propósito**: sin
 JavaScript no hay banner, así que ese iframe mediría la visita sin consentimiento.
 
-⚠️ Si el contenedor de GTM también lleva una etiqueta de GA4 con el mismo ID, cada visita se cuenta
-dos veces: o GA4 directo o GA4 dentro de GTM, no los dos.
+⚠️ No actives `GA_MEASUREMENT_ID` (GA4 directo) mientras GTM lleve la etiqueta de GA4: cada visita
+se contaría dos veces.
 
 ## Checklist GitHub Pages
 

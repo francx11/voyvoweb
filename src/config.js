@@ -88,15 +88,18 @@ module.exports = {
   // Static export (scripts/build-static.mjs): custom domain written to
   // dist/CNAME, and the files the admin-only half of the site lives in.
   SITE_DOMAIN: process.env.SITE_DOMAIN || 'voyvolandosantafe.com',
-  // Google Analytics 4 y Google Tag Manager. Solo entran en el build estático
-  // (scripts/build-static.mjs), que es lo que se publica en el dominio: ni
-  // `pnpm dev` ni el despliegue del panel mandan visitas a Analytics. Los IDs
-  // son públicos (van en el HTML de cualquier web que los use), por eso
-  // viven aquí y no en .env. Una variable vacía apaga esa pieza
-  // (GA_MEASUREMENT_ID= pnpm build:static). public/js/consent.js no carga
-  // ninguno de los dos hasta que el visitante acepta el banner de cookies.
+  // Google Tag Manager (y, si hiciera falta, GA4 directo). Solo entran en el
+  // build estático (scripts/build-static.mjs), que es lo que se publica en el
+  // dominio: ni `pnpm dev` ni el despliegue del panel mandan visitas a
+  // Analytics. Los IDs son públicos (van en el HTML de cualquier web que los
+  // use), por eso viven aquí y no en .env. public/js/consent.js no carga
+  // ninguno hasta que el visitante acepta el banner de cookies.
+  //
+  // GA4 (G-3RFQEGM4YJ) va configurado DENTRO del contenedor de GTM, como
+  // "Etiqueta de Google" con el activador Initialization - All Pages. Por eso
+  // ga4 está vacío: cargarlo también desde aquí contaría cada visita dos veces.
   ANALYTICS: {
-    ga4: process.env.GA_MEASUREMENT_ID ?? 'G-3RFQEGM4YJ',
+    ga4: process.env.GA_MEASUREMENT_ID ?? '',
     gtm: process.env.GTM_CONTAINER_ID ?? 'GTM-T3G79KW8',
   },
   STATIC_EXCLUDE: [
