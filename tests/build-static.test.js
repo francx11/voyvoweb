@@ -203,6 +203,8 @@ test('el build estático reescribe el dominio en todas partes', () => {
     assert.strictEqual(tags.length, 1, `${page}: consent.js debe aparecer una vez`);
     if (ANALYTICS.ga4)
       assert.ok(tags[0].includes(`data-ga4="${ANALYTICS.ga4}"`), `${page}: sin GA4`);
+    if (ANALYTICS.gtm)
+      assert.ok(tags[0].includes(`data-gtm="${ANALYTICS.gtm}"`), `${page}: sin GTM`);
     assert.ok(source.indexOf(tags[0]) < source.indexOf('</head>'), `${page}: fuera del <head>`);
     assert.ok(!source.includes('googletagmanager.com'), `${page}: carga Google sin consentimiento`);
   }

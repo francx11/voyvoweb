@@ -91,13 +91,13 @@ module.exports = {
   // Google Analytics 4 y Google Tag Manager. Solo entran en el build estático
   // (scripts/build-static.mjs), que es lo que se publica en el dominio: ni
   // `pnpm dev` ni el despliegue del panel mandan visitas a Analytics. Los IDs
-  // son públicos (van en el HTML de cualquier web que los use), por eso el de
-  // GA4 vive aquí y no en .env. Una variable vacía apaga esa pieza
+  // son públicos (van en el HTML de cualquier web que los use), por eso
+  // viven aquí y no en .env. Una variable vacía apaga esa pieza
   // (GA_MEASUREMENT_ID= pnpm build:static). public/js/consent.js no carga
   // ninguno de los dos hasta que el visitante acepta el banner de cookies.
   ANALYTICS: {
     ga4: process.env.GA_MEASUREMENT_ID ?? 'G-3RFQEGM4YJ',
-    gtm: process.env.GTM_CONTAINER_ID ?? '',
+    gtm: process.env.GTM_CONTAINER_ID ?? 'GTM-T3G79KW8',
   },
   STATIC_EXCLUDE: [
     'admin.html',
