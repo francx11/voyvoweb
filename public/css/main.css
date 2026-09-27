@@ -1090,3 +1090,24 @@ body.cart-scroll-lock { overflow: hidden; }
   .menu-dots { min-width: 1rem; }
   .hero-actions .btn, .actions-row .btn { width: 100%; }
 }
+
+/* ── Banner de cookies (js/consent.js; solo en el build estático) ──
+   Aceptar y Rechazar llevan el mismo estilo a propósito: la AEPD pide que
+   rechazar no cueste más que aceptar, ni en clics ni en protagonismo. */
+.cookie-banner {
+  position: fixed; z-index: 250;
+  left: calc(1rem + env(safe-area-inset-left, 0px));
+  right: calc(1rem + env(safe-area-inset-right, 0px));
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  max-width: 34rem; margin: 0 auto;
+  padding: 1.1rem 1.25rem;
+  background: var(--paper); color: var(--ink);
+  border: 2px solid var(--ink); border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgb(var(--shadow-rgb) / 0.25);
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-banner-title { font-family: var(--heading); font-weight: 700; font-size: 1.15rem; margin: 0 0 0.35rem; }
+.cookie-banner-text { font-size: 0.95rem; color: var(--ink-soft); margin: 0 0 0.9rem; }
+.cookie-banner-text a { color: var(--ink); }
+.cookie-banner-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.cookie-banner-actions .btn { flex: 1 1 8rem; min-height: 44px; padding: 0.6rem 1rem; font-size: 0.95rem; }

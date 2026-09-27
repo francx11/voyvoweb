@@ -23,7 +23,14 @@ import { HTML_PAGES, MANIFEST } from './sync-theme.mjs';
 process.env.ORDERING_ENABLED = 'false';
 
 const require = createRequire(import.meta.url);
-const { PUBLIC_DIR, DIST_DIR, SITE_DOMAIN, STATIC_EXCLUDE, BUSINESS } = require('../src/config');
+const {
+  PUBLIC_DIR,
+  DIST_DIR,
+  SITE_DOMAIN,
+  STATIC_EXCLUDE,
+  BUSINESS,
+  ANALYTICS,
+} = require('../src/config');
 const { createApp } = require('../src/app');
 const { ensureThemeCss, themeColor } = require('../src/services/theme-store');
 
@@ -291,6 +298,37 @@ ${urls}</urlset>
   );
 }
 
+// Google Analytics / Tag Manager solo en lo que se publica: se inyecta aquí y
+// no en public/ para que `pnpm dev` y el despliegue del panel no ensucien las
+// estadísticas. Va en todas las páginas con <head> de verdad, 404 incluida;
+// las redirecciones de LEGACY_PATHS no, porque el visitante no llega a verlas
+// y contarían una visita doble. La etiqueta no carga nada de Google por sí
+// misma: js/consent.js espera al sí del banner de cookies.
+const ANALYTICS_ID = { ga4: /^G-[A-Z0-9]+$/, gtm: /^GTM-[A-Z0-9]+$/ };
+
+async function injectAnalytics() {
+  const ids = Object.entries(ANALYTICS).filter(([, id]) => id);
+  if (!ids.length) return 0;
+  for (const [kind, id] of ids) {
+    if (!ANALYTICS_ID[kind].test(id)) throw new Error(`ID de ${kind} no válido: "${id}"`);
+  }
+  const attrs = ids.map(([kind, id]) => ` data-${kind}="${id}"`).join('');
+  const tag = `  <script src="/js/consent.js"${attrs} defer></script>\n</head>`;
+
+  let pages = 0;
+  for (const file of await htmlFiles(DIST_DIR)) {
+    const html = await fs.readFile(file, 'utf-8');
+    if (html.includes('http-equiv="refresh"')) continue;
+    if (!html.includes('</head>')) throw new Error(`${path.relative(DIST_DIR, file)}: sin </head>`);
+    await fs.writeFile(
+      file,
+      html.replace('</head>', () => tag)
+    );
+    pages += 1;
+  }
+  return pages;
+}
+
 async function main() {
   await fs.rm(DIST_DIR, { recursive: true, force: true });
   await fs.mkdir(DIST_DIR, { recursive: true });
@@ -323,6 +361,13 @@ async function main() {
   log(`${redirects} redirecciones de URLs antiguas`);
   await writeHostingFiles();
   log(`CNAME ${SITE_DOMAIN}, robots.txt, sitemap.xml, 404.html, .nojekyll`);
+  // La última: así cubre también carta/, contacto/ y 404.html, que se acaban
+  // de escribir.
+  const tracked = await injectAnalytics();
+  if (tracked) {
+    const which = Object.entries(ANALYTICS).filter(([, id]) => id);
+    log(`${which.map(([, id]) => id).join(' + ')} en ${tracked} páginas (tras consentimiento)`);
+  }
   console.log('\nListo. Sirve dist/ con cualquier estático (GitHub Pages incluido).\n');
 }
 
