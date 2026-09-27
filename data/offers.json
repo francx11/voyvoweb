@@ -4,8 +4,8 @@
   "items": [
     {
       "id": "familiares-10",
-      "title": "Familiares a 10 €",
-      "description": "Todos los días, solo a recoger.",
+      "title": "Familiares clásicas a 10 €",
+      "description": "Todas nuestras pizzas clásicas de tamaño familiar por 10 €, todos los días y solo a recoger. Personalizada (mitad de una clásica y mitad de otra): 11 €.",
       "image": "/assets/ofertas/1789456702024-xulmz.webp"
     },
     {
@@ -29,7 +29,7 @@
     {
       "id": "familiares-especiales-12",
       "title": "Familiares especiales a 12 €",
-      "description": "Todas nuestras pizzas especiales de tamaño familiar por 12 €, solo a recoger.",
+      "description": "Todas nuestras pizzas especiales de tamaño familiar por 12 €, solo a recoger. Personalizada (mitad de una especial y mitad de otra): 13,50 €.",
       "image": "/assets/ofertas/1789456703275-kyn0j.webp"
     }
   ]
