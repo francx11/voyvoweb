@@ -36,7 +36,9 @@
   });
 
   var loaded = false;
+  var measuring = false;
   function loadTags() {
+    measuring = true;
     if (loaded) return;
     loaded = true;
     gtag('consent', 'update', { analytics_storage: 'granted' });
@@ -60,6 +62,7 @@
   // Si retira el consentimiento después de aceptar, las etiquetas ya cargadas
   // dejan de escribir cookies (Consent Mode) y se borran las que dejó GA.
   function revoke() {
+    measuring = false;
     gtag('consent', 'update', { analytics_storage: 'denied' });
     var host = location.hostname;
     var domains = ['', host, '.' + host, '.' + host.replace(/^www\./, '')];
@@ -113,6 +116,38 @@
   function hideBanner() {
     if (banner) banner.hidden = true;
   }
+
+  // Clics de contacto → evento 'contacto' en dataLayer (GTM lo manda a GA4).
+  // Solo con consentimiento aceptado: sin él no se empuja nada.
+  var METODOS = [
+    [/^tel:/i, 'telefono'],
+    [/^mailto:/i, 'email'],
+    [/just-?eat\./i, 'just_eat'],
+    [/glovoapp\./i, 'glovo'],
+    [/ubereats\./i, 'uber_eats'],
+    [/(wa\.me|whatsapp\.com)/i, 'whatsapp'],
+    [/(google\.[a-z.]+\/maps|maps\.app\.goo\.gl|goo\.gl\/maps|maps\.google\.)/i, 'como_llegar'],
+    [/\.pdf(\?|#|$)/i, 'carta_pdf'],
+  ];
+  function metodoDe(a) {
+    if (a.id === 'menu-pdf-link') return 'carta_pdf';
+    var href = a.getAttribute('href') || '';
+    for (var i = 0; i < METODOS.length; i++) if (METODOS[i][0].test(href)) return METODOS[i][1];
+    return null;
+  }
+  document.addEventListener('click', function (e) {
+    if (!measuring) return;
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var metodo = metodoDe(a);
+    if (!metodo) return;
+    var zona = a.closest('section[id], header, footer, nav');
+    window.dataLayer.push({
+      event: 'contacto',
+      metodo: metodo,
+      ubicacion: zona ? (zona.id || zona.tagName.toLowerCase()) : 'pagina',
+    });
+  }, true);
 
   var saved = read();
   if (saved === 'granted') loadTags();
