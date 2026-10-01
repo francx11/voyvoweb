@@ -17,6 +17,8 @@ flag manda sobre el interruptor del panel; con él apagado no se montan `/api/or
 - Nunca commitear `.env`, `data/auth.json` ni secretos — ya están en `.gitignore`.
 - **Cada feature o fix va en su propia rama** creada desde `main` (nunca commits directos a
   `main`). Nombre de rama descriptivo (`feat/...`, `fix/...`).
+- Mensajes de commit y títulos de PR **en inglés**, prefijo y descripción (Conventional Commits:
+  `fix(hours): change evening hours to 19:30-23:30`). Pensado para poder publicar el código.
 
 @.claude/rules/conventions.md
 @.claude/rules/security-baseline.md
