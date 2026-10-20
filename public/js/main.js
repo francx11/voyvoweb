@@ -60,6 +60,11 @@
 
   function applySite(s) {
     SITE = s || {};
+    // Apagada desde el panel: en el build estático ya ni está en el HTML.
+    if (s && s.justEat && s.justEat.enabled === false) {
+      var je = $('#just-eat');
+      if (je) je.remove();
+    }
     if (s.hero) {
       setText('#hero-eyebrow', s.hero.eyebrow);
       if (s.hero.title1 || s.hero.title2) {

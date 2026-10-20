@@ -37,3 +37,22 @@ test('"always" promete fotos aunque no haya ninguna subida', async () => {
   const html = await carta({ menu: { photos: 'always' } });
   assert.ok(html.includes('Ver la carta con fotos'));
 });
+
+test('Just Eat: sin interruptor o encendido se publica; apagado se quita entera', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const { applyJustEat } = await import('../scripts/lib/pages.mjs');
+  const index = fs.readFileSync(path.join(__dirname, '..', 'public', 'index.html'), 'utf-8');
+
+  assert.strictEqual(applyJustEat(index, {}), index);
+  assert.strictEqual(applyJustEat(index, { justEat: { enabled: true } }), index);
+
+  const sin = applyJustEat(index, { justEat: { enabled: false } });
+  assert.ok(!sin.includes('id="just-eat"'), 'sigue la sección');
+  assert.ok(!sin.includes('just-eat.es'), 'sigue el enlace a Just Eat');
+  assert.ok(sin.includes('id="gallery"'), 'se ha llevado la sección siguiente');
+  assert.strictEqual(index.length - sin.length < 1200, true, 'ha quitado más de la cuenta');
+
+  // Si alguien cambia el HTML y la sección ya no se reconoce, el build para.
+  assert.throws(() => applyJustEat('<main></main>', { justEat: { enabled: false } }), /just-eat/);
+});
