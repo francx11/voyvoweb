@@ -23,7 +23,7 @@
       "mode": "both"
     },
     "justEat": {
-      "enabled": true
+      "enabled": false
     }
   }
 }
