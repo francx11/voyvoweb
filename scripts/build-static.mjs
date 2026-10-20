@@ -15,7 +15,7 @@
 import { createRequire } from 'node:module';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { renderCarta, renderContacto } from './lib/pages.mjs';
+import { renderCarta, renderContacto, applyJustEat, justEatVisible } from './lib/pages.mjs';
 import { HTML_PAGES, MANIFEST } from './sync-theme.mjs';
 
 // Must be set before src/config is required: the flag is read at load time,
@@ -98,6 +98,7 @@ async function rewriteHtml() {
   const marker = '<script src="/js/main.js"';
   if (!html.includes(marker)) throw new Error('index.html: main.js script tag not found');
   html = html.replace(marker, `<script>window.VV_STATIC = true;</script>\n  ${marker}`);
+  html = applyJustEat(html, await readSnapshot('site'));
   await fs.writeFile(index, html);
 
   const canonical = html.match(/<link rel="canonical" href="https:\/\/([^/"]+)\//);
@@ -351,6 +352,8 @@ async function main() {
 
   const rewritten = await rewriteHtml();
   if (rewritten) log(`${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
+  if (!justEatVisible(await readSnapshot('site')))
+    log('sección Just Eat quitada (apagada en config.json)');
   await assertBusinessData();
   const content = await writeContentPages();
   log(`${content.pages} páginas indexables (carta con ${content.items} platos)`);

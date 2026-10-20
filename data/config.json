@@ -21,6 +21,9 @@
     "menu": {
       "pdf": "/assets/menu-1784653141091.pdf",
       "mode": "both"
+    },
+    "justEat": {
+      "enabled": true
     }
   }
 }

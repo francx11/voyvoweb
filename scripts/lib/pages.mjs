@@ -23,6 +23,21 @@ const { themeColor } = require('../../src/services/theme-store');
 
 const escapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
 
+// La sección «Pide en Just Eat» de la portada se puede apagar desde el panel
+// (site.justEat.enabled = false en config.json): a veces no interesa mandar
+// pedidos por ahí, con su comisión. Se quita del HTML en el build, no se
+// esconde con JS, para que no llegue ni a Google ni a quien no ejecuta JS.
+// Sin el campo, se muestra: es lo que había antes de existir el interruptor.
+export const justEatVisible = (site) => !(site && site.justEat && site.justEat.enabled === false);
+
+const JUST_EAT = /[ \t]*<!-- JUST EAT -->\s*<section[^>]*id="just-eat"[\s\S]*?<\/section>\r?\n?/;
+
+export function applyJustEat(html, site) {
+  if (justEatVisible(site)) return html;
+  if (!JUST_EAT.test(html)) throw new Error('index.html: sección #just-eat no encontrada');
+  return html.replace(JUST_EAT, '');
+}
+
 export function esc(value) {
   return String(value ?? '').replace(/[&<>"]/g, (c) => escapeMap[c]);
 }
