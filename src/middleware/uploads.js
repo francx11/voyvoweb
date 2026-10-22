@@ -18,7 +18,9 @@ const imageUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: UPLOAD_IMAGE_MAX_BYTES, files: UPLOAD_IMAGE_MAX_FILES },
   fileFilter: (_req, file, cb) => {
-    if (/^image\//i.test(file.mimetype)) cb(null, true);
+    // SVG would go through librsvg inside sharp (CVE-2026-96889) and we only
+    // want raster photos here; image-store also checks the real bytes.
+    if (/^image\//i.test(file.mimetype) && !/svg/i.test(file.mimetype)) cb(null, true);
     else cb(rejection('Solo se permiten imágenes'));
   },
 });
