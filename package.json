@@ -15,14 +15,14 @@
     "theme:sync": "node scripts/sync-theme.mjs"
   },
   "engines": {
-    "node": ">=18.17"
+    "node": ">=22.23.4"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
     "express": "^4.22.3",
     "multer": "^2.4.0",
     "nodemailer": "^10.0.13",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "stripe": "^22.6.2"
   },
   "devDependencies": {

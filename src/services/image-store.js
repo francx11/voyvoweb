@@ -12,8 +12,24 @@ const { IMAGE_MAX_DIMENSION, IMAGE_WEBP_QUALITY } = require('../config');
 // millisecond (multi-file gallery upload) would otherwise overwrite each other.
 const newName = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}.webp`;
 
+// multer's mimetype is whatever the browser claims, so an SVG renamed to .jpg
+// would still reach sharp's librsvg loader. Only let through the raster
+// formats we expect, recognised by their magic bytes.
+function isRasterImage(buffer) {
+  if (!Buffer.isBuffer(buffer) || buffer.length < 12) return false;
+  const ascii = (start, end) => buffer.toString('latin1', start, end);
+  return (
+    (buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) || // JPEG
+    ascii(0, 8) === '\x89PNG\r\n\x1a\n' ||
+    (ascii(0, 4) === 'RIFF' && ascii(8, 12) === 'WEBP') ||
+    ascii(0, 4) === 'GIF8' ||
+    ascii(4, 8) === 'ftyp' // HEIC / AVIF
+  );
+}
+
 // Writes `buffer` into `dir` and returns the filename it chose.
 async function saveWebp(buffer, dir) {
+  if (!isRasterImage(buffer)) throw new Error('formato no admitido (usa JPG, PNG, WebP o GIF)');
   fs.mkdirSync(dir, { recursive: true });
   const name = newName();
   await sharp(buffer)

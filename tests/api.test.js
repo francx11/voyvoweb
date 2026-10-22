@@ -202,6 +202,26 @@ test('offers: uploading to an unknown card is a 404 and writes nothing', async (
   assert.deepEqual(after, before, 'no tendria que haber dejado ningun fichero');
 });
 
+// An SVG never reaches sharp (and its librsvg loader), not even when the
+// browser is told it is a PNG.
+test('gallery: SVG uploads are rejected, also when disguised as PNG', async () => {
+  const dir = path.join(process.env.PUBLIC_DIR, 'assets', 'gallery');
+  const before = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+  const svg = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>');
+  for (const type of ['image/svg+xml', 'image/png']) {
+    const fd = new FormData();
+    fd.append('photos', new Blob([svg], { type }), 'x.png');
+    const r = await fetch(base + '/api/gallery/upload', {
+      method: 'POST',
+      headers: { Cookie: cookie },
+      body: fd,
+    });
+    assert.equal(r.status, 400, `${type} tendria que rechazarse`);
+  }
+  const after = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
+  assert.deepEqual(after, before, 'no tendria que haber dejado ningun fichero');
+});
+
 test('monthly special: a text save keeps the photo', async () => {
   const png = await sharp({
     create: { width: 12, height: 12, channels: 3, background: '#0c0' },
