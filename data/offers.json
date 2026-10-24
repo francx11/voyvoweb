@@ -11,19 +11,19 @@
     {
       "id": "tres-pizzas-18",
       "title": "3 pizzas por 18 €",
-      "description": "Tamaño pequeño, especiales incluidas. Para recoger.",
+      "description": "Tamaño pequeño, para recoger. Puede incluir como máximo una pizza especial.",
       "image": "/assets/ofertas/1789456702402-kvds8.webp"
     },
     {
       "id": "dia-de-la-pizza",
       "title": "Día de la Pizza",
-      "description": "Todos los miércoles, por pedidos superiores a 12 € ¡bebida gratis!",
+      "description": "Todos los miércoles, por pedidos superiores a 12 € ¡bebida gratis! No acumulable con otras ofertas.",
       "image": "/assets/ofertas/1789456702674-7fbyf.webp"
     },
     {
       "id": "dia-de-las-papas",
       "title": "Día de las Papas",
-      "description": "Todos los martes, por pedidos superiores a 13 € unas papas pequeñas a elegir gratis.",
+      "description": "Todos los martes, por pedidos superiores a 13 € unas papas pequeñas a elegir gratis. No acumulable con otras ofertas.",
       "image": "/assets/ofertas/1789456703038-x7is6.webp"
     },
     {
