@@ -127,7 +127,7 @@ test('gold is never used as a text colour over a light background', () => {
   // allowed inside a selector that establishes a navy background. Anywhere
   // else it is unreadable, and it is cheaper to catch here than to compute,
   // because a stylesheet cannot know statically what is painted behind a rule.
-  const NAVY_CONTEXTS = ['.hero', '.section-navy'];
+  const NAVY_CONTEXTS = ['.hero', '.section-navy', '.sc-card'];
 
   const offenders = [];
   for (const m of MAIN_CSS.matchAll(/([^{}]+)\{([^}]*)\}/g)) {

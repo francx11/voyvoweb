@@ -1,0 +1,30 @@
+{
+  "active": true,
+  "title": "Tu tarjeta de sellos",
+  "intro": "Sin cartón y sin app: solo tu teléfono. Cada pedido suma un sello y, al completar la tarjeta, la pizza corre de nuestra cuenta.",
+  "goal": 10,
+  "reward": "una familiar clásica gratis",
+  "steps": [
+    {
+      "title": "Da tu teléfono",
+      "text": "Al pedir en el local, para recoger o a domicilio."
+    },
+    {
+      "title": "Suma sellos",
+      "text": "Cada pedido de más de 12 € es un sello. Lo verás en tu ticket."
+    },
+    {
+      "title": "¡Pizza gratis!",
+      "text": "Con 10 sellos, una familiar clásica gratis en tu próximo pedido."
+    }
+  ],
+  "notes": [
+    "Tu primer pedido vale 2 sellos: uno de regalo de bienvenida.",
+    "Cuenta el precio de carta, antes de ofertas. Un sello al día como máximo.",
+    "Los pedidos por Just Eat y Uber Eats no suman.",
+    "El premio se guarda hasta que lo pidas y no se junta con otras ofertas.",
+    "Las especiales y la pizza del mes no entran en el premio.",
+    "Tras 12 meses sin pedir, los sellos vuelven a 0."
+  ],
+  "privacy": "Tu teléfono solo se usa para tus pedidos y tus sellos. No sale del local."
+}
