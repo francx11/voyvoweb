@@ -519,6 +519,41 @@
       .catch(function () {});
   }
 
+  /* ── Stamp card ("tarjeta de sellos") ───────────────────
+     The card drawing shows a card nearly done (all but three stamps) so the
+     reward slot is the eye-catcher. No nav link: one more item wraps the
+     "Pedir ahora" button at desktop widths; the section sits right under
+     Ofertas instead. ── */
+  var PLANE = '<svg viewBox="0 0 24 24"><path d="M2 11 22 3l-6 18-4-7z" fill="currentColor"/></svg>';
+  function loadStampCard() {
+    fetch(apiUrl('stamp-card'))
+      .then(function (r) { return r.json(); })
+      .then(function (sc) {
+        if (!sc.active || !sc.title) return;
+        $('#sc-title').textContent = sc.title;
+        $('#sc-reward').textContent = sc.reward ? sc.goal + ' sellos = ' + sc.reward : '';
+        $('#sc-intro').textContent = sc.intro || '';
+        var stamps = '';
+        for (var i = 1; i <= sc.goal; i++) {
+          stamps += i === sc.goal
+            ? '<span class="sc-stamp sc-prize">Gratis</span>'
+            : i <= sc.goal - 3
+              ? '<span class="sc-stamp on">' + PLANE + '</span>'
+              : '<span class="sc-stamp"></span>';
+        }
+        $('#sc-stamps').innerHTML = stamps;
+        $('#sc-steps').innerHTML = (sc.steps || []).map(function (s, i) {
+          return '<li class="sc-step reveal"><span class="stamp stamp-sm" aria-hidden="true"><span class="stamp-mid">' + (i + 1) + '</span></span>' +
+            '<h3>' + esc(s.title) + '</h3>' + (s.text ? '<p>' + esc(s.text) + '</p>' : '') + '</li>';
+        }).join('');
+        $('#sc-notes').innerHTML = (sc.notes || []).map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('');
+        if (sc.privacy) { $('#sc-privacy').textContent = sc.privacy; $('#sc-privacy').hidden = false; }
+        $('#stamp-card').hidden = false;
+        observeReveals('#stamp-card');
+      })
+      .catch(function () {});
+  }
+
   /* ── Offers ("ofertas") ─────────────────────────────── */
   function loadOffers() {
     fetch(apiUrl('offers'))
@@ -627,6 +662,7 @@
     loadMenu();
     loadMonthlySpecial();
     loadOffers();
+    loadStampCard();
     loadGallery();
     loadReviews();
   });

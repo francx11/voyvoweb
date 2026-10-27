@@ -40,6 +40,7 @@ const ENDPOINTS = [
   'menu',
   'monthly-special',
   'offers',
+  'stamp-card',
   'gallery',
   'reviews',
   'ordering/config',

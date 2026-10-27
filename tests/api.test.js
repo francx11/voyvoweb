@@ -118,6 +118,36 @@ test('monthly special round-trips and coerces active to boolean', async () => {
   assert.equal(ms.name, 'Trufa');
 });
 
+test('stamp card: public read-only, off by default, a half-written file is normalized', async () => {
+  assert.deepEqual((await api('GET', '/api/stamp-card')).json, {
+    active: false,
+    title: '',
+    intro: '',
+    goal: 10,
+    reward: '',
+    steps: [],
+    notes: [],
+    privacy: '',
+  });
+  fs.writeFileSync(
+    path.join(process.env.DATA_DIR, 'stamp-card.json'),
+    JSON.stringify({
+      active: true,
+      title: 'Tu tarjeta',
+      goal: 0,
+      steps: [{ title: 'Da tu teléfono', text: 'Al pedir.' }, { text: 'sin título' }, null],
+      notes: ['Uno al día', 3, ''],
+    })
+  );
+  const sc = (await api('GET', '/api/stamp-card')).json;
+  assert.equal(sc.active, true);
+  assert.equal(sc.goal, 10); // out of range → default
+  assert.deepEqual(sc.steps, [{ title: 'Da tu teléfono', text: 'Al pedir.' }]);
+  assert.deepEqual(sc.notes, ['Uno al día']);
+  // Edited from the panel (commit to data/), never through this API.
+  assert.equal((await api('PUT', '/api/stamp-card', { active: false })).status, 404);
+});
+
 test('offers: public read, admin write, untitled cards dropped', async () => {
   assert.deepEqual((await api('GET', '/api/offers')).json, {
     active: false,

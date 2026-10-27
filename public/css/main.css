@@ -685,6 +685,94 @@ img { max-width: 100%; display: block; }
 }
 .offer-body p { color: var(--ink-soft); font-size: 0.92rem; margin: 0; }
 
+/* ── Tarjeta de sellos ──
+   La tarjeta se dibuja como una de crédito (proporción 85,6 × 54) en azul
+   piloto, igual que el folleto A5 del local. Es siempre azul, también en modo
+   oscuro: por eso usa --navy / --on-navy y el rojo de botón, que no cambian. */
+.sc-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.8rem, 5vw, 3.5rem); align-items: center;
+}
+.sc-reward {
+  font-family: var(--heading); font-weight: 700; font-size: clamp(1.2rem, 2.6vw, 1.5rem);
+  color: var(--tomato); margin: 0.2rem 0 0.8rem;
+}
+.sc-card {
+  position: relative; aspect-ratio: 85.6 / 54; width: 100%; max-width: 440px; justify-self: center;
+  border-radius: 16px; overflow: hidden;
+  background:
+    radial-gradient(circle at 92% -8%, color-mix(in srgb, var(--gold) 22%, transparent) 0 34%, transparent 34.2%),
+    var(--navy);
+  color: var(--on-navy); box-shadow: 6px 6px 0 var(--gold);
+  padding: 5% 6% 9%;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.sc-card::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 8px;
+  background: repeating-linear-gradient(45deg,
+    var(--tomato-btn) 0 7px, var(--on-navy) 7px 14px, var(--navy) 14px 21px, var(--on-navy) 21px 28px);
+}
+.sc-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.sc-card .sc-kicker {
+  display: block; font-family: var(--heading); font-weight: 700; font-size: 0.68rem;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold);
+}
+.sc-brand { display: block; font-family: var(--display); font-size: clamp(1.1rem, 3vw, 1.45rem); line-height: 1.1; }
+.sc-logo { width: 18%; height: auto; background: var(--paper); border-radius: var(--radius-round); padding: 2px; }
+.sc-card-mid { display: flex; align-items: center; gap: 5%; }
+.sc-chip {
+  flex: none; width: 13%; aspect-ratio: 4 / 3; border-radius: 6px;
+  background:
+    linear-gradient(90deg, transparent 32%, color-mix(in srgb, var(--navy) 35%, transparent) 32% 36%, transparent 36% 64%, color-mix(in srgb, var(--navy) 35%, transparent) 64% 68%, transparent 68%),
+    linear-gradient(0deg, transparent 46%, color-mix(in srgb, var(--navy) 35%, transparent) 46% 54%, transparent 54%),
+    var(--gold);
+}
+.sc-stamps { flex: 0 1 62%; margin-left: auto; margin-right: 4%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px 8px; }
+.sc-stamp {
+  aspect-ratio: 1; border-radius: var(--radius-round);
+  border: 2px dashed color-mix(in srgb, var(--on-navy) 55%, transparent);
+}
+.sc-stamp.on {
+  border: 2px solid color-mix(in srgb, var(--on-navy) 55%, transparent);
+  background: var(--tomato-btn); color: var(--on-navy);
+  display: flex; align-items: center; justify-content: center;
+}
+.sc-stamp svg { width: 55%; height: 55%; }
+.sc-prize {
+  border: none; background: var(--gold); color: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--heading); font-weight: 700; font-size: clamp(0.5rem, 1.4vw, 0.66rem);
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.sc-card-foot { display: flex; justify-content: space-between; align-items: flex-end; }
+.sc-number { font-family: 'Courier New', monospace; font-weight: 700; letter-spacing: 0.12em; font-size: clamp(0.85rem, 2.4vw, 1.1rem); }
+.sc-card .sc-mark { font-family: var(--display); font-style: italic; color: var(--gold); font-size: clamp(1rem, 2.8vw, 1.3rem); transform: skewX(-8deg); }
+
+.sc-steps {
+  list-style: none; display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2rem; margin-top: 3rem;
+}
+.sc-step .stamp { margin-bottom: 0.9rem; }
+.sc-step h3 { font-family: var(--display); font-weight: 400; font-size: 1.3rem; margin: 0.3rem 0 0.5rem; }
+.sc-step p { color: var(--ink-soft); font-size: 0.95rem; }
+.sc-notes {
+  list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem 2rem; margin-top: 2.4rem; padding-top: 1.6rem; border-top: 1px dashed var(--line);
+}
+.sc-notes li { position: relative; padding-left: 1.2rem; color: var(--ink-soft); font-size: 0.92rem; }
+.sc-notes li::before {
+  content: ''; position: absolute; left: 0; top: 0.5em; width: 0.5rem; height: 0.5rem;
+  border-radius: var(--radius-round); background: var(--tomato);
+}
+.sc-privacy {
+  margin-top: 1.6rem; border-left: 3px solid var(--gold);
+  padding: 0.2rem 0 0.2rem 1rem; font-size: 0.92rem;
+}
+@media (max-width: 760px) {
+  .sc-layout, .sc-steps, .sc-notes { grid-template-columns: 1fr; }
+  .sc-steps { gap: 1.4rem; margin-top: 2.2rem; }
+}
+
 /* ── Services ── */
 .services-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
