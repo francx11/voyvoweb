@@ -11,7 +11,9 @@
  * etiqueta que se añada en GTM herede la decisión.
  *
  * La decisión se guarda en localStorage (vv_consent). Cualquier elemento con
- * [data-cookie-settings] —el botón de /privacidad/— vuelve a abrir el banner.
+ * [data-cookie-settings] —«Configurar cookies» en el pie de todas las páginas
+ * y el botón de /privacidad/— vuelve a abrir el banner. Van con `hidden` en el
+ * HTML y este script los muestra: sin él (pnpm dev) no hay nada que configurar.
  */
 (function () {
   'use strict';
@@ -39,9 +41,11 @@
   var measuring = false;
   function loadTags() {
     measuring = true;
+    // Antes del return: si acepta de nuevo tras rechazar sin recargar, las
+    // etiquetas ya están cargadas y solo falta devolverles el permiso.
+    gtag('consent', 'update', { analytics_storage: 'granted' });
     if (loaded) return;
     loaded = true;
-    gtag('consent', 'update', { analytics_storage: 'granted' });
     if (GA4) {
       gtag('js', new Date());
       gtag('config', GA4);
@@ -111,7 +115,19 @@
       });
       document.body.appendChild(banner);
     }
+    // Al reabrirlo desde «Configurar cookies» se marca la opción vigente, para
+    // que se vea qué se eligió y que basta pulsar la otra para cambiarla.
+    var current = read();
+    var buttons = banner.querySelectorAll('[data-consent]');
+    for (var b = 0; current && b < buttons.length; b++) {
+      buttons[b].setAttribute('aria-pressed', String(buttons[b].getAttribute('data-consent') === current));
+    }
     banner.hidden = false;
+  }
+  function reopen() {
+    showBanner();
+    var first = banner.querySelector('[data-consent]');
+    if (first) first.focus();
   }
   function hideBanner() {
     if (banner) banner.hidden = true;
@@ -156,6 +172,6 @@
   var settings = document.querySelectorAll('[data-cookie-settings]');
   for (var i = 0; i < settings.length; i++) {
     settings[i].hidden = false;
-    settings[i].addEventListener('click', showBanner);
+    settings[i].addEventListener('click', reopen);
   }
 })();

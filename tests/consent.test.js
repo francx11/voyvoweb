@@ -18,7 +18,7 @@ function run(saved) {
     head: { appendChild() {} },
     body: { appendChild() {} },
     cookie: '',
-    createElement: () => ({ setAttribute() {}, addEventListener() {} }),
+    createElement: () => ({ setAttribute() {}, addEventListener() {}, querySelectorAll: () => [] }),
     querySelectorAll: () => [],
     addEventListener: (type, fn) => {
       if (type === 'click') onClick = fn;
@@ -71,4 +71,57 @@ test('sin consentimiento (rechazado o sin decidir): no empuja nada', () => {
     click('tel:958442847');
     assert.strictEqual(eventos().length, 0);
   }
+});
+
+test('aceptar → rechazar → aceptar sin recargar devuelve el permiso a GA', () => {
+  let banner = null;
+  const window = {};
+  const store = { vv_consent: 'granted' };
+  const settings = { addEventListener: (t, fn) => (settings.open = fn) };
+  const makeBanner = () => {
+    const buttons = ['denied', 'granted'].map((v) => ({
+      getAttribute: (k) => (k === 'data-consent' ? v : null),
+      setAttribute() {},
+      focus() {},
+    }));
+    banner = {
+      setAttribute() {},
+      addEventListener: (t, fn) => (banner.onClick = fn),
+      querySelectorAll: () => buttons,
+      querySelector: () => buttons[0],
+      pick: (v) =>
+        banner.onClick({
+          target: { closest: () => buttons.find((b) => b.getAttribute('data-consent') === v) },
+        }),
+    };
+    return banner;
+  };
+  vm.runInNewContext(SRC, {
+    window,
+    document: {
+      currentScript: { getAttribute: (k) => (k === 'data-gtm' ? 'GTM-TEST' : null) },
+      head: { appendChild() {} },
+      body: { appendChild() {} },
+      cookie: '',
+      createElement: makeBanner,
+      querySelectorAll: () => [settings],
+      addEventListener() {},
+    },
+    location: { hostname: 'voyvolandosantafe.com' },
+    localStorage: { getItem: (k) => store[k] ?? null, setItem: (k, v) => (store[k] = v) },
+    Date,
+  });
+
+  settings.open();
+  banner.pick('denied');
+  assert.strictEqual(store.vv_consent, 'denied');
+  settings.open();
+  banner.pick('granted');
+  assert.strictEqual(store.vv_consent, 'granted');
+
+  const updates = Array.from(
+    window.dataLayer.filter((x) => x && x[0] === 'consent' && x[1] === 'update'),
+    (x) => x[2].analytics_storage
+  );
+  assert.deepStrictEqual(updates, ['granted', 'denied', 'granted']);
 });

@@ -75,5 +75,6 @@ localizado en `src/server.js` (los helpers `readJSON`/`writeJSON` son el único 
 - **CLS:** la galería usa `aspect-ratio` fijo; las secciones dinámicas están ocultas hasta tener datos.
 - **INP:** sin framework, sin hidratación; GSAP anima con transform/opacity (compositor).
 
-Único punto flojo: fuentes de Google Fonts y GSAP desde CDN (2 orígenes externos). Mitigación
-opcional en despliegue: self-host de fuentes y GSAP (documentado como mejora, no bloqueante).
+Fuentes auto-hospedadas en `public/assets/fonts/` (woff2, `@font-face` en `main.css`, con
+`preload` de las dos que pinta el primer pantallazo): ningún origen externo antes del
+consentimiento de cookies, y de paso una conexión TLS menos en el camino crítico.

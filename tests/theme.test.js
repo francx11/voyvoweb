@@ -146,17 +146,31 @@ test('gold is never used as a text colour over a light background', () => {
   );
 });
 
-test("the active preset's fonts are actually loaded on every page", () => {
-  // The <link> to Google Fonts is hand-written in five places, on purpose: an
-  // @import inside a stylesheet would chain HTML → CSS → googleapis → font
-  // files in series and cost LCP. The price is that a half-done font change
-  // falls back to Georgia in silence, so CI checks it instead.
+test("the active preset's fonts are self-hosted and declared in main.css", () => {
+  // Fonts are served from /assets/fonts/, never from Google Fonts: fetching
+  // them from fonts.gstatic.com hands every visitor's IP to Google before any
+  // consent (LG München, 3 O 17493/20). A preset whose family has no
+  // @font-face here would silently fall back to Georgia, so CI checks it.
   const active = theme.loadPreset(theme.readTheme().preset);
   assert.ok(active.fonts, 'the active preset must declare its fonts');
 
   const families = ['display', 'heading', 'body']
     .map((k) => active.fonts[k].match(/'([^']+)'/)[1])
     .filter((v, i, a) => a.indexOf(v) === i);
+
+  const faces = [...MAIN_CSS.matchAll(/@font-face\s*\{([^}]*)\}/g)].map((m) => m[1]);
+  for (const face of faces) {
+    assert.match(face, /font-display:\s*swap/, '@font-face sin font-display: swap');
+    const url = face.match(/url\('?(\/assets\/fonts\/[^')]+\.woff2)'?\)/);
+    assert.ok(url, `@font-face con origen no local: ${face.trim().slice(0, 80)}`);
+    assert.ok(fs.existsSync(path.join(ROOT, 'public', url[1])), `falta ${url[1]}`);
+  }
+  for (const family of families) {
+    assert.ok(
+      faces.some((f) => f.includes(`'${family}'`)),
+      `main.css no declara @font-face para ${family}`
+    );
+  }
 
   const pages = [
     'public/index.html',
@@ -167,13 +181,9 @@ test("the active preset's fonts are actually loaded on every page", () => {
   ];
   for (const page of pages) {
     const html = fs.readFileSync(path.join(ROOT, page), 'utf-8');
-    const link = html.match(/fonts\.googleapis\.com\/css2\?[^"']+/);
-    assert.ok(link, `${page}: no carga Google Fonts`);
-    for (const family of families) {
-      assert.ok(
-        link[0].includes(family.replace(/ /g, '+')),
-        `${page}: el <link> de fuentes no incluye ${family}`
-      );
+    assert.ok(!/fonts\.(googleapis|gstatic)\.com/.test(html), `${page}: aún pide a Google Fonts`);
+    for (const [, href] of html.matchAll(/<link rel="preload" href="([^"]+)" as="font"/g)) {
+      assert.ok(fs.existsSync(path.join(ROOT, 'public', href)), `${page}: preload roto ${href}`);
     }
   }
 
