@@ -102,6 +102,40 @@ module.exports = {
     ga4: process.env.GA_MEASUREMENT_ID ?? '',
     gtm: process.env.GTM_CONTAINER_ID ?? 'GTM-T3G79KW8',
   },
+  // Content-Security-Policy del build estático. GitHub Pages no deja poner
+  // cabeceras, así que va como <meta http-equiv> en cada página publicada
+  // (scripts/build-static.mjs), con el hash SHA-256 de cada <script> inline
+  // calculado en build time: nada de 'unsafe-inline' para scripts.
+  //
+  // Los orígenes de Google son los que pide la documentación de GTM + GA4 y
+  // solo se usan tras aceptar el banner. El contenedor no tiene etiquetas de
+  // HTML ni JavaScript personalizados; si se añade una, la CSP la bloqueará
+  // y habrá que ampliar script-src aquí. style-src lleva 'unsafe-inline' por
+  // los atributos style="" (color de etiqueta de la carta, 404).
+  // frame-ancestors no funciona en <meta>: el navegador lo ignora.
+  CSP: {
+    'default-src': ["'self'"],
+    'script-src': ["'self'", 'https://*.googletagmanager.com'],
+    'style-src': ["'self'", "'unsafe-inline'"],
+    'img-src': [
+      "'self'",
+      'data:',
+      'https://*.google-analytics.com',
+      'https://*.googletagmanager.com',
+    ],
+    'font-src': ["'self'"],
+    'connect-src': [
+      "'self'",
+      'https://*.google-analytics.com',
+      'https://*.analytics.google.com',
+      'https://*.googletagmanager.com',
+    ],
+    'object-src': ["'none'"],
+    'base-uri': ["'self'"],
+    'form-action': ["'self'"],
+    'upgrade-insecure-requests': [],
+  },
+  REFERRER_POLICY: 'strict-origin-when-cross-origin',
   STATIC_EXCLUDE: [
     'admin.html',
     'pedido.html',

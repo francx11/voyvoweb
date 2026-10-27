@@ -17,6 +17,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { renderCarta, renderContacto, applyJustEat, justEatVisible } from './lib/pages.mjs';
 import { HTML_PAGES, MANIFEST } from './sync-theme.mjs';
+import { applySecurityMeta } from './lib/security-meta.mjs';
 
 // Must be set before src/config is required: the flag is read at load time,
 // and an ordering-enabled .env must never leak into a backendless build.
@@ -30,6 +31,8 @@ const {
   STATIC_EXCLUDE,
   BUSINESS,
   ANALYTICS,
+  CSP,
+  REFERRER_POLICY,
 } = require('../src/config');
 const { createApp } = require('../src/app');
 const { ensureThemeCss, themeColor } = require('../src/services/theme-store');
@@ -331,6 +334,21 @@ async function injectAnalytics() {
   return pages;
 }
 
+// CSP + Referrer-Policy en cada página publicada, redirecciones incluidas
+// (también ejecutan un script inline). Ver scripts/lib/security-meta.mjs.
+async function injectSecurityMeta() {
+  const files = await htmlFiles(DIST_DIR);
+  for (const file of files) {
+    const html = await fs.readFile(file, 'utf-8');
+    try {
+      await fs.writeFile(file, applySecurityMeta(html, { csp: CSP, referrer: REFERRER_POLICY }));
+    } catch (err) {
+      throw new Error(`${path.relative(DIST_DIR, file)}: ${err.message}`, { cause: err });
+    }
+  }
+  return files.length;
+}
+
 async function main() {
   await fs.rm(DIST_DIR, { recursive: true, force: true });
   await fs.mkdir(DIST_DIR, { recursive: true });
@@ -372,6 +390,9 @@ async function main() {
     const which = Object.entries(ANALYTICS).filter(([, id]) => id);
     log(`${which.map(([, id]) => id).join(' + ')} en ${tracked} páginas (tras consentimiento)`);
   }
+  // Después de todo: los hashes de los scripts inline tienen que salir del
+  // HTML definitivo.
+  log(`CSP + Referrer-Policy en ${await injectSecurityMeta()} páginas`);
   console.log('\nListo. Sirve dist/ con cualquier estático (GitHub Pages incluido).\n');
 }
 

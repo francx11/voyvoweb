@@ -214,7 +214,11 @@ test('el build estático reescribe el dominio en todas partes', () => {
     if (ANALYTICS.gtm)
       assert.ok(tags[0].includes(`data-gtm="${ANALYTICS.gtm}"`), `${page}: sin GTM`);
     assert.ok(source.indexOf(tags[0]) < source.indexOf('</head>'), `${page}: fuera del <head>`);
-    assert.ok(!source.includes('googletagmanager.com'), `${page}: carga Google sin consentimiento`);
+    // Solo src/href: el dominio también aparece en la CSP, como origen permitido.
+    assert.ok(
+      !/(src|href)="https:\/\/[^"]*googletagmanager\.com/.test(source),
+      `${page}: carga Google sin consentimiento`
+    );
   }
   // Las redirecciones no cuentan visitas: el visitante nunca llega a verlas.
   for (const from of ['galeria', 'quienes-somos', 'resenas']) {
@@ -225,4 +229,43 @@ test('el build estático reescribe el dominio en todas partes', () => {
   const privacidad = fs.readFileSync(path.join(OUT, 'privacidad', 'index.html'), 'utf-8');
   assert.ok(privacidad.includes('data-cookie-settings'), '/privacidad/ sin botón de cookies');
   assert.ok(privacidad.includes('id="cookies"'), '/privacidad/ sin ancla #cookies del banner');
+
+  // CSP en cada HTML publicado, justo tras <meta charset> (una CSP de <meta>
+  // no cubre lo que va antes), y con el hash de cada script inline: si uno no
+  // casa, ese script no se ejecuta en producción y nadie lo ve en `pnpm dev`.
+  const { createHash } = require('node:crypto');
+  const walk = (dir) =>
+    fs
+      .readdirSync(dir, { withFileTypes: true })
+      .flatMap((e) =>
+        e.isDirectory()
+          ? walk(path.join(dir, e.name))
+          : e.name.endsWith('.html')
+            ? [path.join(dir, e.name)]
+            : []
+      );
+  for (const file of walk(OUT)) {
+    const page = fs.readFileSync(file, 'utf-8');
+    const rel = path.relative(OUT, file);
+    const csp = page.match(
+      /<meta charset="UTF-8">\n\s*<meta http-equiv="Content-Security-Policy" content="([^"]+)">/
+    );
+    assert.ok(csp, `${rel}: sin CSP justo después de <meta charset>`);
+    assert.match(
+      page,
+      /<meta name="referrer" content="strict-origin-when-cross-origin">/,
+      `${rel}: sin referrer`
+    );
+    assert.ok(
+      !/script-src[^;]*'unsafe-inline'/.test(csp[1]),
+      `${rel}: script-src con 'unsafe-inline'`
+    );
+    for (const [, attrs, body] of page.matchAll(
+      /<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/g
+    )) {
+      if (attrs.includes('ld+json')) continue;
+      const hash = createHash('sha256').update(body, 'utf8').digest('base64');
+      assert.ok(csp[1].includes(`'sha256-${hash}'`), `${rel}: script inline sin su hash en la CSP`);
+    }
+  }
 });

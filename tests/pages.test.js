@@ -71,3 +71,29 @@ test('las páginas legales no publican campos de titular sin rellenar', () => {
     assert.match(dl[0], /NIF|CIF/, `${page}: falta el NIF/CIF del titular`);
   }
 });
+
+test('security-meta: CSP con hash por script inline, tras <meta charset>', async () => {
+  const { applySecurityMeta, inlineScriptHashes } =
+    await import('../scripts/lib/security-meta.mjs');
+  const { createHash } = require('node:crypto');
+  const html =
+    '<head>\n  <meta charset="UTF-8">\n  <title>x</title>\n' +
+    '  <script type="application/ld+json">{"a":1}</script>\n' +
+    '  <script>window.VV_STATIC = true;</script>\n  <script src="/js/a.js"></script>\n</head>';
+  const sha = createHash('sha256').update('window.VV_STATIC = true;').digest('base64');
+
+  assert.deepStrictEqual(inlineScriptHashes(html), [`'sha256-${sha}'`], 'JSON-LD y src no cuentan');
+
+  const out = applySecurityMeta(html, {
+    csp: { 'default-src': ["'self'"], 'script-src': ["'self'"], 'upgrade-insecure-requests': [] },
+    referrer: 'strict-origin-when-cross-origin',
+  });
+  assert.ok(
+    out.includes(
+      `<meta charset="UTF-8">\n  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-${sha}'; upgrade-insecure-requests">`
+    )
+  );
+  assert.ok(out.includes('<meta name="referrer" content="strict-origin-when-cross-origin">'));
+  assert.strictEqual(applySecurityMeta(out, { csp: {}, referrer: 'x' }), out, 'no duplica');
+  assert.throws(() => applySecurityMeta('<head></head>', { csp: {}, referrer: 'x' }), /charset/);
+});
