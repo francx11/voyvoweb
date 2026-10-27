@@ -116,7 +116,7 @@
     }
   },
   "delivery": {
-    "fee": 1,
+    "fee": 2,
     "minimum": 10,
     "zones": [
       "Santa Fe",
