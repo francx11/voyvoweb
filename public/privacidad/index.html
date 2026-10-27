@@ -16,9 +16,8 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+  <link rel="preload" href="/assets/fonts/barlow-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/alfa-slab-one-400-latin.woff2" as="font" type="font/woff2" crossorigin>
   <!-- theme.css primero: define los tokens de color que main.css consume. -->
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/main.css">
@@ -43,10 +42,13 @@
       </p>
 
       <h2>1. Responsable del tratamiento</h2>
+      <!-- Mismo titular que el apartado 1 de /aviso-legal/. -->
       <dl class="legal-data">
         <dt>Responsable</dt>
-        <dd>Pablo José Ruiz Jiménez — NIF 74695574S</dd>
-        <dt>Domicilio</dt>
+        <dd>VORTEX MASA Y FUEGO, S.L. — CIF B05586276</dd>
+        <dt>Domicilio fiscal</dt>
+        <dd>C/ Filipinas, 18 — 18320 Santa Fe (Granada), España</dd>
+        <dt>Establecimiento</dt>
         <dd>C. Cristóbal Colón, 7 — 18320 Santa Fe (Granada), España</dd>
         <dt>Correo electrónico</dt>
         <dd><a href="mailto:info@voyvolandosantafe.com">info@voyvolandosantafe.com</a></dd>
@@ -110,12 +112,10 @@
 
       <h2>5. Servicios de terceros</h2>
       <p>
-        Las tipografías de la web se cargan desde <strong>Google Fonts</strong>
-        (<code>fonts.googleapis.com</code> y <code>fonts.gstatic.com</code>). Para servir esos
-        archivos, Google recibe la dirección IP de tu dispositivo. Google LLC puede tratar esos
-        datos fuera del Espacio Económico Europeo, al amparo del Marco de Privacidad de Datos
-        UE-EE. UU. Puedes consultar su
-        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">política de privacidad</a>.
+        Las tipografías de la web (Alfa Slab One, Barlow y Barlow Condensed, con licencia SIL
+        Open Font License) se sirven <strong>desde nuestro propio dominio</strong>, junto con el
+        resto de la web. No se descargan de Google Fonts ni de ningún otro servidor externo, así
+        que cargarlas no transmite tu dirección IP a Google ni a ningún tercero.
       </p>
       <p>
         Si aceptas las cookies de analítica, la web carga <strong>Google Analytics</strong> y
@@ -135,7 +135,7 @@
         Puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación del
         tratamiento y portabilidad escribiendo a
         <a href="mailto:info@voyvolandosantafe.com">info@voyvolandosantafe.com</a> o a la dirección
-        postal indicada en el apartado 1, acreditando tu identidad.
+        del domicilio fiscal indicado en el apartado 1, acreditando tu identidad.
       </p>
       <p>
         Si consideras que no hemos atendido correctamente tu solicitud, puedes presentar una
@@ -149,7 +149,7 @@
         aplicable. La fecha de la última revisión figura al final.
       </p>
 
-      <p class="legal-updated">Última actualización: 25 de septiembre de 2026</p>
+      <p class="legal-updated">Última actualización: 27 de octubre de 2026</p>
     </div>
   </main>
 
@@ -161,7 +161,8 @@
       </div>
       <p>
         <a href="/aviso-legal/">Aviso legal</a> ·
-        <a href="/privacidad/">Privacidad</a>
+        <a href="/privacidad/">Privacidad</a><span data-cookie-settings hidden> ·
+        <button type="button" class="footer-link">Configurar cookies</button></span>
       </p>
       <p>© 2026 Pizzería Voy Volando</p>
     </div>

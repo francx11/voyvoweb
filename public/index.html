@@ -127,9 +127,8 @@
   </script>
 
   <!-- Typography -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="preload" href="/assets/fonts/barlow-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/alfa-slab-one-400-latin.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- theme.css primero: define los tokens de color que main.css consume. -->
   <link rel="stylesheet" href="/css/theme.css">
@@ -485,7 +484,8 @@
         <a href="/carta/">Carta</a> ·
         <a href="/contacto/">Contacto</a> ·
         <a href="/aviso-legal/">Aviso legal</a> ·
-        <a href="/privacidad/">Privacidad</a>
+        <a href="/privacidad/">Privacidad</a><span data-cookie-settings hidden> ·
+        <button type="button" class="footer-link">Configurar cookies</button></span>
       </p>
       <p>© 2026 Pizzería Voy Volando</p>
     </div>

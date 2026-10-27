@@ -5,8 +5,7 @@
   "fonts": {
     "display": "'Fraunces', Georgia, serif",
     "heading": "'Fraunces', Georgia, serif",
-    "body": "'Karla', 'Segoe UI', sans-serif",
-    "href": "https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Karla:wght@400;700&display=swap"
+    "body": "'Karla', 'Segoe UI', sans-serif"
   },
   "light": {
     "paper": "#faf6ee",

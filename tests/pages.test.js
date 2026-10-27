@@ -56,3 +56,18 @@ test('Just Eat: sin interruptor o encendido se publica; apagado se quita entera'
   // Si alguien cambia el HTML y la sección ya no se reconoce, el build para.
   assert.throws(() => applyJustEat('<main></main>', { justEat: { enabled: false } }), /just-eat/);
 });
+
+// Datos del titular (art. 10 LSSI-CE): si alguien deja un [campo] por rellenar
+// o pierde el NIF/CIF al editar, se publicaría así en las dos páginas legales.
+test('las páginas legales no publican campos de titular sin rellenar', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  for (const page of ['aviso-legal', 'privacidad']) {
+    const file = path.join(__dirname, '..', 'public', page, 'index.html');
+    const visible = fs.readFileSync(file, 'utf-8').replace(/<!--[\s\S]*?-->/g, '');
+    const dl = visible.match(/<dl class="legal-data">[\s\S]*?<\/dl>/);
+    assert.ok(dl, `${page}: falta el bloque de datos del titular`);
+    assert.ok(!/\[[^\]]+\]/.test(dl[0]), `${page}: hay un [campo] sin rellenar`);
+    assert.match(dl[0], /NIF|CIF/, `${page}: falta el NIF/CIF del titular`);
+  }
+});
