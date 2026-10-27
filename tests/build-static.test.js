@@ -98,6 +98,14 @@ test('el build estático reescribe el dominio en todas partes', () => {
   // mismo js/ui.js que enciende el botón de tema y el hamburguesa. Si alguien
   // vuelve a darle a /carta/ una barra propia, el móvil se queda sin menú.
   const contactoHtml = fs.readFileSync(path.join(OUT, 'contacto', 'index.html'), 'utf-8');
+  // El cliente tiene que ver lo que le cobra el TPV: gastos de envío y mínimo
+  // salen de ordering.json, no de un texto escrito a mano.
+  const ordering = JSON.parse(fs.readFileSync(path.join('data', 'ordering.json'), 'utf-8'));
+  const euro = (n) => `${Number(n).toFixed(2).replace('.', ',')} €`;
+  assert.ok(
+    contactoHtml.includes(`Envío ${euro(ordering.delivery.fee)}`),
+    'contacto no muestra los gastos de envío'
+  );
   for (const [name, page] of [
     ['portada', html],
     ['carta', carta],

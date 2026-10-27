@@ -644,6 +644,19 @@
       '&body=' + encodeURIComponent(text);
   });
 
+  /* ── Gastos de envío (ordering.json → delivery) ─────── */
+  function applyDelivery(cfg) {
+    var d = (cfg && cfg.delivery) || {};
+    var parts = [];
+    if (d.fee != null) parts.push('Envío ' + formatPrice(d.fee));
+    if (d.minimum) parts.push('pedido mínimo ' + formatPrice(d.minimum));
+    if (!parts.length) return;
+    $$('.js-delivery-terms').forEach(function (el) {
+      el.textContent = parts.join(' · ') + '.';
+      el.hidden = false;
+    });
+  }
+
   /* ── Init ─────────────────────────────────────────────
      /api/ordering/config is requested up front, alongside /api/site,
      rather than chained after it — the menu render needs both before
@@ -659,6 +672,7 @@
   Promise.all([sitePromise, orderingConfigPromise]).then(function (results) {
     orderingConfig = results[1];
     VV.orderingConfig = orderingConfig;
+    applyDelivery(orderingConfig);
     loadMenu();
     loadMonthlySpecial();
     loadOffers();
