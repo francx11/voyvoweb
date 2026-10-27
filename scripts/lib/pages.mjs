@@ -368,7 +368,12 @@ function slug(value) {
 }
 
 export function renderContacto({ domain, site, ordering, business }) {
-  const zones = (ordering && ordering.delivery && ordering.delivery.zones) || [];
+  const delivery = (ordering && ordering.delivery) || {};
+  const zones = delivery.zones || [];
+  const deliveryTerms = [
+    delivery.fee != null ? `Envío ${euro(delivery.fee)}` : '',
+    delivery.minimum ? `pedido mínimo ${euro(delivery.minimum)}` : '',
+  ].filter(Boolean);
   const hours = String((site && site.hours) || '')
     .split('\n')
     .filter(Boolean);
@@ -433,6 +438,14 @@ export function renderContacto({ domain, site, ordering, business }) {
               ? `\n          <div class="info-item">
             <dt>Reparto a domicilio</dt>
             <dd>${zones.map(esc).join(' · ')}</dd>
+          </div>`
+              : ''
+          }${
+            deliveryTerms.length
+              ? `
+          <div class="info-item">
+            <dt>Gastos de envío</dt>
+            <dd>${esc(deliveryTerms.join(' · '))}</dd>
           </div>`
               : ''
           }
