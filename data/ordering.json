@@ -6,17 +6,17 @@
       "sizes": [
         {
           "id": "peq",
-          "label": "Pequeña 30cm",
+          "label": "Pequeña 30 cm · 1 persona",
           "price": 6.7
         },
         {
           "id": "med",
-          "label": "Mediana 36cm",
+          "label": "Mediana 36 cm · 2 personas",
           "price": 9.7
         },
         {
           "id": "fam",
-          "label": "Familiar 40cm",
+          "label": "Familiar 40 cm · 3-4 personas",
           "price": 11.7
         }
       ]
@@ -26,18 +26,38 @@
       "sizes": [
         {
           "id": "peq",
-          "label": "Pequeña 30cm",
-          "price": 7.7
+          "label": "Pequeña 30 cm · 1 persona",
+          "price": 8.2
         },
         {
           "id": "med",
-          "label": "Mediana 36cm",
+          "label": "Mediana 36 cm · 2 personas",
           "price": 11.2
         },
         {
           "id": "fam",
-          "label": "Familiar 40cm",
+          "label": "Familiar 40 cm · 3-4 personas",
           "price": 13.2
+        }
+      ]
+    },
+    "gourmet": {
+      "label": "Pizzas Gourmet",
+      "sizes": [
+        {
+          "id": "peq",
+          "label": "Pequeña 30 cm · 1 persona",
+          "price": 8.7
+        },
+        {
+          "id": "med",
+          "label": "Mediana 36 cm · 2 personas",
+          "price": 11.7
+        },
+        {
+          "id": "fam",
+          "label": "Familiar 40 cm · 3-4 personas",
+          "price": 13.7
         }
       ]
     }
@@ -54,8 +74,8 @@
           "price": 1
         },
         {
-          "id": "masa-gruesa",
-          "label": "Masa gruesa",
+          "id": "doble-masa",
+          "label": "Doble de masa",
           "price": 2
         },
         {
@@ -64,63 +84,90 @@
           "price": 1
         },
         {
-          "id": "borde-cheddar",
-          "label": "Bordes de queso cheddar",
+          "id": "borde-queso",
+          "label": "Bordes de queso",
           "price": 2
         },
         {
-          "id": "borde-roquefort",
-          "label": "Bordes de queso roquefort",
+          "id": "borde-cheddar-roquefort",
+          "label": "Bordes de cheddar o roquefort",
+          "price": 3
+        }
+      ]
+    },
+    "pizza-mods-especial": {
+      "label": "Personaliza tu pizza",
+      "required": false,
+      "maxSelect": 3,
+      "options": [
+        {
+          "id": "mitad",
+          "label": "Mitad y mitad",
+          "price": 1.5
+        },
+        {
+          "id": "doble-masa",
+          "label": "Doble de masa",
           "price": 2
+        },
+        {
+          "id": "masa-extrafina",
+          "label": "Masa extrafina",
+          "price": 1
+        },
+        {
+          "id": "borde-queso",
+          "label": "Bordes de queso",
+          "price": 2
+        },
+        {
+          "id": "borde-cheddar-roquefort",
+          "label": "Bordes de cheddar o roquefort",
+          "price": 3
         }
       ]
     },
-    "salsa-alitas": {
-      "label": "Elige tu salsa",
-      "required": true,
-      "maxSelect": 1,
+    "pizza-mods-gourmet": {
+      "label": "Personaliza tu pizza",
+      "required": false,
+      "maxSelect": 3,
       "options": [
         {
-          "id": "bbq",
-          "label": "Barbacoa",
-          "price": 0
+          "id": "mitad",
+          "label": "Mitad y mitad",
+          "price": 2
         },
         {
-          "id": "picante",
-          "label": "Picante",
-          "price": 0
+          "id": "doble-masa",
+          "label": "Doble de masa",
+          "price": 2
         },
         {
-          "id": "yogur",
-          "label": "Yogur",
-          "price": 0
-        }
-      ]
-    },
-    "patatas-sazon": {
-      "label": "Sal o sazonador",
-      "required": true,
-      "maxSelect": 1,
-      "options": [
-        {
-          "id": "sal",
-          "label": "Sal",
-          "price": 0
+          "id": "masa-extrafina",
+          "label": "Masa extrafina",
+          "price": 1
         },
         {
-          "id": "sazonador",
-          "label": "Sazonador",
-          "price": 0
+          "id": "borde-queso",
+          "label": "Bordes de queso",
+          "price": 2
+        },
+        {
+          "id": "borde-cheddar-roquefort",
+          "label": "Bordes de cheddar o roquefort",
+          "price": 3
         }
       ]
     }
   },
   "delivery": {
     "fee": 2,
-    "minimum": 10,
+    "minimum": 8,
+    "minimumNote": "en Santa Fe y Jau; en El Ventorrillo, Belicena, Purchil y Ambroz, consúltanos",
     "zones": [
       "Santa Fe",
       "Jau",
+      "El Ventorrillo",
       "Belicena",
       "Purchil",
       "Ambroz"
@@ -153,7 +200,7 @@
     ],
     "fri": [
       [
-        "13:30",
+        "13:00",
         "15:30"
       ],
       [

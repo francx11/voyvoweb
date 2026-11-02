@@ -166,8 +166,9 @@
   // MENU
   // ═════════════════════════════════════════════════════════════════════════
   const ALLERGENS = [
-    'gluten', 'lácteos', 'huevo', 'pescado', 'marisco', 'frutos secos', 'soja',
-    'mostaza', 'sésamo', 'apio', 'sulfitos', 'altramuces', 'moluscos', 'cacahuetes',
+    // Los 14 del anexo II del Reglamento UE 1169/2011, con los nombres de menu.json.
+    'gluten', 'crustáceos', 'huevo', 'pescado', 'cacahuetes', 'soja', 'lácteos',
+    'frutos de cáscara', 'apio', 'mostaza', 'sésamo', 'sulfitos', 'altramuces', 'moluscos',
   ];
   let MENU = [];
 
@@ -354,20 +355,22 @@
   });
 
   // ── Item modal ───────────────────────────────────────────────────────────
-  // Allergen checkboxes (generated once)
-  $('item-allergens').innerHTML = ALLERGENS.map((a) => `
+  // Allergen and trace checkboxes (generated once, same list for both)
+  const allergenBoxes = (name) => ALLERGENS.map((a) => `
     <label style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;color:var(--text);cursor:pointer;text-transform:capitalize">
-      <input type="checkbox" value="${a}" name="allergen"> ${a}
+      <input type="checkbox" value="${a}" name="${name}"> ${a}
     </label>
   `).join('');
+  $('item-allergens').innerHTML = allergenBoxes('allergen');
+  $('item-traces').innerHTML = allergenBoxes('trace');
 
-  function setAllergens(list) {
-    document.querySelectorAll('input[name=allergen]').forEach((cb) => {
+  function setAllergens(list, name = 'allergen') {
+    document.querySelectorAll(`input[name=${name}]`).forEach((cb) => {
       cb.checked = (list || []).includes(cb.value);
     });
   }
-  function getAllergens() {
-    return [...document.querySelectorAll('input[name=allergen]:checked')].map((cb) => cb.value);
+  function getAllergens(name = 'allergen') {
+    return [...document.querySelectorAll(`input[name=${name}]:checked`)].map((cb) => cb.value);
   }
 
   // ── Pricing editor (fixed / per-size / pizza tier) + modifier groups ──────
@@ -469,6 +472,7 @@
     $('item-id').value = '';
     setItemImageUI(''); // no id yet → upload disabled with a hint
     setAllergens([]);
+    setAllergens([], 'trace');
     $('item-sizes-rows').innerHTML = '';
     $('item-pricing-mode').value = 'fixed';
     pricingModeChanged();
@@ -494,6 +498,7 @@
     $('item-category').value = p.category || '';
     $('item-pickup-only').checked = p.fulfillment === 'pickup_only';
     setAllergens(p.allergens);
+    setAllergens(p.traces, 'trace');
 
     const cfg = await loadOrderingConfigCache();
     renderTierSelectOptions(cfg.tiers);
@@ -527,6 +532,7 @@
       price: $('item-price').value,
       category: $('item-category').value,
       allergens: getAllergens(),
+      traces: getAllergens('trace'),
       pricing,
       modifierGroupIds: getModifierGroups(),
       fulfillment: $('item-pickup-only').checked ? 'pickup_only' : null,
@@ -1477,6 +1483,7 @@
     $('toggle-force-open').classList.toggle('on', ORDERING_DRAFT.forceOpen);
     $('delivery-fee').value = ORDERING_DRAFT.delivery.fee;
     $('delivery-minimum').value = ORDERING_DRAFT.delivery.minimum;
+    $('delivery-minimum-note').value = ORDERING_DRAFT.delivery.minimumNote || '';
     $('delivery-zones').value = (ORDERING_DRAFT.delivery.zones || []).join('\n');
     renderTiers();
     renderModifierGroups();
@@ -1772,6 +1779,7 @@
     ORDERING_DRAFT.delivery = {
       fee: Number($('delivery-fee').value) || 0,
       minimum: Number($('delivery-minimum').value) || 0,
+      minimumNote: $('delivery-minimum-note').value.trim(),
       zones: $('delivery-zones')
         .value.split('\n')
         .map((z) => z.trim())

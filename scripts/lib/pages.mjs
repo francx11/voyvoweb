@@ -58,10 +58,35 @@ function sizesOf(item, tiers) {
   return null;
 }
 
+// Misma regla que shortSizeLabel() en public/js/main.js: "Pequeña 30 cm · 1
+// persona" queda en "Pequeña" junto al precio; el diámetro y las personas van
+// una sola vez bajo el título de la categoría (tierLine).
+const shortSizeLabel = (label) =>
+  String(label || '')
+    .replace(/\s*\d+(?:[.,]\d+)?\s*cm\b.*$/i, '')
+    .trim() || label;
+
 export function priceText(item, tiers) {
   const sizes = sizesOf(item, tiers);
-  if (sizes) return sizes.map((s) => `${s.label} ${euro(s.price)}`).join(' · ');
+  if (sizes) return sizes.map((s) => `${shortSizeLabel(s.label)} ${euro(s.price)}`).join(' · ');
   return item.price != null ? euro(item.price) : '';
+}
+
+// Los tamaños de la tarifa compartida por todo el grupo (las pizzas), o ''.
+function tierLine(items, tiers) {
+  const first = items[0] && items[0].pricing;
+  if (!first || first.mode !== 'tier') return '';
+  const same = items.every(
+    (item) => item.pricing && item.pricing.mode === 'tier' && item.pricing.tierId === first.tierId
+  );
+  const tier = same && tiers[first.tierId];
+  if (!tier || !tier.sizes || !tier.sizes.length) return '';
+  return tier.sizes
+    .map((s) => {
+      const [size, ...rest] = String(s.label || '').split(' · ');
+      return `<strong>${esc(size)}</strong>${rest.length ? ` ${esc(rest.join(' · '))}` : ''} ${esc(euro(s.price))}`;
+    })
+    .join(' · ');
 }
 
 function offersOf(item, tiers) {
@@ -272,7 +297,11 @@ export function renderCarta({ domain, menu, ordering, site }) {
       )}">
           <h2 class="section-title" id="cat-${esc(slug(group.category))}">${esc(
             group.category
-          )}</h2>
+          )}</h2>${
+            tierLine(group.items, tiers)
+              ? `\n          <p class="carta-tiers">${tierLine(group.items, tiers)}</p>`
+              : ''
+          }
           <ul class="carta-list">
 ${group.items.map((item) => renderItem(item, tiers)).join('\n')}
           </ul>
@@ -334,7 +363,7 @@ ${sections}
     path: '/carta/',
     title: 'Carta y precios — Pizzería Voy Volando, Santa Fe (Granada)',
     description:
-      'Carta completa de Pizzería Voy Volando en Santa Fe (Granada): pizzas clásicas y especiales, pastas, ensaladas y postres con sus precios. A domicilio o para recoger.',
+      'Carta completa de Pizzería Voy Volando en Santa Fe (Granada): pizzas clásicas, especiales y gourmet, gratinados, tacos franceses, camperos, pastas, ensaladas y postres con sus precios. A domicilio o para recoger.',
     jsonLd,
     body,
   });
@@ -350,6 +379,12 @@ function renderItem(item, tiers) {
               }${price ? `\n              <p class="carta-item-price">${esc(price)}</p>` : ''}${
                 item.allergens && item.allergens.length
                   ? `\n              <p class="carta-item-alerg"><strong>Alérgenos:</strong> ${item.allergens
+                      .map(esc)
+                      .join(', ')}</p>`
+                  : ''
+              }${
+                item.traces && item.traces.length
+                  ? `\n              <p class="carta-item-alerg"><strong>Puede contener trazas de:</strong> ${item.traces
                       .map(esc)
                       .join(', ')}</p>`
                   : ''
@@ -372,7 +407,9 @@ export function renderContacto({ domain, site, ordering, business }) {
   const zones = delivery.zones || [];
   const deliveryTerms = [
     delivery.fee != null ? `Envío ${euro(delivery.fee)}` : '',
-    delivery.minimum ? `pedido mínimo ${euro(delivery.minimum)}` : '',
+    delivery.minimum
+      ? `pedido mínimo ${euro(delivery.minimum)}${delivery.minimumNote ? ` ${delivery.minimumNote}` : ''}`
+      : '',
   ].filter(Boolean);
   const hours = String((site && site.hours) || '')
     .split('\n')
