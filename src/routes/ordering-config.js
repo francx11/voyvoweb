@@ -74,6 +74,8 @@ function sanitizeOrderingConfig(body, current) {
     cfg.delivery = {
       fee: num(body.delivery.fee, 99),
       minimum: num(body.delivery.minimum, 999),
+      // Free text after the minimum, for zones where it differs ("consúltanos").
+      minimumNote: String(body.delivery.minimumNote || '').slice(0, 160),
       zones: (Array.isArray(body.delivery.zones) ? body.delivery.zones : [])
         .map((z) => String(z).trim().slice(0, 40))
         .filter(Boolean)
@@ -120,6 +122,7 @@ router.get('/config', (_req, res) => {
     delivery: {
       fee: (cfg.delivery && cfg.delivery.fee) || 0,
       minimum: (cfg.delivery && cfg.delivery.minimum) || 0,
+      minimumNote: (cfg.delivery && cfg.delivery.minimumNote) || '',
       zones: (cfg.delivery && cfg.delivery.zones) || [],
     },
     stripeEnabled: enabled && stripeClient.isConfigured(),

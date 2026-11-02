@@ -62,6 +62,7 @@ const sanitizeMenuItem = (p) => {
     category: String(p.category || '').slice(0, 40),
     price: sanitizePrice(p.price),
     allergens: Array.isArray(p.allergens) ? p.allergens.map(String).slice(0, 14) : [],
+    traces: Array.isArray(p.traces) ? p.traces.map(String).slice(0, 14) : [],
     active: p.active !== false,
     ...(p.image ? { image: String(p.image).slice(0, 200) } : {}),
     ...(pricing ? { pricing } : {}),

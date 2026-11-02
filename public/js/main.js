@@ -96,10 +96,11 @@
   /* ── Menu: products or PDF ──────────────────────────── */
   var excludedAllergens = new Set();
 
-  // A size label like "Pequeña 30cm" reads better in a price line abbreviated
-  // to just "Pequeña" — the cm is redundant next to the price.
+  // A size label like "Pequeña 30 cm · 1 persona" reads better in a price line
+  // abbreviated to just "Pequeña" — the cm and people are on the category's
+  // size line (tierLine) and redundant next to each price.
   function shortSizeLabel(label) {
-    var stripped = String(label || '').replace(/\s*\d+(?:[.,]\d+)?\s*cm\.?\s*$/i, '').trim();
+    var stripped = String(label || '').replace(/\s*\d+(?:[.,]\d+)?\s*cm\b.*$/i, '').trim();
     return stripped || label;
   }
   function priceNum(n) { return Number(n).toFixed(2).replace('.', ','); }
@@ -127,6 +128,29 @@
       return sizesPriceLine(pricing.sizes);
     }
     return p.price != null ? formatPrice(p.price) : '';
+  }
+
+  /* Pizzas share a tier: its sizes (diameter, people, price) go once under the
+     category title, as on the printed carta, instead of on every card. */
+  function tierLine(items) {
+    var first = items[0] && items[0].pricing;
+    if (!first || first.mode !== 'tier') return '';
+    var same = items.every(function (p) {
+      return p.pricing && p.pricing.mode === 'tier' && p.pricing.tierId === first.tierId;
+    });
+    var tier = same && orderingConfig && orderingConfig.tiers && orderingConfig.tiers[first.tierId];
+    if (!tier || !tier.sizes || !tier.sizes.length) return '';
+    return '<p class="menu-tiers">' + tier.sizes.map(function (s) {
+      var parts = String(s.label || '').split(' · ');
+      return '<span class="menu-tier"><strong>' + esc(parts[0]) + '</strong>' +
+        (parts[1] ? ' ' + esc(parts.slice(1).join(' · ')) : '') +
+        ' <span class="menu-tier-price">' + esc(formatPrice(s.price)) + '</span></span>';
+    }).join('') + '</p>';
+  }
+
+  // Contains or may contain: an allergy filter has to hide both.
+  function allergensAndTraces(p) {
+    return (p.allergens || []).concat(p.traces || []);
   }
 
   function isOrderable(p) {
@@ -250,8 +274,8 @@
        que el modal ya no aporta el texto recortado: solo vale la pena abrirlo
        por los alérgenos o por el desglose de tallas que "Desde X" resume. */
     var hasDetail = src
-      ? !!(p.description || (p.allergens && p.allergens.length))
-      : !!((p.allergens && p.allergens.length) || priceDisplay(p) !== priceStr);
+      ? !!(p.description || allergensAndTraces(p).length)
+      : !!(allergensAndTraces(p).length || priceDisplay(p) !== priceStr);
     return '<article class="menu-card' + (src ? '' : ' menu-card--flat') +
       (overflow ? ' menu-card--overflow' : '') + '">' +
       (src
@@ -284,7 +308,7 @@
     var visible = items.filter(function (p) { return p.active !== false; })
       .filter(function (p) { return !isDuplicatePromo(p); })
       .filter(function (p) {
-        var al = p.allergens || [];
+        var al = allergensAndTraces(p);
         for (var a of excludedAllergens) if (al.indexOf(a) !== -1) return false;
         return true;
       });
@@ -310,6 +334,7 @@
         (group.category
           ? '<h3 class="menu-category-title">' + esc(group.category) + '</h3>'
           : '') +
+        tierLine(group.items) +
         '<div class="menu-grid"' + (collapsible ? ' id="' + esc(gridId) + '"' : '') + '>' +
           group.items.map(function (p, i) {
             return renderMenuItem(p, collapsible && i >= COLLAPSE_TO);
@@ -402,6 +427,9 @@
       ((p.allergens && p.allergens.length)
         ? '<p class="menu-alerg"><strong>Alérgenos:</strong> ' + p.allergens.map(esc).join(', ') + '</p>'
         : '') +
+      ((p.traces && p.traces.length)
+        ? '<p class="menu-alerg"><strong>Puede contener trazas de:</strong> ' + p.traces.map(esc).join(', ') + '</p>'
+        : '') +
       (canOrder
         ? '<div class="menu-detail-actions"><button type="button" class="btn btn-primary btn-add-item" ' +
           'data-item-id="' + esc(p.id) + '">Pedir</button></div>'
@@ -440,7 +468,7 @@
   function initAllergenFilters(items) {
     var all = [];
     items.forEach(function (p) {
-      (p.allergens || []).forEach(function (a) { if (all.indexOf(a) === -1) all.push(a); });
+      allergensAndTraces(p).forEach(function (a) { if (all.indexOf(a) === -1) all.push(a); });
     });
     if (!all.length) return;
     var box = $('#allergen-filters');
@@ -649,7 +677,9 @@
     var d = (cfg && cfg.delivery) || {};
     var parts = [];
     if (d.fee != null) parts.push('Envío ' + formatPrice(d.fee));
-    if (d.minimum) parts.push('pedido mínimo ' + formatPrice(d.minimum));
+    if (d.minimum) {
+      parts.push('pedido mínimo ' + formatPrice(d.minimum) + (d.minimumNote ? ' ' + d.minimumNote : ''));
+    }
     if (!parts.length) return;
     $$('.js-delivery-terms').forEach(function (el) {
       el.textContent = parts.join(' · ') + '.';

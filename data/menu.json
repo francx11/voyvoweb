@@ -1,14 +1,25 @@
 [
   {
-    "id": "pz-prosciutto",
+    "id": "pz-margarita",
     "emoji": "🍕",
-    "name": "Prosciutto",
-    "description": "Tomate, mozzarella, jamón york.",
-    "tag": "Clásica",
-    "tagColor": "#C41E3A",
+    "name": "Margarita",
+    "description": "Base de tomate, mozzarella y orégano.",
+    "tag": "Favorita",
+    "tagColor": "#8c0a10",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -19,15 +30,27 @@
     ]
   },
   {
-    "id": "pz-margarita",
+    "id": "pz-prosciutto",
     "emoji": "🍕",
-    "name": "Margarita",
-    "description": "Tomate, mozzarella y orégano.",
-    "tag": "Clásica",
-    "tagColor": "#C41E3A",
+    "name": "Prosciutto",
+    "description": "Base de tomate, mozzarella y jamón york.",
+    "tag": "Favorita",
+    "tagColor": "#8c0a10",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -41,12 +64,24 @@
     "id": "pz-romana",
     "emoji": "🍕",
     "name": "Romana",
-    "description": "Tomate, mozzarella, jamón york y champiñón.",
+    "description": "Base de tomate, mozzarella, jamón york y champiñones.",
     "tag": "Clásica",
     "tagColor": "#C41E3A",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -60,12 +95,54 @@
     "id": "pz-bolonesa",
     "emoji": "🍕",
     "name": "Boloñesa",
-    "description": "Tomate, mozzarella, carne picada y cebolla.",
+    "description": "Base de tomate, mozzarella, picada de ternera y cebolla.",
     "tag": "Clásica",
     "tagColor": "#C41E3A",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-pepperoni",
+    "emoji": "🍕",
+    "name": "Pepperoni",
+    "description": "Base de tomate, mozzarella y pepperoni.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -78,13 +155,24 @@
   {
     "id": "pz-cuatro-quesos",
     "emoji": "🧀",
-    "name": "Cuatro quesos",
-    "description": "Mezcla de cuatro exquisitos quesos.",
-    "tag": "Clásica",
-    "tagColor": "#C41E3A",
+    "name": "Cuatro Quesos",
+    "description": "Base de tomate, mozzarella, gouda, edam y roquefort.",
+    "tag": "Favorita",
+    "tagColor": "#8c0a10",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -95,15 +183,27 @@
     ]
   },
   {
-    "id": "pz-caprichosa",
+    "id": "pz-tonno",
     "emoji": "🍕",
-    "name": "Caprichosa",
-    "description": "Tomate, mozzarella, jamón york, atún y bacon.",
+    "name": "Tonno",
+    "description": "Base de tomate, mozzarella, atún y cebolla.",
     "tag": "Clásica",
     "tagColor": "#C41E3A",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "pescado",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -117,12 +217,56 @@
     "id": "pz-hawaiana",
     "emoji": "🍍",
     "name": "Hawaiana",
-    "description": "Tomate, mozzarella, piña y jamón york.",
+    "description": "Base de tomate, mozzarella, jamón York y piña.",
     "tag": "Clásica",
     "tagColor": "#C41E3A",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-caprichosa",
+    "emoji": "🍕",
+    "name": "Caprichosa",
+    "description": "Base de tomate, mozzarella, jamón york, bacon y atún.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "pescado",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -135,13 +279,26 @@
   {
     "id": "pz-cuatro-estaciones",
     "emoji": "🍕",
-    "name": "Cuatro estaciones",
-    "description": "Tomate, mozzarella, jamón york, bacon, atún y champiñón.",
+    "name": "Cuatro Estaciones",
+    "description": "Base de tomate, mozzarella, jamón york, bacon, atún y champiñones.",
     "tag": "Clásica",
     "tagColor": "#C41E3A",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "pescado",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -155,69 +312,25 @@
     "id": "pz-barbacoa",
     "emoji": "🍖",
     "name": "Barbacoa",
-    "description": "Salsa barbacoa, mozzarella, cebolla, bacon y carne picada.",
+    "description": "Salsa barbacoa, mozzarella, picada de ternera, cebolla y bacon.",
     "tag": "Clásica",
     "tagColor": "#C41E3A",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "tier",
-      "tierId": "clasica"
-    },
-    "modifierGroupIds": [
-      "pizza-mods"
-    ]
-  },
-  {
-    "id": "pz-campesina",
-    "emoji": "🌶️",
-    "name": "Campesina",
-    "description": "Tomate, mozzarella, cebolla, pimiento rojo y verde y carne picada.",
-    "tag": "Clásica",
-    "tagColor": "#C41E3A",
-    "category": "Pizzas Clásicas",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "tier",
-      "tierId": "clasica"
-    },
-    "modifierGroupIds": [
-      "pizza-mods"
-    ]
-  },
-  {
-    "id": "pz-carbonara",
-    "emoji": "🥓",
-    "name": "Carbonara",
-    "description": "Base de nata, mozzarella, cebolla, bacon y champiñón.",
-    "tag": "Clásica",
-    "tagColor": "#C41E3A",
-    "category": "Pizzas Clásicas",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "tier",
-      "tierId": "clasica"
-    },
-    "modifierGroupIds": [
-      "pizza-mods"
-    ]
-  },
-  {
-    "id": "pz-monstruo",
-    "emoji": "👹",
-    "name": "Monstruo",
-    "description": "Salsa barbacoa, mozzarella, jamón york, bacon, atún, carne picada.",
-    "tag": "Clásica",
-    "tagColor": "#C41E3A",
-    "category": "Pizzas Clásicas",
-    "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -231,12 +344,303 @@
     "id": "pz-kebab",
     "emoji": "🥙",
     "name": "Kebab",
-    "description": "Salsa kebab, mozzarella, queso edam, jamón york, bacon y pollo kebab.",
+    "description": "Salsa de yogurt, mozzarella, bacon y pollo kebab.",
+    "tag": "Favorita",
+    "tagColor": "#8c0a10",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-campesina",
+    "emoji": "🌶️",
+    "name": "Campesina",
+    "description": "Base de tomate, mozzarella, picada de ternera, cebolla, pimiento verde y rojo.",
     "tag": "Clásica",
     "tagColor": "#C41E3A",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-carbonara",
+    "emoji": "🥓",
+    "name": "Carbonara",
+    "description": "Nata, mozzarella, cebolla, bacon y champiñones.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-exquisita",
+    "emoji": "🍕",
+    "name": "Exquisita",
+    "description": "Base de tomate, mozzarella, jamón york, alcachofas, aceitunas negras y champiñones.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-vegetal",
+    "emoji": "🍕",
+    "name": "Vegetal",
+    "description": "Base de tomate, mozzarella, espárragos, pimiento rojo y aceitunas negras.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-primavera",
+    "emoji": "🍕",
+    "name": "Primavera",
+    "description": "Base de tomate, mozzarella, jamón york, maíz y champiñones.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-siciliana",
+    "emoji": "🍕",
+    "name": "Siciliana",
+    "description": "Base de tomate, mozzarella, anchoas, alcaparras y aceitunas negras.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "pescado",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-cheddar",
+    "emoji": "🍕",
+    "name": "Cheddar",
+    "description": "Base de tomate, mozzarella, picada de ternera, bacon y cheddar.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-suiza",
+    "emoji": "🍕",
+    "name": "Suiza",
+    "description": "Base de tomate, mozzarella, bacon, cebolla y roquefort.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "clasica"
+    },
+    "modifierGroupIds": [
+      "pizza-mods"
+    ]
+  },
+  {
+    "id": "pz-picante",
+    "emoji": "🍕",
+    "name": "Picante",
+    "description": "Base de tomate picante, mozzarella, pepperoni y aceitunas negras.",
+    "tag": "Clásica",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Clásicas",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -250,12 +654,24 @@
     "id": "pz-italiana",
     "emoji": "🇮🇹",
     "name": "Italiana",
-    "description": "Tomate, mozzarella, jamón york, rúcula, tomate natural y aceituna negra.",
+    "description": "Base de tomate, mozzarella, jamón york, aceitunas negras, cherrys y rúcula.",
     "tag": "Clásica",
     "tagColor": "#C41E3A",
     "category": "Pizzas Clásicas",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
@@ -266,730 +682,1816 @@
     ]
   },
   {
+    "id": "pz-gaucha",
+    "emoji": "🍕",
+    "name": "Gaucha",
+    "description": "Salsa gaucha, mozzarella, picada de ternera y pepperoni.",
+    "tag": "Nueva",
+    "tagColor": "#0a2a6b",
+    "category": "Pizzas Especiales",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-especial"
+    ]
+  },
+  {
     "id": "pz-marinera",
     "emoji": "🦐",
     "name": "Marinera",
-    "description": "Tomate, mozzarella, atún, aceituna negra, anchoas y gambas.",
+    "description": "Base de tomate, mozzarella, gambas, atún, aceitunas negras y anchoas.",
     "tag": "Especial",
-    "tagColor": "#C9A84C",
+    "tagColor": "#C41E3A",
     "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "crustáceos",
+      "pescado",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
       "tierId": "especial"
     },
     "modifierGroupIds": [
-      "pizza-mods"
+      "pizza-mods-especial"
     ]
   },
   {
-    "id": "pz-especial",
-    "emoji": "⭐",
-    "name": "Especial",
-    "description": "Tomate, mozzarella, aceituna verde, alcachofas, espárragos, champiñón, alcaparras, jamón york.",
-    "tag": "Especial",
-    "tagColor": "#C9A84C",
-    "category": "Pizzas Especiales",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "tier",
-      "tierId": "especial"
-    },
-    "modifierGroupIds": [
-      "pizza-mods"
-    ]
-  },
-  {
-    "id": "pz-suprema",
+    "id": "pz-arabe",
     "emoji": "🍕",
-    "name": "Suprema",
-    "description": "Salsa suprema, carne picada, champiñón, bacon y cebolla.",
-    "tag": "Especial",
-    "tagColor": "#C9A84C",
+    "name": "Árabe",
+    "description": "Salsa de yogurt, mozzarella, cebolla, pimiento verde, pollo kebab y salsa gaucha.",
+    "tag": "Nueva",
+    "tagColor": "#0a2a6b",
     "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
       "tierId": "especial"
     },
     "modifierGroupIds": [
-      "pizza-mods"
-    ]
-  },
-  {
-    "id": "pz-alpujarrena",
-    "emoji": "🥚",
-    "name": "Alpujarreña",
-    "description": "Tomate, mozzarella, huevo, pimiento, carne picada, chorizo, cebolla y jamón serrano.",
-    "tag": "Especial",
-    "tagColor": "#C9A84C",
-    "category": "Pizzas Especiales",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "tier",
-      "tierId": "especial"
-    },
-    "modifierGroupIds": [
-      "pizza-mods"
-    ]
-  },
-  {
-    "id": "pz-capitulaciones",
-    "emoji": "🍕",
-    "name": "Capitulaciones",
-    "description": "Nata, mozzarella, huevo, bacon, tomate natural y salami.",
-    "tag": "Especial",
-    "tagColor": "#C9A84C",
-    "category": "Pizzas Especiales",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "tier",
-      "tierId": "especial"
-    },
-    "modifierGroupIds": [
-      "pizza-mods"
-    ]
-  },
-  {
-    "id": "pz-santa-fe",
-    "emoji": "🐔",
-    "name": "Santa Fe",
-    "description": "Tomate, mozzarella, edam, pollo, cebolla, bacon y rúcula.",
-    "tag": "Especial",
-    "tagColor": "#C9A84C",
-    "category": "Pizzas Especiales",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "tier",
-      "tierId": "especial"
-    },
-    "modifierGroupIds": [
-      "pizza-mods"
-    ]
-  },
-  {
-    "id": "pz-voy-volando",
-    "emoji": "✈️",
-    "name": "Voy Volando",
-    "description": "Salsa voy volando, mozzarella, pollo kebab, carne picada, maíz.",
-    "tag": "Especial",
-    "tagColor": "#C9A84C",
-    "category": "Pizzas Especiales",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "tier",
-      "tierId": "especial"
-    },
-    "modifierGroupIds": [
-      "pizza-mods"
+      "pizza-mods-especial"
     ]
   },
   {
     "id": "pz-diablo",
     "emoji": "😈",
     "name": "Diablo",
-    "description": "Salsa Jalisco, mozzarella, carne picada, peperoni y cebolleta.",
+    "description": "Base de tomate picante, mozzarella, cebolla, picada de ternera, pepperoni y gouda.",
     "tag": "Especial",
-    "tagColor": "#C9A84C",
+    "tagColor": "#C41E3A",
     "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
       "tierId": "especial"
     },
     "modifierGroupIds": [
-      "pizza-mods"
+      "pizza-mods-especial"
     ]
   },
   {
-    "id": "pz-francis",
-    "emoji": "🍕",
-    "name": "Francis",
-    "description": "Tomate, mozzarella x2, jamón york, carne picada, bacon y champiñón.",
+    "id": "pz-monstruo",
+    "emoji": "👹",
+    "name": "Monstruo",
+    "description": "Salsa bbq, mozzarella, jamón york, bacon, picada de ternera y atún.",
     "tag": "Especial",
-    "tagColor": "#C9A84C",
+    "tagColor": "#C41E3A",
     "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "pescado",
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
       "tierId": "especial"
     },
     "modifierGroupIds": [
-      "pizza-mods"
+      "pizza-mods-especial"
     ]
   },
   {
     "id": "pz-burger",
     "emoji": "🍔",
     "name": "Burger",
-    "description": "Salsa burger, mozzarella, carne picada x2, bacon, tomate natural y pepinillo.",
+    "description": "Salsa burger, mozzarella, pepinillos, cherrys, cebolla, picada de ternera y bacon.",
     "tag": "Especial",
-    "tagColor": "#C9A84C",
+    "tagColor": "#C41E3A",
     "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos",
+      "mostaza",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
       "tierId": "especial"
     },
     "modifierGroupIds": [
-      "pizza-mods"
+      "pizza-mods-especial"
     ]
   },
   {
-    "id": "pz-cabra",
-    "emoji": "🐐",
-    "name": "Cabra",
-    "description": "Base de nata, mozzarella, queso de cabra, pimiento, bacon, mermelada y cebolla caramelizada.",
+    "id": "pz-voy-volando",
+    "emoji": "✈️",
+    "name": "Voy Volando",
+    "description": "Salsa Voy Volando, mozzarella, pollo kebab, picada de ternera y maíz.",
     "tag": "Especial",
-    "tagColor": "#C9A84C",
+    "tagColor": "#C41E3A",
     "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
       "tierId": "especial"
     },
     "modifierGroupIds": [
-      "pizza-mods"
+      "pizza-mods-especial"
+    ]
+  },
+  {
+    "id": "pz-santa-fe",
+    "emoji": "🐔",
+    "name": "Santa Fe",
+    "description": "Base de tomate, mozzarella, bacon, pollo kebab, cebolla, gouda y rúcula.",
+    "tag": "Especial",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Especiales",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-especial"
+    ]
+  },
+  {
+    "id": "pz-suprema",
+    "emoji": "🍕",
+    "name": "Suprema",
+    "description": "Salsa suprema, mozzarella, picada de ternera, bacon, cebolla y champiñones.",
+    "tag": "Especial",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Especiales",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-especial"
+    ]
+  },
+  {
+    "id": "pz-francis",
+    "emoji": "🍕",
+    "name": "Francis",
+    "description": "Base de tomate, mozzarella, picada de ternera, bacon, jamón york y champiñones.",
+    "tag": "Favorita",
+    "tagColor": "#8c0a10",
+    "category": "Pizzas Especiales",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-especial"
+    ]
+  },
+  {
+    "id": "pz-7-quesos",
+    "emoji": "🍕",
+    "name": "7 Quesos",
+    "description": "Base de tomate, mozzarella, edam, gouda, roquefort, feta, cabra y cheddar.",
+    "tag": "Especial",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Especiales",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-especial"
+    ]
+  },
+  {
+    "id": "pz-especial",
+    "emoji": "⭐",
+    "name": "Especial",
+    "description": "Base de tomate, mozzarella, alcachofas, alcaparras, espárragos, aceitunas verdes, jamón york y champiñones.",
+    "tag": "Especial",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Especiales",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-especial"
     ]
   },
   {
     "id": "pz-mediterranea",
     "emoji": "🫒",
     "name": "Mediterránea",
-    "description": "Tomate, mozzarella, alcachofas, serrano, champiñón, aceituna negra y AOVE.",
+    "description": "Base de tomate, mozzarella, alcachofas, aceitunas negras, jamón serrano, champiñones y aove.",
     "tag": "Especial",
-    "tagColor": "#C9A84C",
+    "tagColor": "#C41E3A",
     "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
       "tierId": "especial"
     },
     "modifierGroupIds": [
-      "pizza-mods"
+      "pizza-mods-especial"
     ]
   },
   {
-    "id": "pz-gonza",
-    "emoji": "🍗",
-    "name": "Gonza",
-    "description": "Doble salsa barbacoa, pollo, bacon, cebolla, maíz y pimiento verde.",
+    "id": "pz-alpujarrena",
+    "emoji": "🥚",
+    "name": "Alpujarreña",
+    "description": "Base de tomate, mozzarella, chorizo, jamón serrano, cebolla, pimiento verde y huevo.",
     "tag": "Especial",
-    "tagColor": "#C9A84C",
+    "tagColor": "#C41E3A",
     "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "huevo",
+      "soja",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "cacahuetes",
+      "frutos de cáscara",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "tier",
       "tierId": "especial"
     },
     "modifierGroupIds": [
-      "pizza-mods"
+      "pizza-mods-especial"
     ]
   },
   {
-    "id": "papas-cheddar",
-    "emoji": "🥔",
-    "name": "Papas cheddar",
-    "description": "Salsa cheddar, bacon, cebolla crujiente y mozzarella.",
-    "tag": "",
-    "tagColor": "#e67e22",
-    "category": "Para Picotear",
+    "id": "pz-mare-e-monti",
+    "emoji": "🍕",
+    "name": "Mare e Monti",
+    "description": "Base de tomate, mozzarella, jamón york, gambas, atún, espárragos y champiñones.",
+    "tag": "Especial",
+    "tagColor": "#C41E3A",
+    "category": "Pizzas Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "gluten",
+      "crustáceos",
+      "pescado",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-especial"
+    ]
+  },
+  {
+    "id": "pz-texas",
+    "emoji": "🍕",
+    "name": "Texas",
+    "description": "Base de tomate, mozzarella, pollo kebab, pimiento verde, maíz y salsa barbacoa.",
+    "tag": "Nueva",
+    "tagColor": "#0a2a6b",
+    "category": "Pizzas Especiales",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "especial"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-especial"
+    ]
+  },
+  {
+    "id": "pz-caprese",
+    "emoji": "🍕",
+    "name": "Caprese",
+    "description": "Base de tomate, mozzarella, jamón serrano, pesto, cherrys, queso feta y rúcula.",
+    "tag": "Nueva",
+    "tagColor": "#0a2a6b",
+    "category": "Pizzas Gourmet",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "lácteos",
+      "frutos de cáscara"
+    ],
+    "traces": [
+      "cacahuetes",
+      "soja",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "gourmet"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-gourmet"
+    ]
+  },
+  {
+    "id": "pz-cabra",
+    "emoji": "🐐",
+    "name": "Cabra",
+    "description": "Nata, mozzarella, bacon, cebolla caramelizada, queso cabra, pimiento verde y mermelada de fresa.",
+    "tag": "Favorita",
+    "tagColor": "#8c0a10",
+    "category": "Pizzas Gourmet",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "gourmet"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-gourmet"
+    ]
+  },
+  {
+    "id": "pz-bourbon",
+    "emoji": "🍕",
+    "name": "Bourbon",
+    "description": "Nata, mozzarella, bacon, picada de ternera, queso cabra, cebolla caramelizada y salsa barbacoa.",
+    "tag": "Nueva",
+    "tagColor": "#0a2a6b",
+    "category": "Pizzas Gourmet",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "gourmet"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-gourmet"
+    ]
+  },
+  {
+    "id": "pz-trifasica",
+    "emoji": "🍕",
+    "name": "Trifásica",
+    "description": "Nata, mozzarella, picada de ternera, pollo kebab, bacon, cheddar y cebolla crujiente.",
+    "tag": "Nueva",
+    "tagColor": "#0a2a6b",
+    "category": "Pizzas Gourmet",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "tier",
+      "tierId": "gourmet"
+    },
+    "modifierGroupIds": [
+      "pizza-mods-gourmet"
+    ]
+  },
+  {
+    "id": "gr-benji",
+    "emoji": "🍟",
+    "name": "Gratinado Benji",
+    "description": "Patatas fritas, nata, mozzarella, bacon, cebolla y champiñones.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados",
+    "price": null,
+    "allergens": [
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "soja",
+      "sulfitos"
+    ],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "med",
-          "label": "Medianas",
-          "price": 3.4
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 3.9
         },
         {
-          "id": "gra",
-          "label": "Grandes",
-          "price": 4.9
+          "id": "grande",
+          "label": "Grande",
+          "price": 5.9
         }
       ]
     }
   },
   {
-    "id": "papas-benji",
-    "emoji": "🥔",
-    "name": "Papas Benji",
-    "description": "Salsa carbonara, bacon, champiñón, cebolla.",
+    "id": "gr-bbq",
+    "emoji": "🍟",
+    "name": "Gratinado Bbq",
+    "description": "Patatas fritas, salsa barbacoa, mozzarella, picada de ternera, bacon y cebolla.",
     "tag": "",
-    "tagColor": "#e67e22",
-    "category": "Para Picotear",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "soja",
+      "apio",
+      "sésamo"
+    ],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "med",
-          "label": "Medianas",
-          "price": 3.4
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 3.9
         },
         {
-          "id": "gra",
-          "label": "Grandes",
-          "price": 4.9
+          "id": "grande",
+          "label": "Grande",
+          "price": 5.9
         }
       ]
     }
   },
   {
-    "id": "papas-supremas",
-    "emoji": "🥔",
-    "name": "Papas supremas",
-    "description": "Salsa suprema, carne picada, champiñón, cebolla y mozzarella.",
+    "id": "gr-4-quesos",
+    "emoji": "🍟",
+    "name": "Gratinado 4 quesos",
+    "description": "Patatas fritas, nata, gouda, roquefort, cheddar y mozzarella.",
     "tag": "",
-    "tagColor": "#e67e22",
-    "category": "Para Picotear",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "lácteos"
+    ],
+    "traces": [
+      "soja"
+    ],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "med",
-          "label": "Medianas",
-          "price": 3.4
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 3.9
         },
         {
-          "id": "gra",
-          "label": "Grandes",
-          "price": 4.9
+          "id": "grande",
+          "label": "Grande",
+          "price": 5.9
         }
       ]
     }
   },
   {
-    "id": "papas-roquecheese",
-    "emoji": "🥔",
-    "name": "Papas roquecheese",
-    "description": "Salsa roquefort y mozzarella.",
+    "id": "gr-cheddar",
+    "emoji": "🍟",
+    "name": "Gratinado Cheddar",
+    "description": "Patatas fritas, cheddar, bacon, mozzarella y cebolla crujiente.",
     "tag": "",
-    "tagColor": "#e67e22",
-    "category": "Para Picotear",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "soja",
+      "sulfitos"
+    ],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "med",
-          "label": "Medianas",
-          "price": 3.4
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 3.9
         },
         {
-          "id": "gra",
-          "label": "Grandes",
-          "price": 4.9
+          "id": "grande",
+          "label": "Grande",
+          "price": 5.9
         }
       ]
     }
   },
   {
-    "id": "papas-barbacoa",
-    "emoji": "🥔",
-    "name": "Papas barbacoa",
-    "description": "Salsa bbq, carne picada, bacon y mozzarella.",
+    "id": "gr-kebab",
+    "emoji": "🍟",
+    "name": "Gratinado Kebab",
+    "description": "Patatas fritas, salsa de yogurt, pollo kebab y mozzarella.",
     "tag": "",
-    "tagColor": "#e67e22",
-    "category": "Para Picotear",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "apio"
+    ],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "med",
-          "label": "Medianas",
-          "price": 3.4
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 4.5
         },
         {
-          "id": "gra",
-          "label": "Grandes",
-          "price": 4.9
+          "id": "grande",
+          "label": "Grande",
+          "price": 6.5
         }
       ]
     }
   },
   {
-    "id": "papas-bandeja-kebab",
-    "emoji": "🥙",
-    "name": "Bandeja kebab",
-    "description": "Patatas gratinadas con pollo kebab, salsa y mozzarella.",
+    "id": "gr-burger",
+    "emoji": "🍟",
+    "name": "Gratinado Burger",
+    "description": "Patatas fritas, salsa burger, bacon, picada de ternera, cebolla y mozzarella.",
     "tag": "",
-    "tagColor": "#e67e22",
-    "category": "Para Picotear",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados Especiales",
     "price": null,
-    "allergens": [],
+    "allergens": [
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "huevo",
+      "soja",
+      "apio",
+      "sésamo",
+      "sulfitos"
+    ],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "med",
-          "label": "Medianas",
-          "price": 3.4
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 4.5
         },
         {
-          "id": "gra",
-          "label": "Grandes",
-          "price": 4.9
+          "id": "grande",
+          "label": "Grande",
+          "price": 6.5
         }
       ]
     }
+  },
+  {
+    "id": "gr-supremo",
+    "emoji": "🍟",
+    "name": "Gratinado Supremo",
+    "description": "Patatas fritas, salsa suprema, picada de ternera, cebolla, champiñones y mozzarella.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados Especiales",
+    "price": null,
+    "allergens": [
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "soja",
+      "apio",
+      "sésamo"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 4.5
+        },
+        {
+          "id": "grande",
+          "label": "Grande",
+          "price": 6.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "gr-goat",
+    "emoji": "🍟",
+    "name": "Gratinado Goat",
+    "description": "Patatas fritas, nata, bacon, cebolla caramelizada, queso cabra, salsa barbacoa y mozzarella.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados Especiales",
+    "price": null,
+    "allergens": [
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "soja"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 4.5
+        },
+        {
+          "id": "grande",
+          "label": "Grande",
+          "price": 6.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "gr-ranchero",
+    "emoji": "🍟",
+    "name": "Gratinado Ranchero",
+    "description": "Patatas fritas, salsa ranchera, picada de ternera, bacon, cheddar y mozzarella.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Gratinados Especiales",
+    "price": null,
+    "allergens": [
+      "huevo",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "soja",
+      "apio",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "pequeno",
+          "label": "Pequeño",
+          "price": 4.5
+        },
+        {
+          "id": "grande",
+          "label": "Grande",
+          "price": 6.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "taco-frances-ranchero",
+    "emoji": "🌮",
+    "name": "Taco Francés Ranchero",
+    "description": "Tortilla trigo, patatas fritas, salsa ranchera, bacon, picada de ternera, mozzarella y cheddar.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Tacos Franceses",
+    "price": 6.9,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "soja",
+      "apio",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true
+  },
+  {
+    "id": "taco-frances-kebab",
+    "emoji": "🌮",
+    "name": "Taco Francés Kebab",
+    "description": "Tortilla trigo, patatas fritas, salsa de yogurt, pollo kebab, mozzarella y cheddar.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Tacos Franceses",
+    "price": 6.9,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "apio",
+      "mostaza"
+    ],
+    "active": true
+  },
+  {
+    "id": "taco-frances-burger",
+    "emoji": "🌮",
+    "name": "Taco Francés Burger",
+    "description": "Tortilla trigo, patatas fritas, salsa burger, picada de ternera, bacon y mozzarella.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Tacos Franceses",
+    "price": 6.9,
+    "allergens": [
+      "gluten",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "huevo",
+      "soja",
+      "apio",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true
+  },
+  {
+    "id": "taco-frances-royal",
+    "emoji": "🌮",
+    "name": "Taco Francés Royal",
+    "description": "Tortilla trigo, patatas fritas, salsa gaucha, salsa barbacoa, fingers de pollo y mozzarella.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Tacos Franceses",
+    "price": 6.9,
+    "allergens": [
+      "gluten",
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "soja",
+      "apio",
+      "mostaza"
+    ],
+    "active": true
+  },
+  {
+    "id": "campero-kebab",
+    "emoji": "🥪",
+    "name": "Campero Kebab",
+    "description": "Pollo kebab, mozzarella, lechuga, cherrys, huevo y salsa de yogurt.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Camperos",
+    "price": 10.5,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true
+  },
+  {
+    "id": "campero-burger",
+    "emoji": "🥪",
+    "name": "Campero Burger",
+    "description": "Doble hamburguesa de ternera, mozzarella, lechuga, cherrys, huevo y salsa burger.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Camperos",
+    "price": 11.5,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "lácteos",
+      "mostaza"
+    ],
+    "traces": [
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "sésamo"
+    ],
+    "active": true
+  },
+  {
+    "id": "campero-lomo",
+    "emoji": "🥪",
+    "name": "Campero Lomo",
+    "description": "Lomo de cerdo, lechuga, bacon, mozzarella, huevo y mayonesa.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Camperos",
+    "price": 10.5,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "lácteos"
+    ],
+    "traces": [
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true
   },
   {
     "id": "alitas-pollo",
     "emoji": "🍗",
-    "name": "Alitas de pollo (6 ud)",
-    "description": "¡Elige tu salsa!",
+    "name": "Alitas 7 unidades",
+    "description": "Van sin salsa. Salsa: por encima, +0,50 €; en bote aparte, +0,70 €.",
     "tag": "",
-    "tagColor": "#e67e22",
+    "tagColor": "#C41E3A",
     "category": "Para Picotear",
-    "price": 4.5,
+    "price": 5.5,
     "allergens": [],
-    "active": true,
-    "modifierGroupIds": [
-      "salsa-alitas"
-    ]
+    "traces": [
+      "soja",
+      "lácteos",
+      "sulfitos"
+    ],
+    "active": true
   },
   {
-    "id": "pan-ajo",
-    "emoji": "🧄",
-    "name": "Pan de ajo",
-    "description": "Pan de ajo horneado.",
+    "id": "patatas-fritas",
+    "emoji": "🍗",
+    "name": "Tarrina de patatas fritas",
+    "description": "",
     "tag": "",
-    "tagColor": "#e67e22",
+    "tagColor": "#C41E3A",
     "category": "Para Picotear",
-    "price": 4,
+    "price": 3.5,
     "allergens": [],
+    "traces": [],
     "active": true
   },
   {
     "id": "nuggets-pollo",
     "emoji": "🍗",
-    "name": "Nuggets de pollo (6 ud)",
-    "description": "Nuggets de pollo.",
+    "name": "Nuggets de pollo 7 unidades",
+    "description": "Salsa: por encima, +0,50 €; en bote aparte, +0,70 €.",
     "tag": "",
-    "tagColor": "#e67e22",
+    "tagColor": "#C41E3A",
     "category": "Para Picotear",
-    "price": 4.3,
-    "allergens": [],
+    "price": 4.5,
+    "allergens": [
+      "gluten"
+    ],
+    "traces": [
+      "crustáceos",
+      "huevo",
+      "pescado",
+      "soja",
+      "lácteos",
+      "mostaza",
+      "moluscos"
+    ],
     "active": true
   },
   {
-    "id": "patatas-fritas",
-    "emoji": "🍟",
-    "name": "Patatas fritas",
-    "description": "Patatas fritas.",
+    "id": "pic-fingers-de-pollo-5-unidades",
+    "emoji": "🍗",
+    "name": "Fingers de pollo 5 unidades",
+    "description": "Fingers de pollo empanados. Salsa: por encima, +0,50 €; en bote aparte, +0,70 €.",
     "tag": "",
-    "tagColor": "#e67e22",
+    "tagColor": "#C41E3A",
     "category": "Para Picotear",
-    "price": 3,
-    "allergens": [],
+    "price": 4.5,
+    "allergens": [
+      "gluten"
+    ],
+    "traces": [
+      "soja",
+      "mostaza"
+    ],
+    "active": true
+  },
+  {
+    "id": "pic-pizza-de-ajo",
+    "emoji": "🍗",
+    "name": "Pizza de ajo",
+    "description": "Masa de pizza con mozzarella y aove con ajo.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Para Picotear",
+    "price": 4.9,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true
+  },
+  {
+    "id": "pic-croquetas-pollo-y-bacon",
+    "emoji": "🍗",
+    "name": "Croquetas Pollo y Bacon",
+    "description": "Croquetas caseras de pollo y bacon.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Para Picotear",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "apio",
+      "mostaza",
+      "sulfitos"
+    ],
     "active": true,
-    "modifierGroupIds": [
-      "patatas-sazon"
-    ]
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "1-2-racion-5-ud",
+          "label": "1/2 ración (5 ud)",
+          "price": 4.5
+        },
+        {
+          "id": "racion-10-ud",
+          "label": "Ración (10 ud)",
+          "price": 8
+        }
+      ]
+    }
   },
   {
-    "id": "ensalada-huerta",
-    "emoji": "🥗",
-    "name": "Ensalada de la huerta",
-    "description": "Lechuga, tomate, aceitunas, maíz y espárragos.",
+    "id": "pic-croquetas-jamon-serrano",
+    "emoji": "🍗",
+    "name": "Croquetas Jamón serrano",
+    "description": "Croquetas caseras de jamón serrano.",
     "tag": "",
-    "tagColor": "#27ae60",
-    "category": "Ensaladas",
-    "price": 5,
-    "allergens": [],
+    "tagColor": "#C41E3A",
+    "category": "Para Picotear",
+    "price": null,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "lácteos"
+    ],
+    "traces": [
+      "soja",
+      "mostaza"
+    ],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "1-2-racion-5-ud",
+          "label": "1/2 ración (5 ud)",
+          "price": 4.5
+        },
+        {
+          "id": "racion-10-ud",
+          "label": "Ración (10 ud)",
+          "price": 8
+        }
+      ]
+    }
+  },
+  {
+    "id": "pic-pizza-roll-7-unidades-bbq",
+    "emoji": "🍗",
+    "name": "Pizza roll 7 unidades Bbq",
+    "description": "Salsa barbacoa, mozzarella y picada de ternera.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Para Picotear",
+    "price": 6.9,
+    "allergens": [
+      "gluten",
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true
   },
   {
-    "id": "ensalada-al-andalus",
-    "emoji": "🥗",
-    "name": "Ensalada Al-Andalus",
-    "description": "Ensalada de la huerta con pollo kebab y salsa de yogur.",
+    "id": "pic-pizza-roll-7-unidades-kebab",
+    "emoji": "🍗",
+    "name": "Pizza roll 7 unidades Kebab",
+    "description": "Salsa de yogurt, mozzarella y pollo kebab.",
     "tag": "",
-    "tagColor": "#27ae60",
-    "category": "Ensaladas",
-    "price": 5,
+    "tagColor": "#C41E3A",
+    "category": "Para Picotear",
+    "price": 6.9,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "frutos de cáscara",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true
+  },
+  {
+    "id": "pic-pizza-roll-7-unidades-cheesebacon",
+    "emoji": "🍗",
+    "name": "Pizza roll 7 unidades Cheesebacon",
+    "description": "Cheddar, mozzarella, bacon y salsa tomate.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Para Picotear",
+    "price": 6.9,
+    "allergens": [
+      "gluten",
+      "lácteos"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo",
+      "sulfitos"
+    ],
+    "active": true
+  },
+  {
+    "id": "combo-nuggets-7-unidades-patatas-salsa",
+    "emoji": "🍱",
+    "name": "Nuggets 7 unidades + patatas + salsa",
+    "description": "7 nuggets de pollo, tarrina de patatas fritas y una salsa a elegir en bote aparte. Cada salsa más, +0,70 €.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Combos",
+    "price": 6.5,
+    "allergens": [
+      "gluten"
+    ],
+    "traces": [
+      "crustáceos",
+      "huevo",
+      "pescado",
+      "soja",
+      "lácteos",
+      "mostaza",
+      "moluscos"
+    ],
+    "active": true
+  },
+  {
+    "id": "combo-fingers-de-pollo-5-unidades-patatas-salsa",
+    "emoji": "🍱",
+    "name": "Fingers de pollo 5 unidades + patatas + salsa",
+    "description": "5 fingers de pollo, tarrina de patatas fritas y una salsa a elegir en bote aparte. Cada salsa más, +0,70 €.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Combos",
+    "price": 6.9,
+    "allergens": [
+      "gluten"
+    ],
+    "traces": [
+      "soja",
+      "mostaza"
+    ],
+    "active": true
+  },
+  {
+    "id": "combo-alitas-7-unidades-patatas-salsa",
+    "emoji": "🍱",
+    "name": "Alitas 7 unidades + patatas + salsa",
+    "description": "7 alitas de pollo, tarrina de patatas fritas y una salsa a elegir en bote aparte. Cada salsa más, +0,70 €.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Combos",
+    "price": 7.9,
     "allergens": [],
+    "traces": [
+      "soja",
+      "lácteos",
+      "sulfitos"
+    ],
+    "active": true
+  },
+  {
+    "id": "combo-grande-normal-bebida",
+    "emoji": "🍱",
+    "name": "Gratinado grande normal + bebida",
+    "description": "Un gratinado normal grande + una lata de 33 cl. Alérgenos: los del gratinado que elijas.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Combos",
+    "price": 6.9,
+    "allergens": [],
+    "traces": [],
+    "active": true
+  },
+  {
+    "id": "combo-grande-especial-bebida",
+    "emoji": "🍱",
+    "name": "Gratinado grande especial + bebida",
+    "description": "Un gratinado especial grande + una lata de 33 cl. Alérgenos: los del gratinado que elijas.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Combos",
+    "price": 7.5,
+    "allergens": [],
+    "traces": [],
+    "active": true
+  },
+  {
+    "id": "combo-hazlo-menu-patatas-bebida",
+    "emoji": "🍱",
+    "name": "Taco: hazlo menú (patatas + bebida)",
+    "description": "Patatas y bebida a elegir.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Combos",
+    "price": 2.5,
+    "allergens": [],
+    "traces": [],
     "active": true
   },
   {
     "id": "ensalada-casa",
     "emoji": "🥗",
-    "name": "Ensalada de la casa",
-    "description": "Lechuga, tomate, mozzarella, atún, jamón york y cebolla.",
+    "name": "Ensalada de la Casa",
+    "description": "Lechuga, tomate, queso feta, atún, jamón york, cebolla y vinagre de Módena.",
     "tag": "",
-    "tagColor": "#27ae60",
+    "tagColor": "#C41E3A",
     "category": "Ensaladas",
-    "price": 5,
-    "allergens": [],
-    "active": true
-  },
-  {
-    "id": "ensalada-pollo",
-    "emoji": "🥗",
-    "name": "Ensalada de pollo",
-    "description": "Lechuga, tomate, kebab, piña y maíz.",
-    "tag": "",
-    "tagColor": "#27ae60",
-    "category": "Ensaladas",
-    "price": 5,
-    "allergens": [],
-    "active": true
-  },
-  {
-    "id": "ensalada-quesos",
-    "emoji": "🥗",
-    "name": "Ensalada de quesos",
-    "description": "Lechuga, queso edam, roquefort, cheddar, cabra y jamón york.",
-    "tag": "",
-    "tagColor": "#27ae60",
-    "category": "Ensaladas",
-    "price": 5,
-    "allergens": [],
+    "price": 6.5,
+    "allergens": [
+      "pescado",
+      "lácteos",
+      "sulfitos"
+    ],
+    "traces": [
+      "huevo"
+    ],
     "active": true
   },
   {
     "id": "ensalada-cesar",
     "emoji": "🥗",
     "name": "Ensalada César",
-    "description": "Lechuga, tomate, pollo, mozzarella y salsa César.",
+    "description": "Lechuga, cherrys, pollo, queso feta, nueces y salsa César.",
     "tag": "",
-    "tagColor": "#27ae60",
+    "tagColor": "#C41E3A",
     "category": "Ensaladas",
-    "price": 5,
-    "allergens": [],
+    "price": 6.5,
+    "allergens": [
+      "huevo",
+      "soja",
+      "lácteos",
+      "frutos de cáscara",
+      "mostaza"
+    ],
+    "traces": [
+      "pescado",
+      "apio"
+    ],
     "active": true
   },
   {
     "id": "pasta-bolonesa",
     "emoji": "🍝",
-    "name": "Spaguetis boloñesa",
-    "description": "Carne picada, tomate y mozzarella.",
+    "name": "Spaghetti Boloñesa",
+    "description": "Base de tomate, picada de ternera, mozzarella y orégano.",
     "tag": "",
     "tagColor": "#C41E3A",
     "category": "Pastas",
-    "price": 5.7,
-    "allergens": [],
+    "price": 5.9,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "lácteos"
+    ],
+    "traces": [
+      "soja",
+      "apio",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true
   },
   {
     "id": "pasta-carbonara",
     "emoji": "🍝",
-    "name": "Tallarines carbonara",
-    "description": "Bacon, nata y mozzarella.",
+    "name": "Tallarines Carbonara",
+    "description": "Nata, bacon, mozzarella y orégano.",
     "tag": "",
     "tagColor": "#C41E3A",
     "category": "Pastas",
-    "price": 5.7,
-    "allergens": [],
+    "price": 5.9,
+    "allergens": [
+      "gluten",
+      "huevo",
+      "lácteos"
+    ],
+    "traces": [
+      "soja",
+      "mostaza",
+      "sulfitos"
+    ],
     "active": true
   },
   {
-    "id": "pasta-pesto",
-    "emoji": "🍝",
-    "name": "Spaguetis al pesto",
-    "description": "Salsa boloñesa, pesto, picada de ternera, gouda y mozzarella.",
+    "id": "postre-tarta-3-chocolates",
+    "emoji": "🍰",
+    "name": "Tarta de 3 Chocolates",
+    "description": "",
     "tag": "",
     "tagColor": "#C41E3A",
-    "category": "Pastas",
-    "price": 5.7,
-    "allergens": [],
+    "category": "Postres",
+    "price": 4.9,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "frutos de cáscara",
+      "sésamo"
+    ],
+    "traces": [],
     "active": true
   },
   {
-    "id": "pasta-trufados",
-    "emoji": "🍝",
-    "name": "Tallarines trufados",
-    "description": "Salsa de trufa, bacon, champiñón y mozzarella.",
+    "id": "postre-tarta-choco-galleta",
+    "emoji": "🍰",
+    "name": "Tarta Choco Galleta",
+    "description": "",
     "tag": "",
     "tagColor": "#C41E3A",
-    "category": "Pastas",
-    "price": 5.7,
-    "allergens": [],
+    "category": "Postres",
+    "price": 4.9,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "frutos de cáscara"
+    ],
+    "traces": [],
     "active": true
   },
   {
-    "id": "focaccia-iberica",
-    "emoji": "🫓",
-    "name": "Ibérica",
-    "description": "Jamón serrano, tomate, pesto de pistacho y rúcula.",
+    "id": "postre-tarta-oreo",
+    "emoji": "🍰",
+    "name": "Tarta de Oreo",
+    "description": "",
     "tag": "",
-    "tagColor": "#C9A84C",
-    "category": "Foccacias",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "sizes",
-      "sizes": [
-        {
-          "id": "rec",
-          "label": "Para recoger",
-          "price": 7,
-          "fulfillment": "pickup"
-        },
-        {
-          "id": "dom",
-          "label": "A domicilio",
-          "price": 9,
-          "fulfillment": "delivery"
-        }
-      ]
-    }
+    "tagColor": "#C41E3A",
+    "category": "Postres",
+    "price": 4.9,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "frutos de cáscara"
+    ],
+    "traces": [],
+    "active": true
   },
   {
-    "id": "focaccia-ragu",
-    "emoji": "🫓",
-    "name": "Ragú",
-    "description": "Salsa tomate, picado de ternera, cheddar y rúcula.",
+    "id": "postre-pizza-roll-nutella-7u",
+    "emoji": "🍰",
+    "name": "Pizza roll nutella 7u",
+    "description": "Nutella con nueces o pistachos.",
     "tag": "",
-    "tagColor": "#C9A84C",
-    "category": "Foccacias",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "sizes",
-      "sizes": [
-        {
-          "id": "rec",
-          "label": "Para recoger",
-          "price": 5,
-          "fulfillment": "pickup"
-        },
-        {
-          "id": "dom",
-          "label": "A domicilio",
-          "price": 7,
-          "fulfillment": "delivery"
-        }
-      ]
-    }
+    "tagColor": "#C41E3A",
+    "category": "Postres",
+    "price": 3.9,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "frutos de cáscara"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true
   },
   {
-    "id": "focaccia-bolonia",
-    "emoji": "🫓",
-    "name": "Bolonia",
-    "description": "Mortadela, ricotta, salsa de trufa.",
+    "id": "postre-churrillos-de-pizza-10u",
+    "emoji": "🍰",
+    "name": "Churrillos de pizza 10u",
+    "description": "Con bote de crema de cacao.",
     "tag": "",
-    "tagColor": "#C9A84C",
-    "category": "Foccacias",
-    "price": null,
-    "allergens": [],
-    "active": true,
-    "pricing": {
-      "mode": "sizes",
-      "sizes": [
-        {
-          "id": "rec",
-          "label": "Para recoger",
-          "price": 7,
-          "fulfillment": "pickup"
-        },
-        {
-          "id": "dom",
-          "label": "A domicilio",
-          "price": 9,
-          "fulfillment": "delivery"
-        }
-      ]
-    }
+    "tagColor": "#C41E3A",
+    "category": "Postres",
+    "price": 2.9,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "frutos de cáscara"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true
   },
   {
-    "id": "bebida-refresco",
+    "id": "postre-pizza-dolce",
+    "emoji": "🍰",
+    "name": "Pizza Dolce",
+    "description": "Plátano, nutella y sirope fresa.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Postres",
+    "price": 4.9,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "frutos de cáscara"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "mostaza",
+      "sésamo"
+    ],
+    "active": true
+  },
+  {
+    "id": "bebida-coca-cola",
     "emoji": "🥤",
-    "name": "Refresco",
-    "description": "Indica el sabor en las notas del pedido.",
+    "name": "Coca Cola",
+    "description": "",
     "tag": "",
-    "tagColor": "#2980b9",
+    "tagColor": "#C41E3A",
     "category": "Bebidas",
     "price": null,
     "allergens": [],
+    "traces": [],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "33cl",
-          "label": "33cl",
+          "id": "lata",
+          "label": "Lata",
           "price": 1.5
         },
         {
-          "id": "1l",
-          "label": "1L",
+          "id": "1-25-l",
+          "label": "1,25 L",
           "price": 2
         },
         {
-          "id": "2l",
-          "label": "2L",
+          "id": "2-l",
+          "label": "2 L",
           "price": 2.5
         }
       ]
     }
   },
   {
-    "id": "bebida-cerveza",
-    "emoji": "🍺",
-    "name": "Cerveza",
-    "description": "Cerveza.",
+    "id": "bebida-coca-cola-zero",
+    "emoji": "🥤",
+    "name": "Coca Cola Zero",
+    "description": "",
     "tag": "",
-    "tagColor": "#2980b9",
+    "tagColor": "#C41E3A",
     "category": "Bebidas",
     "price": null,
     "allergens": [],
+    "traces": [],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "33cl",
-          "label": "33cl",
+          "id": "lata",
+          "label": "Lata",
           "price": 1.5
         },
         {
-          "id": "1l",
-          "label": "1L",
-          "price": 2.3
+          "id": "1-25-l",
+          "label": "1,25 L",
+          "price": 2
+        },
+        {
+          "id": "2-l",
+          "label": "2 L",
+          "price": 2.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "bebida-fanta-naranja",
+    "emoji": "🥤",
+    "name": "Fanta naranja",
+    "description": "",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Bebidas",
+    "price": null,
+    "allergens": [],
+    "traces": [],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "lata",
+          "label": "Lata",
+          "price": 1.5
+        },
+        {
+          "id": "1-25-l",
+          "label": "1,25 L",
+          "price": 2
+        },
+        {
+          "id": "2-l",
+          "label": "2 L",
+          "price": 2.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "bebida-aquarius-limon",
+    "emoji": "🥤",
+    "name": "Aquarius limón",
+    "description": "",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Bebidas",
+    "price": null,
+    "allergens": [],
+    "traces": [],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "lata",
+          "label": "Lata",
+          "price": 1.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "bebida-aquarius-naranja",
+    "emoji": "🥤",
+    "name": "Aquarius naranja",
+    "description": "",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Bebidas",
+    "price": null,
+    "allergens": [],
+    "traces": [],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "lata",
+          "label": "Lata",
+          "price": 1.5
+        }
+      ]
+    }
+  },
+  {
+    "id": "bebida-fuze-tea-maracuya",
+    "emoji": "🥤",
+    "name": "Fuze tea maracuyá",
+    "description": "",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Bebidas",
+    "price": null,
+    "allergens": [],
+    "traces": [],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "lata",
+          "label": "Lata",
+          "price": 1.5
+        },
+        {
+          "id": "1-5-l",
+          "label": "1,5 L",
+          "price": 2.5
         }
       ]
     }
@@ -998,113 +2500,274 @@
     "id": "bebida-agua",
     "emoji": "💧",
     "name": "Agua",
-    "description": "Agua.",
+    "description": "",
     "tag": "",
-    "tagColor": "#2980b9",
+    "tagColor": "#C41E3A",
     "category": "Bebidas",
     "price": null,
     "allergens": [],
+    "traces": [],
     "active": true,
     "pricing": {
       "mode": "sizes",
       "sizes": [
         {
-          "id": "33cl",
-          "label": "33cl (botella pequeña)",
+          "id": "500-ml",
+          "label": "500 ml",
           "price": 1
         },
         {
-          "id": "1.5l",
-          "label": "1.5L",
-          "price": 1.6
+          "id": "1-5-l",
+          "label": "1,5 L",
+          "price": 1.5
         }
       ]
     }
   },
   {
-    "id": "postre-tarta-abuela",
-    "emoji": "🍰",
-    "name": "Tarta de la abuela",
-    "description": "Tarta de la abuela.",
+    "id": "bebida-cerveza-alhambra",
+    "emoji": "🥤",
+    "name": "Cerveza Alhambra",
+    "description": "",
     "tag": "",
-    "tagColor": "#8e44ad",
-    "category": "Postres",
-    "price": 5,
-    "allergens": [],
+    "tagColor": "#C41E3A",
+    "category": "Bebidas",
+    "price": null,
+    "allergens": [
+      "gluten"
+    ],
+    "traces": [],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "lata",
+          "label": "Lata",
+          "price": 1.8
+        },
+        {
+          "id": "litro",
+          "label": "Litro",
+          "price": 2.3
+        }
+      ]
+    }
+  },
+  {
+    "id": "infantil-menu-infantil-menores-de-12",
+    "emoji": "🧒",
+    "name": "Menú infantil (menores de 12)",
+    "description": "Pizza infantil de 26 cm (Margarita o York) + agua + 3 churrillos con crema de cacao, todo en una caja.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Menú Infantil",
+    "price": 6.5,
+    "allergens": [
+      "gluten",
+      "soja",
+      "lácteos",
+      "frutos de cáscara"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true
   },
   {
-    "id": "postre-tarta-3-chocolates",
-    "emoji": "🍰",
-    "name": "Tarta de 3 chocolates",
-    "description": "Tarta de 3 chocolates.",
+    "id": "extra-mitad-y-mitad",
+    "emoji": "➕",
+    "name": "Mitad y mitad",
+    "description": "Suplemento por pizza mitad de una y mitad de otra, según la categoría.",
     "tag": "",
-    "tagColor": "#8e44ad",
-    "category": "Postres",
-    "price": 5,
+    "tagColor": "#C41E3A",
+    "category": "Extras",
+    "price": null,
     "allergens": [],
+    "traces": [],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "clasica",
+          "label": "Clásica",
+          "price": 1
+        },
+        {
+          "id": "especial",
+          "label": "Especial",
+          "price": 1.5
+        },
+        {
+          "id": "gourmet",
+          "label": "Gourmet",
+          "price": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "extra-doble-de-masa",
+    "emoji": "➕",
+    "name": "Doble de masa",
+    "description": "",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Extras",
+    "price": 2,
+    "allergens": [
+      "gluten"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "lácteos",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true
   },
   {
-    "id": "postre-tarta-oreo",
-    "emoji": "🍰",
-    "name": "Tarta de Oreo",
-    "description": "Tarta de Oreo.",
+    "id": "extra-masa-extrafina",
+    "emoji": "➕",
+    "name": "Masa extrafina",
+    "description": "",
     "tag": "",
-    "tagColor": "#8e44ad",
-    "category": "Postres",
-    "price": 5,
-    "allergens": [],
+    "tagColor": "#C41E3A",
+    "category": "Extras",
+    "price": 1,
+    "allergens": [
+      "gluten"
+    ],
+    "traces": [
+      "huevo",
+      "cacahuetes",
+      "soja",
+      "lácteos",
+      "frutos de cáscara",
+      "mostaza",
+      "sésamo"
+    ],
     "active": true
   },
   {
-    "id": "postre-focaccia-dolce",
-    "emoji": "🍰",
-    "name": "Focaccia dolce",
-    "description": "Focaccia dulce.",
+    "id": "extra-bordes-de-queso",
+    "emoji": "➕",
+    "name": "Bordes de queso",
+    "description": "",
     "tag": "",
-    "tagColor": "#8e44ad",
-    "category": "Postres",
-    "price": 4,
-    "allergens": [],
+    "tagColor": "#C41E3A",
+    "category": "Extras",
+    "price": 2,
+    "allergens": [
+      "lácteos"
+    ],
+    "traces": [
+      "soja"
+    ],
     "active": true
+  },
+  {
+    "id": "extra-bordes-de-cheddar-o-roquefort",
+    "emoji": "➕",
+    "name": "Bordes de cheddar o roquefort",
+    "description": "",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Extras",
+    "price": 3,
+    "allergens": [
+      "lácteos"
+    ],
+    "traces": [],
+    "active": true
+  },
+  {
+    "id": "extra-gratina-tu-taco",
+    "emoji": "➕",
+    "name": "Gratina tu taco",
+    "description": "Para cualquier taco francés.",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Extras",
+    "price": 2,
+    "allergens": [],
+    "traces": [],
+    "active": true
+  },
+  {
+    "id": "extra-salsa-extra",
+    "emoji": "➕",
+    "name": "Salsa extra",
+    "description": "Para cualquier plato: barbacoa, miel y mostaza, yogurt, picante, cheddar, burger, gaucha o mayonesa. Alérgenos de cada salsa: barbacoa (sulfitos); miel y mostaza (huevo, mostaza; trazas de lácteos); yogurt (lácteos); picante (ninguno); cheddar (lácteos); burger (lácteos, mostaza); gaucha (lácteos); mayonesa (huevo).",
+    "tag": "",
+    "tagColor": "#C41E3A",
+    "category": "Extras",
+    "price": null,
+    "allergens": [],
+    "traces": [],
+    "active": true,
+    "pricing": {
+      "mode": "sizes",
+      "sizes": [
+        {
+          "id": "por-encima-del-plato",
+          "label": "Por encima del plato",
+          "price": 0.5
+        },
+        {
+          "id": "en-bote-aparte",
+          "label": "En bote aparte",
+          "price": 0.7
+        }
+      ]
+    }
   },
   {
     "id": "oferta-familiar-clasica",
     "emoji": "🎉",
-    "name": "Familiar Clásica a 10€",
-    "description": "Cualquier pizza clásica tamaño familiar. Indica en las notas qué pizza quieres.",
+    "name": "Familiar clásica a 10 € a recoger",
+    "description": "Cualquier clásica familiar, solo a recoger. Mitad y mitad: 11 €. Indica en las notas cuáles quieres.",
     "tag": "Solo recogida",
     "tagColor": "#e67e22",
     "category": "Ofertas",
     "price": 10,
     "allergens": [],
+    "traces": [],
     "active": true,
     "fulfillment": "pickup_only"
   },
   {
     "id": "oferta-familiar-especial",
     "emoji": "🎉",
-    "name": "Familiar Especial a 12€",
-    "description": "Cualquier pizza especial tamaño familiar. Indica en las notas qué pizza quieres.",
+    "name": "Familiar especial a 12 € a recoger",
+    "description": "Cualquier especial familiar, solo a recoger. Las gourmet no entran. Mitad y mitad: 13,50 €. Indica en las notas cuáles quieres.",
     "tag": "Solo recogida",
     "tagColor": "#e67e22",
     "category": "Ofertas",
     "price": 12,
     "allergens": [],
+    "traces": [],
     "active": true,
     "fulfillment": "pickup_only"
   },
   {
     "id": "oferta-3-pizzas-pequenas",
     "emoji": "🎉",
-    "name": "3 Pizzas Pequeñas a 18€",
-    "description": "Tres pizzas pequeñas a elegir (especiales incluidas). Indica en las notas cuáles.",
+    "name": "3 pizzas pequeñas por 18 € a recoger",
+    "description": "Tres pequeñas, como máximo una especial. Indica en las notas cuáles quieres.",
     "tag": "Solo recogida",
     "tagColor": "#e67e22",
     "category": "Ofertas",
     "price": 18,
     "allergens": [],
+    "traces": [],
     "active": true,
     "fulfillment": "pickup_only"
   }

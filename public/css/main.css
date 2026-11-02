@@ -521,6 +521,16 @@ img { max-width: 100%; display: block; }
   font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.02em;
 }
 .menu-alerg strong { font-weight: 700; color: var(--ink); }
+.menu-alerg + .menu-alerg { margin-top: 0.3rem; }
+
+/* Tamaños de una tarifa (pizzas), una vez bajo el título de la categoría. */
+.menu-tiers {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem;
+  margin: -0.6rem 0 1.2rem; font-size: 0.9rem; color: var(--ink-soft);
+}
+.menu-tiers strong { color: var(--ink); font-weight: 700; }
+.menu-tier { white-space: nowrap; }
+.menu-tier-price { color: var(--tomato); font-weight: 700; }
 .menu-empty { text-align: center; color: var(--ink-soft); padding: 2rem 0; }
 
 /* Category groups */
@@ -1231,6 +1241,8 @@ body.cart-scroll-lock { overflow: hidden; }
 .carta-item-desc { font-size: 0.92rem; color: var(--ink-soft); margin: 0.25rem 0 0; }
 .carta-item-price { font-size: 0.92rem; margin: 0.35rem 0 0; color: var(--tomato); }
 .carta-item-alerg { font-size: 0.82rem; color: var(--ink-soft); margin: 0.35rem 0 0; }
+.carta-tiers { font-size: 0.95rem; color: var(--ink-soft); margin: 0.5rem 0 0; }
+.carta-tiers strong { color: var(--ink); }
 
 @media (max-width: 720px) {
   .carta-list { grid-template-columns: 1fr; gap: 0; }

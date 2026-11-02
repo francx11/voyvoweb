@@ -1,36 +1,34 @@
 {
   "active": true,
-  "intro": "Descubre nuestras ofertas: promociones que cambian según el día de la semana. Desde descuentos en pizzas hasta combos especiales, siempre hay algo nuevo.",
+  "intro": "Nuestras ofertas fijas para recoger, los churrillos y el menú infantil. Y cada mes, una pizza nueva y ofertas que solo verás en redes.",
   "items": [
     {
       "id": "familiares-10",
-      "title": "Familiares clásicas a 10 €",
-      "description": "Todas nuestras pizzas clásicas de tamaño familiar por 10 €, todos los días y solo a recoger. Personalizada (mitad de una clásica y mitad de otra): 11 €.",
+      "title": "Familiar clásica a 10 €",
+      "description": "Cualquier pizza clásica familiar por 10 €, solo a recoger. Mitad y mitad: 11 €.",
       "image": "/assets/ofertas/1789456702024-xulmz.webp"
     },
     {
+      "id": "familiares-especiales-12",
+      "title": "Familiar especial a 12 €",
+      "description": "Cualquier pizza especial familiar por 12 €, solo a recoger. Las gourmet no entran. Mitad y mitad: 13,50 €.",
+      "image": "/assets/ofertas/1789456703275-kyn0j.webp"
+    },
+    {
       "id": "tres-pizzas-18",
-      "title": "3 pizzas por 18 €",
-      "description": "Tamaño pequeño, para recoger. Puede incluir como máximo una pizza especial.",
+      "title": "3 pizzas pequeñas por 18 €",
+      "description": "Tres pizzas pequeñas, solo a recoger. Como máximo una especial.",
       "image": "/assets/ofertas/1789456702402-kvds8.webp"
     },
     {
-      "id": "dia-de-la-pizza",
-      "title": "Día de la Pizza",
-      "description": "Todos los miércoles, por pedidos superiores a 12 € ¡bebida gratis! No acumulable con otras ofertas.",
-      "image": "/assets/ofertas/1789456702674-7fbyf.webp"
+      "id": "churrillos-2",
+      "title": "Churrillos a 2 € con una familiar",
+      "description": "Churrillos de pizza (10 u.) con bote de crema de cacao por 2 € al pedir cualquier pizza familiar."
     },
     {
-      "id": "dia-de-las-papas",
-      "title": "Día de las Papas",
-      "description": "Todos los martes, por pedidos superiores a 13 € unas papas pequeñas a elegir gratis. No acumulable con otras ofertas.",
-      "image": "/assets/ofertas/1789456703038-x7is6.webp"
-    },
-    {
-      "id": "familiares-especiales-12",
-      "title": "Familiares especiales a 12 €",
-      "description": "Todas nuestras pizzas especiales de tamaño familiar por 12 €, solo a recoger. Personalizada (mitad de una especial y mitad de otra): 13,50 €.",
-      "image": "/assets/ofertas/1789456703275-kyn0j.webp"
+      "id": "menu-infantil",
+      "title": "Menú infantil 6,50 €",
+      "description": "Para menores de 12: pizza infantil de 26 cm (Margarita o York) + agua + 3 churrillos con crema de cacao, todo en una caja."
     }
   ]
 }
