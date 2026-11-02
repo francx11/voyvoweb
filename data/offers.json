@@ -1,6 +1,6 @@
 {
   "active": true,
-  "intro": "Descubre nuestras ofertas: promociones que cambian según el día de la semana. Desde descuentos en pizzas hasta combos especiales, siempre hay algo nuevo.",
+  "intro": "Nuestras ofertas fijas para recoger, los churrillos y el menú infantil. Y cada mes, una pizza nueva y ofertas que solo verás en redes.",
   "items": [
     {
       "id": "familiares-10",
@@ -29,18 +29,6 @@
       "id": "menu-infantil",
       "title": "Menú infantil 6,50 €",
       "description": "Para menores de 12: pizza infantil de 26 cm (Margarita o York) + agua + 3 churrillos con crema de cacao, todo en una caja."
-    },
-    {
-      "id": "dia-de-la-pizza",
-      "title": "Día de la Pizza",
-      "description": "Todos los miércoles, por pedidos superiores a 12 € ¡bebida gratis! No acumulable con otras ofertas.",
-      "image": "/assets/ofertas/1789456702674-7fbyf.webp"
-    },
-    {
-      "id": "dia-de-las-papas",
-      "title": "Día de las Papas",
-      "description": "Todos los martes, por pedidos superiores a 13 € unas papas pequeñas a elegir gratis. No acumulable con otras ofertas.",
-      "image": "/assets/ofertas/1789456703038-x7is6.webp"
     }
   ]
 }

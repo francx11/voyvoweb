@@ -1,5 +1,5 @@
 // Ofertas: la sección de promociones que el WordPress ya tenía ("Familiares a
-// 10€", "Día de la Pizza"...). Cambian a menudo y las edita el dueño, así que
+// 10€"...). Cambian a menudo y las edita el dueño, así que
 // todo el bloque —el interruptor, el texto de entrada y las tarjetas— vive en
 // offers.json y se guarda de una vez.
 const { Router } = require('express');
