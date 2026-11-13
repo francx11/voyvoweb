@@ -248,55 +248,94 @@ img { max-width: 100%; display: block; }
 /* .ornament (un ◆ entre dos filetes) se retiró con la dirección "Correo
    Aéreo": era decoración sin significado. Su papel lo hace .airmail-rule. */
 
-/* ── Header / nav ── */
+/* ── Header / nav ──
+   Una sola cabecera para todas las páginas (scripts/lib/layout.mjs). Fija
+   arriba, translúcida, con el teléfono siempre a un toque: en móvil el botón
+   de llamar se queda fuera del menú plegado, que es donde convierte. */
 .site-header {
   position: sticky; top: 0; z-index: 100;
-  background: color-mix(in srgb, var(--paper) 92%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--paper) 84%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  backdrop-filter: saturate(1.4) blur(14px);
   border-bottom: 1px solid var(--line);
 }
 .header-inner {
-  max-width: 1100px; margin: 0 auto;
-  padding: 0.9rem 1.5rem;
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  max-width: 1200px; margin: 0 auto;
+  min-height: 72px;
+  padding: 0.6rem clamp(1rem, 3vw, 1.5rem);
+  display: flex; align-items: center; gap: clamp(0.75rem, 2vw, 2rem);
   position: relative;
 }
-.header-right { display: flex; align-items: center; gap: 0.7rem; }
 /* El logo es la mascota piloto del original. Margen libre alrededor igual a
    la altura del casco, y nunca sobre rojo (docs/marca/prompt-canva-carta.md). */
 .brand {
   display: flex; align-items: center; gap: 0.6rem;
-  color: var(--ink); text-decoration: none;
+  color: var(--ink); text-decoration: none; flex: none;
 }
-.brand-logo { width: 52px; height: 52px; object-fit: contain; flex: none; }
+.brand-logo { width: 48px; height: 48px; object-fit: contain; flex: none; }
 .brand-name {
   font-family: var(--heading); font-weight: 700;
-  font-size: 1.35rem; letter-spacing: 0.14em; text-transform: uppercase;
-  line-height: 1;
+  font-size: 1.3rem; letter-spacing: 0.14em; text-transform: uppercase;
+  line-height: 1; white-space: nowrap;
 }
 
-.nav-toggle {
-  display: none;
-  background: none; border: 1px solid var(--line-strong);
-  border-radius: var(--radius-pill); cursor: pointer;
-  min-width: 44px; min-height: 44px;
-  align-items: center; justify-content: center;
-  color: var(--ink);
+.site-nav { margin-left: auto; }
+.site-nav ul { display: flex; align-items: center; gap: 0.2rem; list-style: none; }
+.site-nav a {
+  display: block;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius);
+  color: var(--ink-soft); text-decoration: none;
+  font-family: var(--heading); font-size: 0.98rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  transition: background 0.2s, color 0.2s;
 }
-.nav-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+.site-nav a:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.site-nav a[aria-current="page"] {
+  color: var(--tomato);
+  background: color-mix(in srgb, var(--tomato) 10%, transparent);
+}
+
+.header-actions { display: flex; align-items: center; gap: 0.5rem; flex: none; }
+
+.nav-cta {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: 44px; padding: 0.5rem 1.05rem;
+  border-radius: var(--radius-pill);
+  background: var(--tomato-btn); color: var(--on-tomato);
+  font-family: var(--heading); font-size: 1rem; font-weight: 700;
+  letter-spacing: 0.08em; text-decoration: none; white-space: nowrap;
+  box-shadow: var(--shadow-hard);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.nav-cta:hover { background: var(--tomato-btn-hover); }
+.nav-cta:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--gold); }
+.nav-cta-label { text-transform: uppercase; letter-spacing: 0.14em; }
+.nav-cta-label::after { content: '·'; margin-left: 0.45rem; }
+.nav-cta-phone { font-variant-numeric: tabular-nums; }
+
+.icon-phone {
+  width: 18px; height: 18px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* Botones de icono de la cabecera: tema y menú. 44 px, objetivo táctil AA. */
+.icon-btn {
+  width: 44px; height: 44px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; color: var(--ink); cursor: pointer;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-pill);
+  transition: border-color 0.2s, color 0.2s;
+}
+.icon-btn:hover { border-color: var(--tomato); color: var(--tomato); }
+.icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+.nav-toggle { display: none; }
 .nav-toggle .icon-close { display: none; }
 .nav-toggle[aria-expanded="true"] .icon-open { display: none; }
 .nav-toggle[aria-expanded="true"] .icon-close { display: block; }
 
-.theme-toggle {
-  background: none; border: 1px solid var(--line-strong);
-  border-radius: var(--radius-pill); cursor: pointer;
-  width: 44px; height: 44px;
-  display: inline-flex; align-items: center; justify-content: center;
-  color: var(--ink); flex-shrink: 0;
-}
-.theme-toggle:hover { border-color: var(--tomato); color: var(--tomato); }
-.theme-toggle svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
 .theme-toggle .icon-moon { display: none; }
 :root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
 :root[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
@@ -305,23 +344,10 @@ img { max-width: 100%; display: block; }
   :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: block; }
 }
 
-.site-nav ul {
-  display: flex; align-items: center; gap: 1.8rem; list-style: none;
+/* Entre tableta y escritorio pequeño no cabe todo: se queda el número. */
+@media (max-width: 1080px) {
+  .nav-cta-label { display: none; }
 }
-.site-nav a {
-  color: var(--ink-soft); text-decoration: none;
-  font-family: var(--heading); font-size: 1rem; font-weight: 700;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  padding: 0.6rem 0;
-}
-.site-nav a:hover { color: var(--tomato); }
-.site-nav .nav-cta {
-  color: var(--on-tomato); background: var(--tomato-btn);
-  padding: 0.6rem 1.2rem; border-radius: var(--radius-pill);
-}
-.site-nav .nav-cta:hover { background: var(--tomato-btn-hover); color: var(--on-tomato); }
-.site-nav a[aria-current="page"] { color: var(--tomato); }
-.site-nav .nav-cta[aria-current="page"] { color: var(--on-tomato); }
 
 /* ── Buttons ── */
 .btn {
@@ -770,13 +796,7 @@ img { max-width: 100%; display: block; }
   background: var(--paper);
 }
 
-/* ── Legal pages (aviso legal, privacidad) ──
-   Páginas sueltas, sin nav ni JS: el modo oscuro les llega igual porque el
-   tema vive en un @media prefers-color-scheme, no en el toggle. */
-.legal-header { border-bottom: 1px solid var(--line); padding: 1.1rem 0; }
-.legal-header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.legal-back { font-size: 0.86rem; color: var(--ink-soft); }
-.legal-back:hover { color: var(--tomato); }
+/* ── Legal pages (aviso legal, privacidad) ── */
 .legal-prose h1 { margin-bottom: 2rem; }
 .legal-prose h2 {
   font-family: var(--display); font-weight: 400;
@@ -1249,34 +1269,149 @@ body.cart-scroll-lock { overflow: hidden; }
 }
 
 /* ── Footer ── */
+/* ── Footer ──
+   Banda azul a sangre (lleva .section-navy, que invierte los tokens), en
+   rejilla: marca y teléfono, horario, zonas de reparto y dónde estamos. El
+   mismo en todas las páginas (scripts/lib/layout.mjs). */
 .site-footer {
-  border-top: 1px solid var(--line-strong);
-  background: var(--paper-2);
-  padding: 2.5rem 1.5rem;
+  padding: clamp(3rem, 6vw, 4.5rem) clamp(1rem, 3vw, 1.5rem) 1.5rem;
 }
-.footer-inner {
-  max-width: 1100px; margin: 0 auto;
-  display: flex; justify-content: space-between; align-items: center;
-  gap: 1.5rem; flex-wrap: wrap;
+.footer-inner { max-width: 1200px; margin: 0 auto; }
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(3, minmax(0, 1fr));
+  gap: 2.5rem 2rem;
 }
 .footer-brand {
-  display: flex; align-items: center; gap: 0.6rem;
+  display: inline-flex; align-items: center; gap: 0.6rem;
   font-family: var(--heading); font-weight: 700;
-  font-size: 1.2rem; letter-spacing: 0.14em; text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  font-size: 1.35rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink); text-decoration: none;
+  margin-bottom: 1rem;
 }
 .footer-brand img { width: 44px; height: 44px; object-fit: contain; flex: none; }
-.footer-inner p, .footer-inner a { font-size: 0.86rem; color: var(--ink-soft); }
-.footer-inner a { text-decoration-color: var(--tomato); }
-.footer-inner a:hover { color: var(--tomato); }
+.footer-about p { color: var(--ink-soft); max-width: 36ch; margin-bottom: 1.5rem; }
+.footer-call { padding-inline: 1.4rem; }
+.footer-title {
+  font-family: var(--heading); font-weight: 700;
+  font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--tomato);
+  margin-bottom: 1rem;
+}
+.footer-list {
+  list-style: none; display: grid; gap: 0.45rem;
+  color: var(--ink-soft); font-style: normal; font-size: 0.95rem;
+  margin-bottom: 0.9rem;
+}
+.footer-zones { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1rem; }
+.footer-address {
+  font-style: normal; color: var(--ink-soft); font-size: 0.95rem;
+  line-height: 1.6; margin-bottom: 0.9rem;
+}
+.site-footer .footer-list a { color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.site-footer .footer-list a:hover { color: var(--tomato); text-decoration: underline; }
+.footer-more {
+  font-size: 0.92rem; font-weight: 700; color: var(--tomato);
+  text-decoration: none;
+}
+.footer-more:hover { text-decoration: underline; }
+.footer-bottom {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem); padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.8rem 1.5rem; flex-wrap: wrap;
+  font-size: 0.86rem; color: var(--ink-soft);
+}
+.footer-legal { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; }
+.footer-legal a { color: var(--ink-soft); text-decoration: none; }
+.footer-legal a:hover { color: var(--ink); text-decoration: underline; }
 /* «Configurar cookies» es un <button> (abre el banner, no navega) vestido de
    enlace del pie, para que se lea igual que «Aviso legal» y «Privacidad». */
 .footer-link {
   font: inherit; font-size: 0.86rem; color: var(--ink-soft);
   background: none; border: 0; padding: 0; cursor: pointer;
-  text-decoration: underline; text-decoration-color: var(--tomato);
 }
-.footer-link:hover { color: var(--tomato); }
+.footer-link:hover { color: var(--ink); text-decoration: underline; }
+
+@media (max-width: 980px) {
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── Páginas interiores (/a-domicilio/, 404) ──
+   Cabecera de página en azul, como el hero de la portada, y bloques en
+   rejilla: zonas, pasos para pedir, horario y preguntas. */
+.page-hero { padding: clamp(3rem, 7vw, 5rem) clamp(1rem, 3vw, 1.5rem); }
+.page-title {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.1;
+  max-width: 22ch; margin-bottom: 1.1rem;
+  text-wrap: balance;
+}
+.page-lead {
+  color: var(--ink-soft);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  max-width: 56ch; margin-bottom: 2rem;
+  text-wrap: pretty;
+}
+.page-hero--center { text-align: center; }
+.page-hero--center .page-title, .page-hero--center .page-lead { margin-inline: auto; }
+.page-hero--center .hero-actions { justify-content: center; }
+
+.zone-grid {
+  list-style: none;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 1rem; margin-top: 2rem;
+}
+.zone-card {
+  display: flex; align-items: center; gap: 0.8rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  font-family: var(--heading); font-weight: 700;
+  font-size: 1.15rem; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.zone-pin {
+  width: 0.75rem; height: 0.75rem; flex: none;
+  border-radius: var(--radius-round); background: var(--tomato);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--tomato) 22%, transparent);
+}
+.zone-terms { margin-top: 1.5rem; color: var(--ink-soft); max-width: 70ch; }
+
+.steps {
+  list-style: none;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem; margin-top: 2rem;
+}
+.step {
+  background: var(--paper);
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  padding: 1.6rem;
+}
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.6rem; height: 2.6rem; margin-bottom: 1rem;
+  border-radius: var(--radius-round);
+  background: var(--navy); color: var(--on-navy);
+  font-family: var(--display); font-size: 1.2rem;
+}
+.step-title { font-family: var(--display); font-weight: 400; font-size: 1.25rem; margin-bottom: 0.5rem; }
+.step p { color: var(--ink-soft); }
+.step a { color: var(--tomato); }
+
+.hours-list { list-style: none; display: grid; gap: 0.6rem; margin-top: 1.5rem; font-size: 1.05rem; }
+.hours-list li {
+  padding: 0.9rem 1.1rem;
+  background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius);
+}
+
+@media (max-width: 760px) {
+  .steps { grid-template-columns: 1fr; }
+}
 
 /* ── Subtle reveals (IntersectionObserver) ── */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
@@ -1293,18 +1428,21 @@ body.cart-scroll-lock { overflow: hidden; }
 
 /* ── Responsive ── */
 @media (max-width: 860px) {
+  /* Menú plegado: la navegación cae en un panel bajo la cabecera y el botón
+     de llamar se queda fuera, siempre visible. */
   .nav-toggle { display: inline-flex; }
+  .header-actions { margin-left: auto; }
   .site-nav {
     position: absolute; top: 100%; left: 0; right: 0;
+    margin: 0;
     background: var(--paper);
     border-bottom: 1px solid var(--line-strong);
-    border-radius: 0 0 var(--radius) var(--radius);
+    box-shadow: 0 18px 30px -18px rgb(var(--shadow-rgb) / 0.35);
     display: none;
   }
   .site-nav.open { display: block; }
-  .site-nav ul { flex-direction: column; align-items: stretch; gap: 0; padding: 0.5rem 1rem 1rem; }
-  .site-nav a { display: block; padding: 0.9rem 0.5rem; font-size: 0.95rem; }
-  .site-nav .nav-cta { text-align: center; margin-top: 0.5rem; }
+  .site-nav ul { flex-direction: column; align-items: stretch; gap: 0.15rem; padding: 0.75rem clamp(1rem, 3vw, 1.5rem) 1.25rem; }
+  .site-nav a { padding: 0.95rem 0.75rem; font-size: 1.05rem; }
 
   .story-grid, .contact-grid { grid-template-columns: 1fr; }
   /* El hero apila y se centra: en móvil la rejilla asimétrica no cabe, y la
@@ -1358,3 +1496,23 @@ body.cart-scroll-lock { overflow: hidden; }
    pulsables: rechazar no puede costar más que aceptar. */
 .cookie-banner-actions .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .cookie-banner-actions .btn[aria-pressed="true"]::before { content: "✓ "; }
+
+/* Móvil estrecho: logo, «Pedir» y los dos iconos caben en 360 px. El número
+   completo sigue en el aria-label del botón y en el pie. */
+@media (max-width: 480px) {
+  .header-inner { gap: 0.5rem; }
+  .brand { gap: 0.45rem; }
+  .brand-name { font-size: 1rem; letter-spacing: 0.06em; }
+  .brand-logo { width: 40px; height: 40px; }
+  .header-actions { gap: 0.35rem; }
+  .icon-btn { width: 40px; height: 40px; }
+  .nav-cta { padding-inline: 0.8rem; }
+  .nav-cta-phone { display: none; }
+  .nav-cta-label { display: inline; }
+  .nav-cta-label::after { content: none; }
+}
+
+/* Por debajo de 360 px manda el logo: el nombre ya está en la mascota. */
+@media (max-width: 359px) {
+  .brand-name { display: none; }
+}
