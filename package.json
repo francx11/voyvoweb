@@ -12,7 +12,8 @@
     "check": "eslint src scripts tests public/js && prettier --check \"src/**/*.js\" \"scripts/**/*.mjs\" \"tests/**/*.js\" && node --test tests/api.test.js tests/build-static.test.js tests/orders.test.js tests/pages.test.js tests/theme.test.js tests/consent.test.js",
     "backup": "node scripts/backup.mjs",
     "build:static": "node scripts/build-static.mjs",
-    "theme:sync": "node scripts/sync-theme.mjs"
+    "theme:sync": "node scripts/sync-theme.mjs",
+    "layout:sync": "node scripts/sync-layout.mjs"
   },
   "engines": {
     "node": ">=22.23.4"

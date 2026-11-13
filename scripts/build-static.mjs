@@ -15,7 +15,15 @@
 import { createRequire } from 'node:module';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { renderCarta, renderContacto, applyJustEat, justEatVisible } from './lib/pages.mjs';
+import {
+  renderCarta,
+  renderContacto,
+  renderADomicilio,
+  render404,
+  applyJustEat,
+  justEatVisible,
+} from './lib/pages.mjs';
+import { applyLayout, hasLayout, LAYOUT_PAGES } from './lib/layout.mjs';
 import { HTML_PAGES, MANIFEST } from './sync-theme.mjs';
 import { applySecurityMeta } from './lib/security-meta.mjs';
 
@@ -182,6 +190,12 @@ async function assertBusinessData() {
     BUSINESS.placeId,
     ...BUSINESS.sameAs,
   ];
+  // Las zonas de reparto de ordering.json, una a una, en el areaServed escrito
+  // a mano en la portada: /contacto/ y /a-domicilio/ las generan solas.
+  const ordering = await readSnapshot('ordering/config');
+  for (const zone of (ordering.delivery && ordering.delivery.zones) || []) {
+    expected.push(`{ "@type": "Place", "name": ${JSON.stringify(zone)} }`);
+  }
   const missing = expected.filter((value) => !html.includes(value));
   if (missing.length) {
     throw new Error(
@@ -208,6 +222,7 @@ async function assertThemeColor() {
     ...HTML_PAGES.filter((p) => !STATIC_EXCLUDE.includes(p)),
     'carta/index.html',
     'contacto/index.html',
+    'a-domicilio/index.html',
   ];
 
   for (const page of published) {
@@ -235,6 +250,26 @@ async function assertThemeColor() {
   }
 }
 
+// Cabecera y pie de las páginas que se copian de public/, regenerados con los
+// datos congelados del build (horario y zonas del pie). Así lo publicado
+// siempre lleva el layout actual, aunque nadie haya ejecutado layout:sync.
+async function applySiteLayout() {
+  const [site, ordering] = await Promise.all([
+    readSnapshot('site'),
+    readSnapshot('ordering/config'),
+  ]);
+  let pages = 0;
+  for (const [page, route] of Object.entries(LAYOUT_PAGES)) {
+    if (STATIC_EXCLUDE.includes(page)) continue;
+    const file = path.join(DIST_DIR, page);
+    const html = await fs.readFile(file, 'utf-8');
+    if (!hasLayout(html)) throw new Error(`${page}: sin los marcadores de layout:header/footer`);
+    await fs.writeFile(file, applyLayout(html, { path: route, site, ordering }));
+    pages += 1;
+  }
+  return pages;
+}
+
 async function writeContentPages() {
   const [menu, ordering, site] = await Promise.all([
     readSnapshot('menu'),
@@ -245,6 +280,7 @@ async function writeContentPages() {
   const pages = {
     carta: renderCarta({ domain: SITE_DOMAIN, menu, ordering, site }),
     contacto: renderContacto({ domain: SITE_DOMAIN, site, ordering, business: BUSINESS }),
+    'a-domicilio': renderADomicilio({ domain: SITE_DOMAIN, site, ordering, business: BUSINESS }),
   };
   for (const [dir, html] of Object.entries(pages)) {
     await fs.mkdir(path.join(DIST_DIR, dir), { recursive: true });
@@ -271,6 +307,7 @@ async function writeHostingFiles() {
   const urls = [
     { loc: '/', changefreq: 'weekly', priority: '1.0' },
     { loc: '/carta/', changefreq: 'weekly', priority: '0.9' },
+    { loc: '/a-domicilio/', changefreq: 'monthly', priority: '0.8' },
     { loc: '/contacto/', changefreq: 'monthly', priority: '0.7' },
     { loc: '/aviso-legal/', changefreq: 'yearly', priority: '0.3' },
     { loc: '/privacidad/', changefreq: 'yearly', priority: '0.3' },
@@ -296,10 +333,13 @@ async function writeHostingFiles() {
 ${urls}</urlset>
 `
   );
+  const [site, ordering] = await Promise.all([
+    readSnapshot('site'),
+    readSnapshot('ordering/config'),
+  ]);
   await fs.writeFile(
     path.join(DIST_DIR, '404.html'),
-    `<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <title>Página no encontrada — Pizzería Voy Volando</title>\n  <meta name="robots" content="noindex">\n  <link rel="stylesheet" href="/css/theme.css">
-  <link rel="stylesheet" href="/css/main.css">\n</head>\n<body>\n  <main class="section">\n    <div class="container-narrow" style="text-align:center">\n      <h1 class="section-title">Esta página no existe</h1>\n      <p>Vuelve a la portada para ver la carta y contactar con nosotros.</p>\n      <p><a class="btn btn-primary" href="/">Ir a la portada</a></p>\n    </div>\n  </main>\n</body>\n</html>\n`
+    render404({ domain: SITE_DOMAIN, site, ordering })
   );
 }
 
@@ -374,6 +414,7 @@ async function main() {
   if (!justEatVisible(await readSnapshot('site')))
     log('sección Just Eat quitada (apagada en config.json)');
   await assertBusinessData();
+  log(`cabecera y pie comunes en ${await applySiteLayout()} páginas de public/`);
   const content = await writeContentPages();
   log(`${content.pages} páginas indexables (carta con ${content.items} platos)`);
   // Después de writeContentPages: comprueba también carta/index.html y

@@ -17,6 +17,7 @@
 
 import { createRequire } from 'node:module';
 import { metaTags } from '../sync-theme.mjs';
+import { siteHeader, siteFooter, hoursOf } from './layout.mjs';
 
 const require = createRequire(import.meta.url);
 const { themeColor } = require('../../src/services/theme-store');
@@ -131,54 +132,23 @@ const jsonLdBlock = (data) =>
     '\\u003c'
   )}\n  </script>`;
 
-// Misma cabecera que public/index.html: mismo marcado, mismas clases y los
-// mismos dos botones (tema y hamburguesa), que js/ui.js activa en las dos
-// páginas. Los enlaces de sección van en absoluto ("/#story") porque desde
-// aquí el ancla sola apuntaría a esta misma página. /carta/ y /contacto/ son
-// páginas de verdad, así que la barra enlaza la URL y no el ancla.
-const NAV_ITEMS = [
-  { href: '/#story', label: 'Nosotros' },
-  { href: '/carta/', label: 'Carta' },
-  { href: '/#offers', label: 'Ofertas' },
-  { href: '/#services', label: 'Servicios' },
-  { href: '/#gallery', label: 'Galería' },
-  { href: '/contacto/', label: 'Contacto' },
-];
-
-function siteHeader(path) {
-  const links = NAV_ITEMS.map((item) => {
-    const current = item.href === path ? ' aria-current="page"' : '';
-    return `            <li><a href="${item.href}"${current}>${esc(item.label)}</a></li>`;
-  }).join('\n');
-
-  return `  <header class="site-header">
-    <div class="header-inner">
-      <a href="/" class="brand">
-        <img src="/assets/logo-voyvolando.png" alt="" width="52" height="52" class="brand-logo">
-        <span class="brand-name">Voy Volando</span>
-      </a>
-      <div class="header-right">
-        <nav id="site-nav" class="site-nav" aria-label="Principal">
-          <ul>
-${links}
-            <li><a href="tel:958442847" class="nav-cta">Pedir ahora</a></li>
-          </ul>
-        </nav>
-        <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Activar modo oscuro">
-          <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-        </button>
-        <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú de navegación">
-          <svg class="icon-open" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
-        </button>
-      </div>
-    </div>
-  </header>`;
-}
-
-function shell({ domain, path, title, description, jsonLd, body }) {
+// Esqueleto común de las páginas generadas en el build. La cabecera y el pie
+// salen de layout.mjs, los mismos que llevan la portada y las legales.
+// indexable: false es para la 404: sin canonical ni og:url (no tiene URL
+// propia que declarar) y con noindex.
+export function shell({
+  domain,
+  path,
+  title,
+  description,
+  jsonLd = [],
+  body,
+  site,
+  ordering,
+  indexable = true,
+}) {
   const url = `https://${domain}${path}`;
+  const robots = indexable ? 'index, follow, max-image-preview:large' : 'noindex';
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -187,8 +157,7 @@ function shell({ domain, path, title, description, jsonLd, body }) {
 
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-  <link rel="canonical" href="${url}">
+  <meta name="robots" content="${robots}">${indexable ? `\n  <link rel="canonical" href="${url}">` : ''}
   ${metaTags(themeColor())}
 
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -201,8 +170,7 @@ function shell({ domain, path, title, description, jsonLd, body }) {
   <meta property="og:site_name" content="Pizzería Voy Volando">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
-  <meta property="og:url" content="${url}">
-  <meta property="og:image" content="https://${domain}/assets/og-image.jpg">
+${indexable ? `  <meta property="og:url" content="${url}">\n` : ''}  <meta property="og:image" content="https://${domain}/assets/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
@@ -226,30 +194,7 @@ ${siteHeader(path)}
 ${body}
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div>
-        <div class="footer-brand">
-          <img src="/assets/logo-voyvolando.png" alt="" width="44" height="44">
-          Voy Volando
-        </div>
-        <p>Pizzería artesanal en Santa Fe, Granada. Reparto a domicilio y para recoger.</p>
-      </div>
-      <p>
-        <a href="tel:958442847">958 44 28 47</a> ·
-        <a href="mailto:info@voyvolandosantafe.com">info@voyvolandosantafe.com</a>
-      </p>
-      <p>
-        <a href="/">Portada</a> ·
-        <a href="/carta/">Carta</a> ·
-        <a href="/contacto/">Contacto</a> ·
-        <a href="/aviso-legal/">Aviso legal</a> ·
-        <a href="/privacidad/">Privacidad</a><span data-cookie-settings hidden> ·
-        <button type="button" class="footer-link">Configurar cookies</button></span>
-      </p>
-      <p>© 2026 Pizzería Voy Volando</p>
-    </div>
-  </footer>
+${siteFooter({ site, ordering })}
 
   <script src="/js/ui.js" defer></script>
 
@@ -361,6 +306,8 @@ ${sections}
   return shell({
     domain,
     path: '/carta/',
+    site,
+    ordering,
     title: 'Carta y precios — Pizzería Voy Volando, Santa Fe (Granada)',
     description:
       'Carta completa de Pizzería Voy Volando en Santa Fe (Granada): pizzas clásicas, especiales y gourmet, gratinados, tacos franceses, camperos, pastas, ensaladas y postres con sus precios. A domicilio o para recoger.',
@@ -402,15 +349,45 @@ function slug(value) {
     .replace(/^-|-$/g, '');
 }
 
-export function renderContacto({ domain, site, ordering, business }) {
-  const delivery = (ordering && ordering.delivery) || {};
-  const zones = delivery.zones || [];
-  const deliveryTerms = [
+function deliveryTermsOf(delivery) {
+  return [
     delivery.fee != null ? `Envío ${euro(delivery.fee)}` : '',
     delivery.minimum
       ? `pedido mínimo ${euro(delivery.minimum)}${delivery.minimumNote ? ` ${delivery.minimumNote}` : ''}`
       : '',
   ].filter(Boolean);
+}
+
+// La ficha del negocio que repiten /contacto/ y /a-domicilio/. Mismo @id que la
+// portada: para Google son la misma entidad vista desde tres URL.
+function restaurantLd({ domain, address, zones, business }) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Restaurant',
+    '@id': `https://${domain}/#restaurant`,
+    name: 'Pizzería Voy Volando',
+    url: `https://${domain}/`,
+    telephone: '+34958442847',
+    email: 'info@voyvolandosantafe.com',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: address,
+      addressLocality: 'Santa Fe',
+      addressRegion: 'Granada',
+      postalCode: '18320',
+      addressCountry: 'ES',
+    },
+    ...(zones.length ? { areaServed: zones.map((z) => ({ '@type': 'Place', name: z })) } : {}),
+    geo: { '@type': 'GeoCoordinates', ...business.geo },
+    hasMap: business.mapsUrl,
+    sameAs: business.sameAs,
+  };
+}
+
+export function renderContacto({ domain, site, ordering, business }) {
+  const delivery = (ordering && ordering.delivery) || {};
+  const zones = delivery.zones || [];
+  const deliveryTerms = deliveryTermsOf(delivery);
   const hours = String((site && site.hours) || '')
     .split('\n')
     .filter(Boolean);
@@ -421,27 +398,7 @@ export function renderContacto({ domain, site, ordering, business }) {
   const maps = business.mapsUrl;
 
   const jsonLd = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Restaurant',
-      '@id': `https://${domain}/#restaurant`,
-      name: 'Pizzería Voy Volando',
-      url: `https://${domain}/`,
-      telephone: '+34958442847',
-      email: 'info@voyvolandosantafe.com',
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: address,
-        addressLocality: 'Santa Fe',
-        addressRegion: 'Granada',
-        postalCode: '18320',
-        addressCountry: 'ES',
-      },
-      ...(zones.length ? { areaServed: zones.map((z) => ({ '@type': 'Place', name: z })) } : {}),
-      geo: { '@type': 'GeoCoordinates', ...business.geo },
-      hasMap: business.mapsUrl,
-      sameAs: business.sameAs,
-    },
+    restaurantLd({ domain, address, zones, business }),
     breadcrumb(domain, 'Contacto', '/contacto/'),
   ];
 
@@ -474,7 +431,7 @@ export function renderContacto({ domain, site, ordering, business }) {
             zones.length
               ? `\n          <div class="info-item">
             <dt>Reparto a domicilio</dt>
-            <dd>${zones.map(esc).join(' · ')}</dd>
+            <dd>${zones.map(esc).join(' · ')}<br><a href="/a-domicilio/">Zonas y condiciones de reparto</a></dd>
           </div>`
               : ''
           }${
@@ -499,10 +456,205 @@ export function renderContacto({ domain, site, ordering, business }) {
   return shell({
     domain,
     path: '/contacto/',
+    site,
+    ordering,
     title: 'Contacto, horario y reparto — Pizzería Voy Volando (Santa Fe, Granada)',
     description:
       'Teléfono, dirección, horario y zona de reparto de Pizzería Voy Volando en Santa Fe (Granada). Pide a domicilio o para recoger llamando al 958 44 28 47.',
     jsonLd,
     body,
+  });
+}
+
+const joinList = (items) =>
+  items.length > 1
+    ? `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`
+    : items[0] || '';
+
+// /a-domicilio/: la página de zonas de reparto (plan SEO local, nov-2026).
+//
+// Una sola página para todas las zonas y no una por pueblo: cinco páginas
+// iguales con el nombre cambiado son «páginas puerta» para Google. Cuando haya
+// datos propios de cada pueblo (tiempo de entrega medido, lo más pedido allí)
+// y Search Console enseñe búsquedas con su nombre, se parte en
+// /a-domicilio/<pueblo>/. Todo lo que dice sale de ordering.json y
+// config.json: zonas, envío, mínimo y horario.
+export function renderADomicilio({ domain, site, ordering, business }) {
+  const delivery = (ordering && ordering.delivery) || {};
+  const zones = delivery.zones || [];
+  const terms = deliveryTermsOf(delivery);
+  const hours = hoursOf(site);
+  const address = (site && site.address) || 'C. Cristóbal Colón, 7';
+  const city = (site && site.city) || '18320 Santa Fe, Granada';
+  const zoneText = joinList(zones);
+  const termsText = terms.length ? `${terms.join(' · ')}.` : '';
+
+  const faq = [
+    {
+      q: '¿Hasta dónde lleváis las pizzas?',
+      a: zones.length
+        ? `Repartimos en ${zoneText}. Si vives cerca y no sabes si llegamos, llámanos al 958 44 28 47 y te lo decimos.`
+        : 'Llámanos al 958 44 28 47 y te decimos si llegamos a tu casa.',
+    },
+    ...(termsText ? [{ q: '¿Cuánto cuesta el envío?', a: termsText }] : []),
+    {
+      q: '¿Puedo pasar a recogerla?',
+      a: `Sí. Pide por teléfono y recógela en ${address}, ${city}. No tenemos sala: solo reparto y recogida.`,
+    },
+    {
+      q: '¿Cómo hago el pedido?',
+      a: 'Llamando al 958 44 28 47 en horario de apertura. El pedido nos llega directo, sin plataformas de por medio.',
+    },
+  ];
+
+  const jsonLd = [
+    restaurantLd({ domain, address, zones, business }),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faq.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    },
+    breadcrumb(domain, 'Pizza a domicilio', '/a-domicilio/'),
+  ];
+
+  const zonesSection = zones.length
+    ? `
+    <section class="section" id="zonas" aria-labelledby="zonas-title">
+      <div class="container">
+        <span class="eyebrow">Dónde repartimos</span>
+        <h2 class="section-title" id="zonas-title">${zones.length} zonas, un mismo horno</h2>
+        <ul class="zone-grid">
+${zones
+  .map(
+    (z) =>
+      `          <li class="zone-card"><span class="zone-pin" aria-hidden="true"></span>${esc(z)}</li>`
+  )
+  .join('\n')}
+        </ul>${
+          termsText
+            ? `\n        <p class="zone-terms"><strong>Condiciones:</strong> ${esc(termsText)}</p>`
+            : ''
+        }
+      </div>
+    </section>
+`
+    : '';
+
+  const hoursSection = hours.length
+    ? `
+    <section class="section" id="horario" aria-labelledby="horario-title">
+      <div class="container-narrow">
+        <span class="eyebrow">Horario</span>
+        <h2 class="section-title" id="horario-title">Cuándo repartimos</h2>
+        <ul class="hours-list">
+${hours.map((h) => `          <li>${esc(h)}</li>`).join('\n')}
+        </ul>
+      </div>
+    </section>
+`
+    : '';
+
+  const faqItems = faq
+    .map(
+      (item) => `          <details>
+            <summary>${esc(item.q)}</summary>
+            <p>${esc(item.a)}</p>
+          </details>`
+    )
+    .join('\n');
+
+  const body = `    <section class="page-hero section-navy" aria-labelledby="page-title">
+      <div class="container page-hero-inner">
+        <span class="eyebrow">Reparto a domicilio</span>
+        <h1 class="page-title" id="page-title">Pizza a domicilio en Santa Fe y pueblos cercanos</h1>
+        <p class="page-lead">Pizza artesanal recién hecha, llevada a tu puerta${
+          zones.length ? ` en ${esc(zoneText)}` : ''
+        }. Pide por teléfono: sin plataformas ni comisiones.</p>
+        <div class="hero-actions">
+          <a href="tel:958442847" class="btn btn-primary">Llamar · 958 44 28 47</a>
+          <a href="/carta/" class="btn btn-outline">Ver la carta</a>
+        </div>
+      </div>
+    </section>
+    <div class="airmail-rule" aria-hidden="true"></div>
+${zonesSection}
+    <section class="section section-alt" id="como-pedir" aria-labelledby="como-pedir-title">
+      <div class="container">
+        <span class="eyebrow">Cómo pedir</span>
+        <h2 class="section-title" id="como-pedir-title">Tres pasos y a cenar</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num" aria-hidden="true">1</span>
+            <h3 class="step-title">Elige en la carta</h3>
+            <p>Pizzas pequeñas, medianas y familiares, tacos franceses, camperos y más. <a href="/carta/">Ver la carta con precios</a>.</p>
+          </li>
+          <li class="step">
+            <span class="step-num" aria-hidden="true">2</span>
+            <h3 class="step-title">Llama al 958 44 28 47</h3>
+            <p>Dinos qué quieres y tu dirección. Te confirmamos el total al momento.</p>
+          </li>
+          <li class="step">
+            <span class="step-num" aria-hidden="true">3</span>
+            <h3 class="step-title">Te la llevamos</h3>
+            <p>O pasa a recogerla por ${esc(address)}, en Santa Fe, si te pilla de camino.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+${hoursSection}
+    <section class="section section-alt" id="faq" aria-labelledby="faq-title">
+      <div class="container-narrow">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2 class="section-title" id="faq-title">Dudas sobre el reparto</h2>
+        <div class="faq-list">
+${faqItems}
+        </div>
+        <p class="actions-row">
+          <a href="tel:958442847" class="btn btn-primary">Pedir ahora · 958 44 28 47</a>
+        </p>
+      </div>
+    </section>`;
+
+  return shell({
+    domain,
+    path: '/a-domicilio/',
+    site,
+    ordering,
+    title: 'Pizza a domicilio en Santa Fe y la Vega — Voy Volando',
+    description: `Pizza artesanal a domicilio${
+      zones.length ? ` en ${zoneText}` : ' en Santa Fe (Granada)'
+    }. Pide por teléfono al 958 44 28 47.`,
+    jsonLd,
+    body,
+  });
+}
+
+// 404 con la misma cabecera y pie que el resto: quien llega a una URL rota
+// tiene a mano la carta, el teléfono y la navegación de siempre.
+export function render404({ domain, site, ordering }) {
+  const body = `    <section class="page-hero page-hero--center section-navy" aria-labelledby="page-title">
+      <div class="container-narrow page-hero-inner">
+        <span class="eyebrow">Error 404</span>
+        <h1 class="page-title" id="page-title">Esta página no existe</h1>
+        <p class="page-lead">Puede que el enlace sea antiguo. La carta y el teléfono siguen donde siempre.</p>
+        <div class="hero-actions">
+          <a href="/carta/" class="btn btn-primary">Ver la carta</a>
+          <a href="/" class="btn btn-outline">Ir a la portada</a>
+        </div>
+      </div>
+    </section>`;
+  return shell({
+    domain,
+    path: '/404.html',
+    site,
+    ordering,
+    title: 'Página no encontrada — Pizzería Voy Volando',
+    description: 'La página que buscas no existe. Vuelve a la carta o llámanos al 958 44 28 47.',
+    body,
+    indexable: false,
   });
 }

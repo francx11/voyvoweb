@@ -115,7 +115,7 @@ test('el build estático reescribe el dominio en todas partes', () => {
     assert.ok(page.includes('id="nav-toggle"'), `${name}: sin el botón de menú móvil`);
     assert.ok(page.includes('id="theme-toggle"'), `${name}: sin el botón de modo oscuro`);
     assert.ok(page.includes('src="/js/ui.js"'), `${name}: no carga js/ui.js`);
-    for (const label of ['Nosotros', 'Carta', 'Ofertas', 'Servicios', 'Galería', 'Contacto']) {
+    for (const label of ['Carta', 'A domicilio', 'Nosotros', 'Contacto']) {
       assert.ok(page.includes(`>${label}</a>`), `${name}: la barra no lleva "${label}"`);
     }
   }
@@ -160,7 +160,14 @@ test('el build estático reescribe el dominio en todas partes', () => {
   assert.ok(fs.readFileSync(path.join(OUT, 'robots.txt'), 'utf-8').includes(`https://${DOMAIN}/`));
 
   const sitemap = fs.readFileSync(path.join(OUT, 'sitemap.xml'), 'utf-8');
-  for (const loc of ['/', '/carta/', '/contacto/', '/aviso-legal/', '/privacidad/']) {
+  for (const loc of [
+    '/',
+    '/carta/',
+    '/a-domicilio/',
+    '/contacto/',
+    '/aviso-legal/',
+    '/privacidad/',
+  ]) {
     assert.ok(sitemap.includes(`<loc>https://${DOMAIN}${loc}</loc>`), `sitemap sin ${loc}`);
   }
 
@@ -202,6 +209,7 @@ test('el build estático reescribe el dominio en todas partes', () => {
     'index.html',
     'carta/index.html',
     'contacto/index.html',
+    'a-domicilio/index.html',
     'aviso-legal/index.html',
     'privacidad/index.html',
     '404.html',
@@ -267,5 +275,60 @@ test('el build estático reescribe el dominio en todas partes', () => {
       const hash = createHash('sha256').update(body, 'utf8').digest('base64');
       assert.ok(csp[1].includes(`'sha256-${hash}'`), `${rel}: script inline sin su hash en la CSP`);
     }
+  }
+});
+
+// Una cabecera y un pie para todo el sitio (scripts/lib/layout.mjs). Si alguna
+// página vuelve a llevar los suyos, el visitante cambia de web al cambiar de
+// página y el móvil se queda sin menú o sin teléfono.
+test('todas las páginas publicadas llevan la misma cabecera y el mismo pie', () => {
+  const pages = [
+    'index.html',
+    'carta/index.html',
+    'contacto/index.html',
+    'a-domicilio/index.html',
+    'aviso-legal/index.html',
+    'privacidad/index.html',
+    '404.html',
+  ];
+  const headers = new Set();
+  const footers = new Set();
+  for (const page of pages) {
+    const html = fs.readFileSync(path.join(OUT, page), 'utf-8');
+    const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/g) || [];
+    const footer = html.match(/<footer class="site-footer[^"]*">[\s\S]*?<\/footer>/g) || [];
+    assert.strictEqual(header.length, 1, `${page}: debe tener una sola cabecera común`);
+    assert.strictEqual(footer.length, 1, `${page}: debe tener un solo pie común`);
+    assert.ok(html.includes('src="/js/ui.js"'), `${page}: no carga js/ui.js`);
+    assert.ok(html.includes('id="content"'), `${page}: sin <main id="content"> para el salto`);
+    headers.add(header[0].replace(/ aria-current="page"/g, ''));
+    footers.add(footer[0]);
+  }
+  assert.strictEqual(headers.size, 1, 'las cabeceras difieren entre páginas');
+  assert.strictEqual(footers.size, 1, 'los pies difieren entre páginas');
+
+  const carta = fs.readFileSync(path.join(OUT, 'carta', 'index.html'), 'utf-8');
+  assert.ok(carta.includes('<a href="/carta/" aria-current="page">'), '/carta/ sin enlace activo');
+});
+
+test('/a-domicilio/ lista las zonas, el envío y el horario de los datos', () => {
+  const page = fs.readFileSync(path.join(OUT, 'a-domicilio', 'index.html'), 'utf-8');
+  const ordering = JSON.parse(fs.readFileSync(path.join('data', 'ordering.json'), 'utf-8'));
+  const config = JSON.parse(fs.readFileSync(path.join('data', 'config.json'), 'utf-8'));
+  for (const zone of ordering.delivery.zones) {
+    assert.ok(page.includes(`</span>${zone}</li>`), `/a-domicilio/ sin la zona ${zone}`);
+  }
+  const euro = (n) => `${Number(n).toFixed(2).replace('.', ',')} €`;
+  assert.ok(page.includes(`Envío ${euro(ordering.delivery.fee)}`), 'sin gastos de envío');
+  assert.ok(page.includes(config.site.hours.split('\n')[0]), 'sin horario');
+  assert.match(page, /<h1 class="page-title"[^>]*>Pizza a domicilio en Santa Fe/);
+  assert.ok(page.includes('"@type": "FAQPage"'), 'sin FAQPage');
+  // Cada pregunta del JSON-LD tiene que verse en la página: Google no quiere
+  // marcado que el visitante no ve.
+  for (const [, q] of page.matchAll(/"name": "(¿[^"]+)"/g)) {
+    assert.ok(page.includes(`<summary>${q}</summary>`), `pregunta oculta: ${q}`);
+  }
+  for (const frase of ['comer en el local', 'reservar mesa']) {
+    assert.ok(!page.includes(frase), `dice "${frase}"`);
   }
 });
