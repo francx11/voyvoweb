@@ -60,32 +60,80 @@
      Portada (lo pinta main.js después de cargar la carta) y /carta/ (viene en
      el HTML). Por delegación, así vale para los dos. La pista es una lista con
      scroll y snap: se pasa deslizando o con las flechas del teclado (tiene
-     tabindex). Los botones avanzan una "página" y se desactivan en los extremos.
-     Nada se mueve solo. */
+     tabindex). Los botones avanzan una "página" (1, 2 o 4 fotos según el
+     ancho). Nada se mueve solo.
+     Accesibilidad: los botones usan aria-disabled (no disabled) para no perder
+     el foco al llegar al final; el contador visible dice dónde estás y, tras
+     pulsar un botón, una región aria-live lo anuncia una vez; los botones de
+     nombre de las fotos que no se ven salen del orden del tabulador. */
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var announceFor = null;
+  var announceTimer = 0;
   function carouselOf(el) {
     var box = el.closest('.dish-carousel');
     return box && box.querySelector('[data-carousel]');
   }
+  // Qué fotos se ven: primera (desde 0), cuántas caben y cuánto mide un paso.
+  function viewOf(track) {
+    var slides = track.children;
+    var n = slides.length;
+    if (!n) return { n: 0, first: 0, per: 1, step: track.clientWidth };
+    var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    var step = slides[0].getBoundingClientRect().width + gap;
+    var per = Math.max(1, Math.round((track.clientWidth + gap) / step));
+    var first = Math.min(n - 1, Math.max(0, Math.round(track.scrollLeft / step)));
+    return { n: n, first: first, per: per, last: Math.min(n, first + per), step: step };
+  }
+  function rangeText(v) {
+    return v.last - v.first <= 1 ? (v.first + 1) + ' de ' + v.n : (v.first + 1) + '–' + v.last + ' de ' + v.n;
+  }
+  function setDisabled(btn, off) {
+    if (btn) btn.setAttribute('aria-disabled', String(off));
+  }
   function syncCarousel(track) {
     var box = track.closest('.dish-carousel');
     if (!box) return;
-    var prev = box.querySelector('[data-carousel-prev]');
-    var next = box.querySelector('[data-carousel-next]');
+    var v = viewOf(track);
     var max = track.scrollWidth - track.clientWidth - 8;
-    if (prev) prev.disabled = track.scrollLeft <= 8;
-    if (next) next.disabled = track.scrollLeft >= max;
+    setDisabled(box.querySelector('[data-carousel-prev]'), track.scrollLeft <= 8);
+    setDisabled(box.querySelector('[data-carousel-next]'), track.scrollLeft >= max);
     // Sin nada que pasar (pocas fotos en pantalla ancha), los botones sobran.
     box.classList.toggle('dish-carousel--static', max <= 0);
+    var count = box.querySelector('[data-carousel-count]');
+    if (count) count.textContent = rangeText(v);
+    for (var i = 0; i < v.n; i++) {
+      var b = track.children[i].querySelector('button');
+      if (b) b.tabIndex = i >= v.first && i < v.last ? 0 : -1;
+    }
+    if (announceFor === track) {
+      clearTimeout(announceTimer);
+      announceTimer = setTimeout(function () { announce(track); }, 300);
+    }
+  }
+  function announce(track, text) {
+    announceFor = null;
+    var status = track.closest('.dish-carousel').querySelector('[data-carousel-status]');
+    if (!status) return;
+    var v = viewOf(track);
+    var name = track.children[v.first] && track.children[v.first].querySelector('.dish-carousel-name');
+    status.textContent = text || (v.last - v.first <= 1 && name
+      ? 'Foto ' + rangeText(v) + ': ' + name.textContent
+      : 'Fotos ' + rangeText(v).replace('–', ' a '));
   }
   document.addEventListener('click', function (e) {
     var btn = e.target.closest && e.target.closest('[data-carousel-prev], [data-carousel-next]');
     if (!btn) return;
     var track = carouselOf(btn);
     if (!track) return;
-    var dir = btn.hasAttribute('data-carousel-next') ? 1 : -1;
+    var next = btn.hasAttribute('data-carousel-next');
+    if (btn.getAttribute('aria-disabled') === 'true') {
+      announce(track, next ? 'Ya estás en la última foto.' : 'Ya estás en la primera foto.');
+      return;
+    }
+    var v = viewOf(track);
+    announceFor = track;
     track.scrollBy({
-      left: dir * track.clientWidth * 0.85,
+      left: (next ? 1 : -1) * v.per * v.step,
       behavior: reduceMotion.matches ? 'auto' : 'smooth',
     });
   });
@@ -104,5 +152,6 @@
       }
     }).observe(document.body, { childList: true, subtree: true });
   }
+  window.addEventListener('load', syncAll);
   syncAll();
 })();

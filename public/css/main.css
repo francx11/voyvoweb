@@ -708,23 +708,29 @@ img { max-width: 100%; display: block; }
   font-family: var(--heading); font-weight: 700; font-size: 1.15rem;
   letter-spacing: 0.16em; text-transform: uppercase; color: var(--tomato); margin: 0;
 }
-.dish-carousel-nav { display: flex; gap: 0.5rem; }
+.dish-carousel-nav { display: flex; align-items: center; gap: 0.5rem; }
 .dish-carousel--static .dish-carousel-nav { display: none; }
+/* "3 de 21": dónde estás, ya que sin la foto asomando no se ve que hay más. */
+.dish-carousel-count { font-size: 0.85rem; color: var(--ink-soft); white-space: nowrap; margin-right: 0.3rem; }
 .dish-carousel-btn {
   width: 44px; height: 44px; border-radius: var(--radius-round);
   border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink);
   font-size: 1.6rem; line-height: 1; cursor: pointer;
 }
-.dish-carousel-btn:hover:not(:disabled) { background: var(--paper-2); }
-.dish-carousel-btn:disabled { opacity: 0.4; cursor: default; }
+.dish-carousel-btn:hover:not([aria-disabled="true"]) { background: var(--paper-2); }
+/* aria-disabled y no disabled: un botón disabled pierde el foco y quien va con
+   teclado se queda sin saber dónde está al llegar al final. */
+.dish-carousel-btn[aria-disabled="true"] { opacity: 0.4; cursor: default; }
 .dish-carousel-track {
   list-style: none; margin: 0; padding: 0.2rem 0 0.8rem;
-  display: grid; grid-auto-flow: column; grid-auto-columns: 62%; gap: 0.9rem;
+  /* Móvil 1 foto, tablet 2, escritorio 4 (decisión de socios, 2026-11-17). */
+  --dc-gap: 0.9rem;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: var(--dc-gap);
   overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
   scrollbar-width: thin;
 }
-@media (min-width: 520px) { .dish-carousel-track { grid-auto-columns: 40%; } }
-@media (min-width: 720px) { .dish-carousel-track { grid-auto-columns: 220px; } }
+@media (min-width: 600px) { .dish-carousel-track { grid-auto-columns: calc((100% - var(--dc-gap)) / 2); } }
+@media (min-width: 960px) { .dish-carousel-track { grid-auto-columns: calc((100% - 3 * var(--dc-gap)) / 4); } }
 .dish-carousel-track:focus-visible { outline: 3px solid var(--tomato); outline-offset: 3px; border-radius: var(--radius); }
 .dish-carousel-slide { scroll-snap-align: start; cursor: zoom-in; }
 .dish-carousel-slide figure { margin: 0; }
@@ -734,6 +740,13 @@ img { max-width: 100%; display: block; }
 }
 .dish-carousel-slide figcaption { display: flex; flex-direction: column; gap: 0.1rem; margin-top: 0.5rem; }
 .dish-carousel-name { font-family: var(--display); font-size: 1.05rem; line-height: 1.2; }
+/* En la portada el nombre es un botón que abre el detalle (teclado incluido). */
+button.dish-carousel-name {
+  align-self: flex-start; padding: 0.2rem 0; min-height: 24px; background: none; border: 0;
+  color: inherit; text-align: left; cursor: pointer; text-decoration: underline;
+  text-decoration-thickness: 1px; text-underline-offset: 3px;
+}
+button.dish-carousel-name:hover { color: var(--tomato); }
 .dish-carousel-cat { font-size: 0.82rem; color: var(--ink-soft); }
 
 .menu-jump { margin: 0 0 1.4rem; }
