@@ -6,19 +6,25 @@
       "id": "familiares-10",
       "title": "Familiar clásica a 10 €",
       "description": "Cualquier pizza clásica familiar por 10 €, solo a recoger. Mitad y mitad: 11 €.",
-      "image": "/assets/ofertas/1789456702024-xulmz.webp"
+      "image": "/assets/ofertas/familiar-clasica-a-10-pbf81e84d-1200.webp",
+      "imageThumb": "/assets/ofertas/familiar-clasica-a-10-pbf81e84d-600.webp",
+      "imageAlt": "Pizza Prosciutto"
     },
     {
       "id": "familiares-especiales-12",
       "title": "Familiar especial a 12 €",
       "description": "Cualquier pizza especial familiar por 12 €, solo a recoger. Las gourmet no entran. Mitad y mitad: 13,50 €.",
-      "image": "/assets/ofertas/1789456703275-kyn0j.webp"
+      "image": "/assets/ofertas/familiar-especial-a-12-p578668e8-1200.webp",
+      "imageThumb": "/assets/ofertas/familiar-especial-a-12-p578668e8-600.webp",
+      "imageAlt": "Pizza Santa Fe"
     },
     {
       "id": "tres-pizzas-18",
       "title": "3 pizzas pequeñas por 18 €",
       "description": "Tres pizzas pequeñas, solo a recoger. Como máximo una especial.",
-      "image": "/assets/ofertas/1789456702402-kvds8.webp"
+      "image": "/assets/ofertas/3-pizzas-pequenas-por-18-p1cf26fbd-1200.webp",
+      "imageThumb": "/assets/ofertas/3-pizzas-pequenas-por-18-p1cf26fbd-600.webp",
+      "imageAlt": "Tres pizzas: Boloñesa, Cuatro Estaciones y 7 Quesos"
     },
     {
       "id": "churrillos-2",
