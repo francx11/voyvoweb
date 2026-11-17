@@ -39,6 +39,20 @@ export function applyJustEat(html, site) {
   return html.replace(JUST_EAT, '');
 }
 
+// La galería «Momentos en Voy Volando» se apaga igual (site.gallery.enabled =
+// false): decisión de socios del 2026-11-17, hasta tener fotos del local, el
+// horno o el equipo (las de pizzas ya salen en la carta y en su carrusel). Las
+// fotos se quedan en data/gallery.json para cuando se vuelva a encender.
+export const galleryVisible = (site) => !(site && site.gallery && site.gallery.enabled === false);
+
+const GALLERY = /[ \t]*<!-- GALLERY -->\s*<section[^>]*id="gallery"[\s\S]*?<\/section>\r?\n?/;
+
+export function applyGallery(html, site) {
+  if (galleryVisible(site)) return html;
+  if (!GALLERY.test(html)) throw new Error('index.html: sección #gallery no encontrada');
+  return html.replace(GALLERY, '');
+}
+
 export function esc(value) {
   return String(value ?? '').replace(/[&<>"]/g, (c) => escapeMap[c]);
 }
