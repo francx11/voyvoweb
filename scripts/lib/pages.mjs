@@ -219,12 +219,27 @@ const breadcrumb = (domain, name, path) => ({
 // justo lo que esta página viene a evitar.
 const PROMO_CATEGORY = 'Ofertas';
 
-export function renderCarta({ domain, menu, ordering, site }) {
-  const tiers = (ordering && ordering.tiers) || {};
+// Foto de un plato para /carta/, el JSON-LD y el sitemap de imágenes, o null.
+// Mismo interruptor que la portada (site.menu.photos), salvo el placeholder de
+// "always": aquí solo cuentan fotos de verdad, que es lo que Google indexa.
+export function menuPhoto(item, site) {
+  const mode = (site && site.menu && site.menu.photos) || 'auto';
+  if (mode === 'never' || !item || !item.image) return null;
+  return { src: item.image, thumb: item.imageThumb || '', alt: item.imageAlt || '' };
+}
+
+// Platos que salen en /carta/ (activos y sin las promos duplicadas con los
+// pedidos apagados). Lo comparten la página y el sitemap.
+export function cartaItems(menu, ordering) {
   const orderingOn = !!(ordering && ordering.enabled);
-  const items = menu.filter(
+  return menu.filter(
     (item) => item.active !== false && (orderingOn || item.category !== PROMO_CATEGORY)
   );
+}
+
+export function renderCarta({ domain, menu, ordering, site }) {
+  const tiers = (ordering && ordering.tiers) || {};
+  const items = cartaItems(menu, ordering);
   const groups = groupByCategory(items);
   const pdf = site && site.menu && site.menu.pdf;
   /* El CTA de vuelta a la portada prometía "con fotos" cuando ningún plato
@@ -248,7 +263,7 @@ export function renderCarta({ domain, menu, ordering, site }) {
               : ''
           }
           <ul class="carta-list">
-${group.items.map((item) => renderItem(item, tiers)).join('\n')}
+${group.items.map((item) => renderItem(item, tiers, menuPhoto(item, site))).join('\n')}
           </ul>
         </section>`
     )
@@ -269,6 +284,7 @@ ${group.items.map((item) => renderItem(item, tiers)).join('\n')}
           '@type': 'MenuItem',
           name: item.name,
           ...(item.description ? { description: item.description } : {}),
+          ...(menuPhoto(item, site) ? { image: `https://${domain}${item.image}` } : {}),
           ...(offersOf(item, tiers).length ? { offers: offersOf(item, tiers) } : {}),
         })),
       })),
@@ -316,9 +332,30 @@ ${sections}
   });
 }
 
-function renderItem(item, tiers) {
-  const price = priceText(item, tiers);
+// Con foto, el texto va en su columna y la miniatura a la derecha, como en la
+// portada. La foto va escrita en el HTML (no pintada por JS) para que Google la
+// vea; lazy porque la carta empieza bajo la cabecera de la página.
+function photoTag(photo) {
+  const set = photo.thumb
+    ? ` srcset="${esc(photo.thumb)} 240w, ${esc(photo.src)} 960w" sizes="104px"`
+    : '';
+  return `<img class="carta-item-photo" src="${esc(photo.thumb || photo.src)}"${set} alt="${esc(
+    photo.alt
+  )}" width="240" height="240" loading="lazy" decoding="async">`;
+}
+
+function renderItem(item, tiers, photo) {
+  const text = renderItemText(item, priceText(item, tiers));
+  if (!photo) return `            <li class="carta-item">${text}\n            </li>`;
   return `            <li class="carta-item">
+              <div class="carta-item-text">${text}
+              </div>
+              ${photoTag(photo)}
+            </li>`;
+}
+
+function renderItemText(item, price) {
+  return `
               <h3 class="carta-item-name">${esc(item.name)}</h3>${
                 item.description
                   ? `\n              <p class="carta-item-desc">${esc(item.description)}</p>`
@@ -335,8 +372,7 @@ function renderItem(item, tiers) {
                       .map(esc)
                       .join(', ')}</p>`
                   : ''
-              }
-            </li>`;
+              }`;
 }
 
 // Identificador estable para el aria-labelledby de cada categoría.

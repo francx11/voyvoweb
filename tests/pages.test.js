@@ -33,6 +33,46 @@ test('"never" no promete fotos aunque haya alguna subida', async () => {
   assert.ok(!html.includes('con fotos'));
 });
 
+test('/carta/ escribe la miniatura en el HTML, con alt, tamaño y srcset', async () => {
+  const menu = [
+    {
+      ...MENU[0],
+      image: '/assets/menu/pz-margarita-960.webp',
+      imageThumb: '/assets/menu/pz-margarita-240.webp',
+      imageAlt: 'Pizza con tomate, mozzarella y orégano',
+    },
+    MENU[1],
+  ];
+  const html = await carta({ menu: { photos: 'auto' } }, menu);
+  const imgs = html.match(/<img class="carta-item-photo"[^>]*>/g) || [];
+  assert.equal(imgs.length, 1, 'solo el plato con foto lleva <img>');
+  const img = imgs[0];
+  assert.match(img, /src="\/assets\/menu\/pz-margarita-240\.webp"/);
+  assert.match(img, /srcset="[^"]*-240\.webp 240w, [^"]*-960\.webp 960w"/);
+  assert.match(img, /alt="Pizza con tomate, mozzarella y orégano"/);
+  assert.match(img, /width="240" height="240"/, 'sin tamaño la página salta al cargar');
+  assert.match(img, /loading="lazy"/);
+  // El nombre ya es el <h3> de al lado: el alt no lo repite.
+  assert.ok(!/alt="Margarita"/.test(html));
+  // JSON-LD: la foto grande, con URL absoluta.
+  assert.ok(html.includes('"image": "https://ejemplo.test/assets/menu/pz-margarita-960.webp"'));
+  assert.equal((html.match(/"image": "https:\/\/ejemplo\.test\/assets\/menu\//g) || []).length, 1);
+});
+
+test('/carta/: foto sin alt revisado sale decorativa (alt vacío), y "never" no pinta ninguna', async () => {
+  const menu = [{ ...MENU[0], image: '/assets/menu/x.webp' }, MENU[1]];
+  const auto = await carta({ menu: { photos: 'auto' } }, menu);
+  assert.match(auto, /<img class="carta-item-photo" src="\/assets\/menu\/x\.webp" alt=""/);
+  const never = await carta({ menu: { photos: 'never' } }, menu);
+  assert.ok(!never.includes('carta-item-photo'));
+  assert.ok(!never.includes('"image": "https://ejemplo.test/assets/menu/'));
+});
+
+test('"always" no inventa fotos en /carta/: el placeholder no es una foto', async () => {
+  const html = await carta({ menu: { photos: 'always' } });
+  assert.ok(!html.includes('carta-item-photo'));
+});
+
 test('"always" promete fotos aunque no haya ninguna subida', async () => {
   const html = await carta({ menu: { photos: 'always' } });
   assert.ok(html.includes('Ver la carta con fotos'));
