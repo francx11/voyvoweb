@@ -24,6 +24,9 @@
     },
     "justEat": {
       "enabled": false
+    },
+    "gallery": {
+      "enabled": false
     }
   }
 }

@@ -132,6 +132,26 @@ test('Just Eat: sin interruptor o encendido se publica; apagado se quita entera'
   assert.throws(() => applyJustEat('<main></main>', { justEat: { enabled: false } }), /just-eat/);
 });
 
+test('Galería «Momentos»: sin interruptor o encendida se publica; apagada se quita entera', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const { applyGallery } = await import('../scripts/lib/pages.mjs');
+  const index = fs.readFileSync(path.join(__dirname, '..', 'public', 'index.html'), 'utf-8');
+
+  assert.strictEqual(applyGallery(index, {}), index);
+  assert.strictEqual(applyGallery(index, { gallery: { enabled: true } }), index);
+
+  const sin = applyGallery(index, { gallery: { enabled: false } });
+  assert.ok(!sin.includes('id="gallery"'), 'sigue la sección');
+  assert.ok(!sin.includes('Momentos en Voy Volando'), 'sigue el título');
+  assert.ok(
+    sin.includes('id="reviews"') || sin.includes('</main>'),
+    'se ha llevado lo que va detrás'
+  );
+  assert.strictEqual(index.length - sin.length < 800, true, 'ha quitado más de la cuenta');
+  assert.throws(() => applyGallery('<main></main>', { gallery: { enabled: false } }), /gallery/);
+});
+
 // Datos del titular (art. 10 LSSI-CE): si alguien deja un [campo] por rellenar
 // o pierde el NIF/CIF al editar, se publicaría así en las dos páginas legales.
 test('las páginas legales no publican campos de titular sin rellenar', () => {

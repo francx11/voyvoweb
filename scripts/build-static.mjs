@@ -22,6 +22,8 @@ import {
   render404,
   applyJustEat,
   justEatVisible,
+  applyGallery,
+  galleryVisible,
   cartaItems,
   menuPhoto,
   esc,
@@ -114,6 +116,7 @@ async function rewriteHtml() {
   if (!html.includes(marker)) throw new Error('index.html: main.js script tag not found');
   html = html.replace(marker, `<script>window.VV_STATIC = true;</script>\n  ${marker}`);
   html = applyJustEat(html, await readSnapshot('site'));
+  html = applyGallery(html, await readSnapshot('site'));
   await fs.writeFile(index, html);
 
   const canonical = html.match(/<link rel="canonical" href="https:\/\/([^/"]+)\//);
@@ -432,6 +435,8 @@ async function main() {
   if (rewritten) log(`${rewritten} URLs absolutas → ${SITE_DOMAIN}`);
   if (!justEatVisible(await readSnapshot('site')))
     log('sección Just Eat quitada (apagada en config.json)');
+  if (!galleryVisible(await readSnapshot('site')))
+    log('galería «Momentos» quitada (apagada en config.json)');
   await assertBusinessData();
   log(`cabecera y pie comunes en ${await applySiteLayout()} páginas de public/`);
   const content = await writeContentPages();

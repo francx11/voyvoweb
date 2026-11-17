@@ -65,6 +65,11 @@
       var je = $('#just-eat');
       if (je) je.remove();
     }
+    // Galería «Momentos» apagada (site.gallery.enabled = false): igual que Just Eat.
+    if (s && s.gallery && s.gallery.enabled === false) {
+      var gal = $('#gallery');
+      if (gal) gal.remove();
+    }
     if (s.hero) {
       setText('#hero-eyebrow', s.hero.eyebrow);
       if (s.hero.title1 || s.hero.title2) {
@@ -713,6 +718,7 @@
 
   /* ── Gallery ────────────────────────────────────────── */
   function loadGallery() {
+    if (!$('#gallery')) return; // apagada: ni se piden las fotos
     fetch(apiUrl('gallery'))
       .then(function (r) { return r.json(); })
       .then(function (files) {
