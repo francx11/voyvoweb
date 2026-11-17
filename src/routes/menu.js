@@ -13,6 +13,15 @@ if (!fs.existsSync(MENU_IMG_DIR)) fs.mkdirSync(MENU_IMG_DIR, { recursive: true }
 
 const MENU_FILE = 'menu.json';
 const CONFIG_FILE = 'config.json';
+const MENU_ASSET_RE = /^\/assets\/menu\/[\w.-]+\.(webp|jpe?g)$/;
+
+// Una foto nueva o borrada deja huérfanos su miniatura y su alt (describían la
+// anterior): se quitan del disco y del plato.
+function dropPhotoExtras(item) {
+  removeImage(MENU_IMG_DIR, item.imageThumb);
+  delete item.imageThumb;
+  delete item.imageAlt;
+}
 
 const sanitizePrice = (v) =>
   v === null || v === undefined || v === '' ? null : Math.max(0, Number(v) || 0);
@@ -65,6 +74,14 @@ const sanitizeMenuItem = (p) => {
     traces: Array.isArray(p.traces) ? p.traces.map(String).slice(0, 14) : [],
     active: p.active !== false,
     ...(p.image ? { image: String(p.image).slice(0, 200) } : {}),
+    // Miniatura de la fila de la carta (240 px, la sube el panel junto a la
+    // grande). Solo rutas de /assets/menu/: el valor acaba en un srcset.
+    ...(p.image && MENU_ASSET_RE.test(p.imageThumb || '') ? { imageThumb: p.imageThumb } : {}),
+    // alt de la foto: describe lo que se ve, no repite el nombre (ese ya es el
+    // encabezado de al lado). Vacío = decorativa, alt="".
+    ...(p.image && typeof p.imageAlt === 'string' && p.imageAlt.trim()
+      ? { imageAlt: p.imageAlt.trim().slice(0, 160) }
+      : {}),
     ...(pricing ? { pricing } : {}),
     ...(modifierGroupIds.length ? { modifierGroupIds } : {}),
     ...(p.fulfillment === 'pickup_only' ? { fulfillment: 'pickup_only' } : {}),
@@ -129,6 +146,7 @@ router.post('/:id/image', requireAuth, imageUpload.single('image'), async (req, 
   try {
     const name = await saveWebp(req.file.buffer, MENU_IMG_DIR);
     removeImage(MENU_IMG_DIR, menu[idx].image);
+    dropPhotoExtras(menu[idx]);
     menu[idx].image = `/assets/menu/${name}`;
     writeJSON(MENU_FILE, menu);
     res.json({ ok: true, image: menu[idx].image });
@@ -142,6 +160,7 @@ router.delete('/:id/image', requireAuth, (req, res) => {
   const idx = menu.findIndex((p) => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'No encontrada' });
   removeImage(MENU_IMG_DIR, menu[idx].image);
+  dropPhotoExtras(menu[idx]);
   delete menu[idx].image;
   writeJSON(MENU_FILE, menu);
   res.json({ ok: true });
@@ -159,7 +178,10 @@ router.put('/:id', requireAuth, (req, res) => {
 router.delete('/:id', requireAuth, (req, res) => {
   const menu = readJSON(MENU_FILE, []);
   const removed = menu.find((p) => p.id === req.params.id);
-  if (removed) removeImage(MENU_IMG_DIR, removed.image);
+  if (removed) {
+    removeImage(MENU_IMG_DIR, removed.image);
+    removeImage(MENU_IMG_DIR, removed.imageThumb);
+  }
   writeJSON(
     MENU_FILE,
     menu.filter((p) => p.id !== req.params.id)

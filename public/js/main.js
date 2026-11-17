@@ -266,27 +266,43 @@
       '>' + esc(p.tag) + '</span>';
   }
 
+  /* alt de la foto del plato. El nombre ya es el encabezado de al lado, así que
+     repetirlo solo es ruido para un lector de pantalla: el alt describe lo que
+     se ve (imageAlt, revisado en el panel) y, sin él, la foto es decorativa. */
+  function photoAlt(p) {
+    return p.imageAlt || '';
+  }
+
+  /* Miniatura cuadrada de la fila. width/height y el aspect-ratio del CSS
+     reservan el hueco antes de que llegue la foto (sin saltos de página); lazy
+     porque la carta queda por debajo del hero. La
+     pulsa quien usa ratón o dedo para abrir el detalle; con teclado ese mismo
+     detalle lo abre el botón "Detalles", así que la foto no suma otra parada
+     de tabulador. */
+  function thumb(p, src) {
+    var set = p.imageThumb && src === p.image
+      ? ' srcset="' + esc(p.imageThumb) + ' 240w, ' + esc(p.image) + ' 960w" sizes="104px"'
+      : '';
+    return '<div class="menu-card-thumb" data-detail-id="' + esc(p.id) + '">' +
+      '<img src="' + esc(p.imageThumb || src) + '"' + set + ' alt="' + esc(photoAlt(p)) + '"' +
+        ' width="240" height="240" decoding="async" loading="lazy">' +
+    '</div>';
+  }
+
   function renderMenuItem(p, overflow) {
     var canOrder = orderingConfig && orderingConfig.enabled && isOrderable(p);
     var priceStr = priceShort(p);
     var src = mediaSrc(p);
-    /* Sin foto la descripción cabe entera (la más larga son 94 caracteres), así
-       que el modal ya no aporta el texto recortado: solo vale la pena abrirlo
-       por los alérgenos o por el desglose de tallas que "Desde X" resume. */
-    var hasDetail = src
-      ? !!(p.description || allergensAndTraces(p).length)
-      : !!(allergensAndTraces(p).length || priceDisplay(p) !== priceStr);
-    return '<article class="menu-card' + (src ? '' : ' menu-card--flat') +
+    /* La descripción cabe entera en la fila (la más larga son 94 caracteres):
+       el detalle vale la pena por la foto grande, los alérgenos o el desglose
+       de tallas que "Desde X" resume. */
+    var hasDetail = !!((src && src !== MENU_PLACEHOLDER) || allergensAndTraces(p).length ||
+      priceDisplay(p) !== priceStr);
+    return '<article class="menu-card menu-card--flat' + (src ? ' menu-card--thumb' : '') +
       (overflow ? ' menu-card--overflow' : '') + '">' +
-      (src
-        ? '<div class="menu-card-media">' +
-            '<img src="' + esc(src) + '" alt="' + esc(p.name) + '" loading="lazy">' +
-            (p.tag ? badge(p) : '') +
-          '</div>'
-        : '') +
       '<div class="menu-card-body">' +
         '<h4 class="menu-card-name">' + esc(p.name) +
-          (!src && tagAddsInfo(p) ? ' ' + badge(p, 'menu-card-badge--inline') : '') +
+          (tagAddsInfo(p) ? ' ' + badge(p, 'menu-card-badge--inline') : '') +
         '</h4>' +
         (p.description ? '<p class="menu-card-desc">' + esc(p.description) + '</p>' : '') +
         (hasDetail
@@ -300,6 +316,7 @@
             esc(p.id) + '">Pedir</button>'
           : '') +
       '</div>' +
+      (src ? thumb(p, src) : '') +
     '</article>';
   }
 
@@ -317,12 +334,11 @@
         'Llámanos y te la preparamos a medida.</p>';
       return;
     }
-    /* La forma de la tarjeta es una decisión de la rejilla entera, no de cada
-       plato: durante la transición (unos con foto y otros sin ella) una rejilla
-       que mezclase filas de 410px con filas de 115px se vería peor que
-       cualquiera de las dos puras. Basta una foto para conservar la clásica. */
+    /* Siempre filas: la foto va en miniatura a la derecha, así que un plato sin
+       foto es la misma fila sin ella y una sección a medio fotografiar no se
+       descuadra (decisión de socios, 2026-11-17). */
     var groups = groupByCategory(visible);
-    wrap.classList.toggle('menu-cards--flat', !visible.some(function (p) { return !!mediaSrc(p); }));
+    wrap.classList.add('menu-cards--flat');
     wrap.innerHTML = groups.map(function (group) {
       var id = group.category ? slug(group.category) : '';
       // El conteo del botón sale de los platos que quedan tras el filtro de
@@ -414,7 +430,7 @@
     $('#vv-detail-body').innerHTML =
       (src
         ? '<div class="menu-detail-media">' +
-            '<img src="' + esc(src) + '" alt="' + esc(p.name) + '">' + tag +
+            '<img src="' + esc(src) + '" alt="' + esc(photoAlt(p)) + '" width="960" height="960">' + tag +
           '</div>'
         : '') +
       '<h2 class="modal-title" id="vv-detail-title">' + esc(p.name) + '</h2>' +

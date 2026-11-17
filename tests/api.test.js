@@ -103,6 +103,48 @@ test('menu CRUD: create, sanitize, reorder, update, delete', async () => {
   assert.equal((await api('GET', '/api/menu')).json.length, 1);
 });
 
+test('menu photo fields: thumb only from /assets/menu/, alt trimmed, both need a photo', async () => {
+  const noPhoto = await api('POST', '/api/menu', {
+    name: 'Sin foto',
+    imageThumb: '/assets/menu/a-240.webp',
+    imageAlt: 'Pizza',
+  });
+  assert.equal(noPhoto.json.imageThumb, undefined);
+  assert.equal(noPhoto.json.imageAlt, undefined);
+
+  const ok = await api('POST', '/api/menu', {
+    name: 'Con foto',
+    image: '/assets/menu/a-960.webp',
+    imageThumb: '/assets/menu/a-240.webp',
+    imageAlt: '  Pizza con tomate y albahaca  ',
+  });
+  assert.equal(ok.json.imageThumb, '/assets/menu/a-240.webp');
+  assert.equal(ok.json.imageAlt, 'Pizza con tomate y albahaca');
+
+  for (const bad of [
+    'https://evil.test/x.webp',
+    '/assets/menu/../auth.json',
+    '/assets/menu/x.svg',
+    'x" onerror="a',
+  ]) {
+    const r = await api('POST', '/api/menu', {
+      name: 'Mala',
+      image: '/assets/menu/a.webp',
+      imageThumb: bad,
+    });
+    assert.equal(r.json.imageThumb, undefined, `aceptó ${bad}`);
+    await api('DELETE', `/api/menu/${r.json.id}`);
+  }
+  const blank = await api('POST', '/api/menu', {
+    name: 'Alt vacío',
+    image: '/assets/menu/a.webp',
+    imageAlt: '   ',
+  });
+  assert.equal(blank.json.imageAlt, undefined);
+  for (const id of [noPhoto.json.id, ok.json.id, blank.json.id])
+    await api('DELETE', `/api/menu/${id}`);
+});
+
 test('PUT /api/site deep-merges menu so the PDF path survives a mode switch', async () => {
   await api('PUT', '/api/site', { menu: { pdf: '/assets/menu-1.pdf' } });
   await api('PUT', '/api/site', { menu: { mode: 'pdf' } });

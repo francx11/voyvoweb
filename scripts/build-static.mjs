@@ -22,6 +22,9 @@ import {
   render404,
   applyJustEat,
   justEatVisible,
+  cartaItems,
+  menuPhoto,
+  esc,
 } from './lib/pages.mjs';
 import { applyLayout, hasLayout, LAYOUT_PAGES } from './lib/layout.mjs';
 import { HTML_PAGES, MANIFEST } from './sync-theme.mjs';
@@ -298,6 +301,17 @@ async function writeContentPages() {
 // /admin and the API routes do not exist in this build anyway.
 async function writeHostingFiles() {
   const today = new Date().toISOString().slice(0, 10);
+  const [site, ordering, menu] = await Promise.all([
+    readSnapshot('site'),
+    readSnapshot('ordering/config'),
+    readSnapshot('menu'),
+  ]);
+  // Fotos de los platos que salen en /carta/, para Google Imágenes: la grande
+  // (960 px), que es la que conviene que indexe.
+  const cartaImages = cartaItems(menu, ordering)
+    .map((item) => menuPhoto(item, site))
+    .filter(Boolean)
+    .map((photo) => photo.src);
   await fs.writeFile(path.join(DIST_DIR, 'CNAME'), `${SITE_DOMAIN}\n`);
   await fs.writeFile(path.join(DIST_DIR, '.nojekyll'), ''); // keep _-prefixed paths
   await fs.writeFile(
@@ -306,7 +320,7 @@ async function writeHostingFiles() {
   );
   const urls = [
     { loc: '/', changefreq: 'weekly', priority: '1.0' },
-    { loc: '/carta/', changefreq: 'weekly', priority: '0.9' },
+    { loc: '/carta/', changefreq: 'weekly', priority: '0.9', images: cartaImages },
     { loc: '/a-domicilio/', changefreq: 'monthly', priority: '0.8' },
     { loc: '/contacto/', changefreq: 'monthly', priority: '0.7' },
     { loc: '/aviso-legal/', changefreq: 'yearly', priority: '0.3' },
@@ -321,7 +335,16 @@ async function writeHostingFiles() {
     <changefreq>${u.changefreq}</changefreq>
 ` +
         `    <priority>${u.priority}</priority>
-  </url>
+` +
+        (u.images || [])
+          .map(
+            (
+              src
+            ) => `    <image:image><image:loc>https://${SITE_DOMAIN}${esc(src)}</image:loc></image:image>
+`
+          )
+          .join('') +
+        `  </url>
 `
     )
     .join('');
@@ -329,14 +352,10 @@ async function writeHostingFiles() {
     path.join(DIST_DIR, 'sitemap.xml'),
     `<?xml version="1.0" encoding="UTF-8"?>
 ` +
-      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urls}</urlset>
 `
   );
-  const [site, ordering] = await Promise.all([
-    readSnapshot('site'),
-    readSnapshot('ordering/config'),
-  ]);
   await fs.writeFile(
     path.join(DIST_DIR, '404.html'),
     render404({ domain: SITE_DOMAIN, site, ordering })
