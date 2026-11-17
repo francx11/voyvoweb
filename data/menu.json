@@ -284,8 +284,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/caprichosa-f9-20261116112300-960.webp",
-    "imageThumb": "/assets/menu/caprichosa-f9-20261116112300-240.webp",
+    "image": "/assets/menu/caprichosa-f9-20261117123822-960.webp",
+    "imageThumb": "/assets/menu/caprichosa-f9-20261117123822-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, jamón york, bacon y atún"
   },
   {
@@ -389,8 +389,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/kebab-f12-20261116112604-960.webp",
-    "imageThumb": "/assets/menu/kebab-f12-20261116112604-240.webp",
+    "image": "/assets/menu/kebab-f12-20261117123848-960.webp",
+    "imageThumb": "/assets/menu/kebab-f12-20261117123848-240.webp",
     "imageAlt": "Pizza con salsa de yogurt, mozzarella, bacon y pollo kebab"
   },
   {
@@ -1763,7 +1763,10 @@
       "apio",
       "mostaza"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/taco-frances-royal-f21-20261116113309-960.webp",
+    "imageThumb": "/assets/menu/taco-frances-royal-f21-20261116113309-240.webp",
+    "imageAlt": "Tortilla trigo, patatas fritas, salsa gaucha, salsa barbacoa, fingers de pollo y mozzarella"
   },
   {
     "id": "campero-kebab",
@@ -1834,7 +1837,10 @@
       "sésamo",
       "sulfitos"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/campero-lomo-f22-20261116113350-960.webp",
+    "imageThumb": "/assets/menu/campero-lomo-f22-20261116113350-240.webp",
+    "imageAlt": "Lomo de cerdo, lechuga, bacon, mozzarella, huevo y mayonesa"
   },
   {
     "id": "alitas-pollo",
@@ -1851,7 +1857,10 @@
       "lácteos",
       "sulfitos"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/alitas-7-unidades-f23-20261116113435-960.webp",
+    "imageThumb": "/assets/menu/alitas-7-unidades-f23-20261116113435-240.webp",
+    "imageAlt": "Van sin salsa. Salsa: por encima, +0,50 €; en bote aparte, +0,70 €"
   },
   {
     "id": "patatas-fritas",
@@ -1928,7 +1937,10 @@
       "mostaza",
       "sésamo"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/pizza-de-ajo-f33-20261116114144-960.webp",
+    "imageThumb": "/assets/menu/pizza-de-ajo-f33-20261116114144-240.webp",
+    "imageAlt": "Masa de pizza con mozzarella y aove con ajo"
   },
   {
     "id": "pic-croquetas-pollo-y-bacon",
@@ -1965,7 +1977,10 @@
           "price": 8
         }
       ]
-    }
+    },
+    "image": "/assets/menu/croquetas-pollo-y-bacon-f31-20261116114022-960.webp",
+    "imageThumb": "/assets/menu/croquetas-pollo-y-bacon-f31-20261116114022-240.webp",
+    "imageAlt": "Croquetas caseras de pollo y bacon"
   },
   {
     "id": "pic-croquetas-jamon-serrano",
@@ -2000,7 +2015,10 @@
           "price": 8
         }
       ]
-    }
+    },
+    "image": "/assets/menu/croquetas-jamon-serrano-f32-20261116114059-960.webp",
+    "imageThumb": "/assets/menu/croquetas-jamon-serrano-f32-20261116114059-240.webp",
+    "imageAlt": "Croquetas caseras de jamón serrano"
   },
   {
     "id": "pic-pizza-roll-7-unidades-bbq",
@@ -2049,7 +2067,10 @@
       "mostaza",
       "sésamo"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/pizza-roll-7-unidades-kebab-f24-20261116113534-960.webp",
+    "imageThumb": "/assets/menu/pizza-roll-7-unidades-kebab-f24-20261116113534-240.webp",
+    "imageAlt": "Salsa de yogurt, mozzarella y pollo kebab"
   },
   {
     "id": "pic-pizza-roll-7-unidades-cheesebacon",
@@ -2211,7 +2232,10 @@
       "pescado",
       "apio"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/ensalada-cesar-f27-20261116113752-960.webp",
+    "imageThumb": "/assets/menu/ensalada-cesar-f27-20261116113752-240.webp",
+    "imageAlt": "Lechuga, cherrys, pollo, queso feta, nueces y salsa César"
   },
   {
     "id": "pasta-bolonesa",
