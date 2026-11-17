@@ -55,4 +55,54 @@
       }
     });
   }
+
+  /* ── Carrusel de fotos de platos ([data-carousel]) ──────
+     Portada (lo pinta main.js después de cargar la carta) y /carta/ (viene en
+     el HTML). Por delegación, así vale para los dos. La pista es una lista con
+     scroll y snap: se pasa deslizando o con las flechas del teclado (tiene
+     tabindex). Los botones avanzan una "página" y se desactivan en los extremos.
+     Nada se mueve solo. */
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function carouselOf(el) {
+    var box = el.closest('.dish-carousel');
+    return box && box.querySelector('[data-carousel]');
+  }
+  function syncCarousel(track) {
+    var box = track.closest('.dish-carousel');
+    if (!box) return;
+    var prev = box.querySelector('[data-carousel-prev]');
+    var next = box.querySelector('[data-carousel-next]');
+    var max = track.scrollWidth - track.clientWidth - 8;
+    if (prev) prev.disabled = track.scrollLeft <= 8;
+    if (next) next.disabled = track.scrollLeft >= max;
+    // Sin nada que pasar (pocas fotos en pantalla ancha), los botones sobran.
+    box.classList.toggle('dish-carousel--static', max <= 0);
+  }
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('[data-carousel-prev], [data-carousel-next]');
+    if (!btn) return;
+    var track = carouselOf(btn);
+    if (!track) return;
+    var dir = btn.hasAttribute('data-carousel-next') ? 1 : -1;
+    track.scrollBy({
+      left: dir * track.clientWidth * 0.85,
+      behavior: reduceMotion.matches ? 'auto' : 'smooth',
+    });
+  });
+  // scroll no burbujea: se escucha en captura para las pistas que aún no existen.
+  document.addEventListener('scroll', function (e) {
+    if (e.target.matches && e.target.matches('[data-carousel]')) syncCarousel(e.target);
+  }, true);
+  function syncAll() {
+    document.querySelectorAll('[data-carousel]').forEach(syncCarousel);
+  }
+  window.addEventListener('resize', syncAll);
+  if ('MutationObserver' in window) {
+    new MutationObserver(function (records) {
+      for (var i = 0; i < records.length; i++) {
+        if (records[i].target.id === 'dish-carousel') { syncAll(); return; }
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+  syncAll();
 })();

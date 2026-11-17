@@ -698,6 +698,44 @@ img { max-width: 100%; display: block; }
    ataría el día que uno de los dos cambie de aspecto. Tampoco es sticky: la
    cabecera ya lo es y en un móvil de 640px dos barras fijas se comen el
    viewport. */
+/* ── Carrusel "Así salen del horno" ──
+   Fotos de platos cuya sección aún no las enseña en la fila. Pista con scroll
+   y snap: la siguiente foto asoma por el borde para que se vea que hay más.
+   Botones de 44px (objetivo táctil) y foco visible en la pista. */
+.dish-carousel { margin: 0 0 1.8rem; }
+.dish-carousel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; }
+.dish-carousel-title {
+  font-family: var(--heading); font-weight: 700; font-size: 1.15rem;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--tomato); margin: 0;
+}
+.dish-carousel-nav { display: flex; gap: 0.5rem; }
+.dish-carousel--static .dish-carousel-nav { display: none; }
+.dish-carousel-btn {
+  width: 44px; height: 44px; border-radius: var(--radius-round);
+  border: 1px solid var(--line-strong); background: var(--paper); color: var(--ink);
+  font-size: 1.6rem; line-height: 1; cursor: pointer;
+}
+.dish-carousel-btn:hover:not(:disabled) { background: var(--paper-2); }
+.dish-carousel-btn:disabled { opacity: 0.4; cursor: default; }
+.dish-carousel-track {
+  list-style: none; margin: 0; padding: 0.2rem 0 0.8rem;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 62%; gap: 0.9rem;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+@media (min-width: 520px) { .dish-carousel-track { grid-auto-columns: 40%; } }
+@media (min-width: 720px) { .dish-carousel-track { grid-auto-columns: 220px; } }
+.dish-carousel-track:focus-visible { outline: 3px solid var(--tomato); outline-offset: 3px; border-radius: var(--radius); }
+.dish-carousel-slide { scroll-snap-align: start; cursor: zoom-in; }
+.dish-carousel-slide figure { margin: 0; }
+.dish-carousel-slide img {
+  display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: contain;
+  border-radius: var(--radius); background: var(--paper-2);
+}
+.dish-carousel-slide figcaption { display: flex; flex-direction: column; gap: 0.1rem; margin-top: 0.5rem; }
+.dish-carousel-name { font-family: var(--display); font-size: 1.05rem; line-height: 1.2; }
+.dish-carousel-cat { font-size: 0.82rem; color: var(--ink-soft); }
+
 .menu-jump { margin: 0 0 1.4rem; }
 .menu-jump-label {
   display: block; font-family: var(--heading); font-size: 0.8rem; font-weight: 700;

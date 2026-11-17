@@ -237,9 +237,77 @@ export function cartaItems(menu, ordering) {
   );
 }
 
+// Secciones a medio fotografiar (decisión de socios, 2026-11-17): la fila solo
+// lleva miniatura cuando TODA su sección tiene foto; las fotos de las demás van
+// al carrusel de arriba. Bebidas y Extras nunca llevan foto. Misma regla que
+// photoSections() de public/js/main.js; si tocas una, toca la otra.
+export const NO_PHOTO_CATEGORIES = ['Bebidas', 'Extras'];
+export function photoSections(items) {
+  const all = new Map();
+  for (const item of items) {
+    const cat = item.category || '';
+    if (NO_PHOTO_CATEGORIES.includes(cat)) continue;
+    all.set(cat, all.get(cat) !== false && !!item.image);
+  }
+  return new Set([...all].filter(([, complete]) => complete).map(([cat]) => cat));
+}
+
+// Platos con foto para el carrusel: los de secciones que aún no están completas.
+export function carouselItems(items, site) {
+  const complete = photoSections(items);
+  return items.filter(
+    (item) =>
+      menuPhoto(item, site) &&
+      !NO_PHOTO_CATEGORIES.includes(item.category || '') &&
+      !complete.has(item.category || '')
+  );
+}
+
+// Mismo marcado que carouselHtml() de public/js/main.js; los botones los activa
+// ui.js. Va en el HTML, así Google ve las fotos sin ejecutar nada.
+function dishCarousel(slides) {
+  if (!slides.length) return '';
+  return `        <section class="dish-carousel" aria-labelledby="dish-carousel-title">
+          <div class="dish-carousel-head">
+            <h2 class="dish-carousel-title" id="dish-carousel-title">Así salen del horno</h2>
+            <div class="dish-carousel-nav">
+              <button type="button" class="dish-carousel-btn" data-carousel-prev aria-label="Fotos anteriores">&lsaquo;</button>
+              <button type="button" class="dish-carousel-btn" data-carousel-next aria-label="Más fotos">&rsaquo;</button>
+            </div>
+          </div>
+          <ul class="dish-carousel-track" data-carousel tabindex="0" aria-label="Fotos de nuestros platos: ${
+            slides.length
+          }. Desliza o usa las flechas para ver más">
+${slides
+  .map((item) => {
+    const set = item.imageThumb
+      ? ` srcset="${esc(item.imageThumb)} 240w, ${esc(item.image)} 960w" sizes="(min-width: 720px) 220px, 62vw"`
+      : '';
+    return `            <li class="dish-carousel-slide">
+              <figure>
+                <img src="${esc(item.image)}"${set} alt="${esc(
+                  item.imageAlt || ''
+                )}" width="960" height="960" loading="lazy" decoding="async">
+                <figcaption><span class="dish-carousel-name">${esc(
+                  item.name
+                )}</span><span class="dish-carousel-cat">${esc(
+                  item.category || ''
+                )}</span></figcaption>
+              </figure>
+            </li>`;
+  })
+  .join('\n')}
+          </ul>
+        </section>
+
+`;
+}
+
 export function renderCarta({ domain, menu, ordering, site }) {
   const tiers = (ordering && ordering.tiers) || {};
   const items = cartaItems(menu, ordering);
+  const complete = photoSections(items);
+  const rowPhoto = (item) => (complete.has(item.category || '') ? menuPhoto(item, site) : null);
   const groups = groupByCategory(items);
   const pdf = site && site.menu && site.menu.pdf;
   /* El CTA de vuelta a la portada prometía "con fotos" cuando ningún plato
@@ -263,7 +331,7 @@ export function renderCarta({ domain, menu, ordering, site }) {
               : ''
           }
           <ul class="carta-list">
-${group.items.map((item) => renderItem(item, tiers, menuPhoto(item, site))).join('\n')}
+${group.items.map((item) => renderItem(item, tiers, rowPhoto(item))).join('\n')}
           </ul>
         </section>`
     )
@@ -301,7 +369,7 @@ ${group.items.map((item) => renderItem(item, tiers, menuPhoto(item, site))).join
           <p class="section-intro" style="margin:0 auto">Clásicas y gourmet, con ingredientes frescos. Pídelas a domicilio en Santa Fe y alrededores o pasa a recogerlas por el local.</p>
         </header>
 
-${sections}
+${dishCarousel(carouselItems(items, site))}${sections}
 
         <div class="airmail-rule" aria-hidden="true"></div>
         <p class="actions-row">
