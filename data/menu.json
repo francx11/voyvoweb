@@ -28,8 +28,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/margarita-f3-20261116084838-960.webp",
-    "imageThumb": "/assets/menu/margarita-f3-20261116084838-240.webp",
+    "image": "/assets/menu/margarita-f3-20261117103733-960.webp",
+    "imageThumb": "/assets/menu/margarita-f3-20261117103733-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella y orégano"
   },
   {
@@ -283,7 +283,10 @@
     },
     "modifierGroupIds": [
       "pizza-mods"
-    ]
+    ],
+    "image": "/assets/menu/caprichosa-f9-20261116112300-960.webp",
+    "imageThumb": "/assets/menu/caprichosa-f9-20261116112300-240.webp",
+    "imageAlt": "Pizza con tomate, mozzarella, jamón york, bacon y atún"
   },
   {
     "id": "pz-cuatro-estaciones",
@@ -385,7 +388,10 @@
     },
     "modifierGroupIds": [
       "pizza-mods"
-    ]
+    ],
+    "image": "/assets/menu/kebab-f12-20261116112604-960.webp",
+    "imageThumb": "/assets/menu/kebab-f12-20261116112604-240.webp",
+    "imageAlt": "Pizza con salsa de yogurt, mozzarella, bacon y pollo kebab"
   },
   {
     "id": "pz-campesina",
@@ -930,7 +936,10 @@
     },
     "modifierGroupIds": [
       "pizza-mods-especial"
-    ]
+    ],
+    "image": "/assets/menu/voy-volando-f16-20261116112859-960.webp",
+    "imageThumb": "/assets/menu/voy-volando-f16-20261116112859-240.webp",
+    "imageAlt": "Pizza con salsa Voy Volando, mozzarella, pollo kebab, picada de ternera y maíz"
   },
   {
     "id": "pz-santa-fe",
@@ -962,7 +971,10 @@
     },
     "modifierGroupIds": [
       "pizza-mods-especial"
-    ]
+    ],
+    "image": "/assets/menu/santa-fe-f15-20261116112826-960.webp",
+    "imageThumb": "/assets/menu/santa-fe-f15-20261116112826-240.webp",
+    "imageAlt": "Pizza con tomate, mozzarella, bacon, pollo kebab, cebolla, gouda y rúcula"
   },
   {
     "id": "pz-suprema",
@@ -1026,7 +1038,10 @@
     },
     "modifierGroupIds": [
       "pizza-mods-especial"
-    ]
+    ],
+    "image": "/assets/menu/francis-f34-20261116114400-960.webp",
+    "imageThumb": "/assets/menu/francis-f34-20261116114400-240.webp",
+    "imageAlt": "Pizza con tomate, mozzarella, picada de ternera, bacon, jamón york y champiñones"
   },
   {
     "id": "pz-7-quesos",
@@ -1056,7 +1071,10 @@
     },
     "modifierGroupIds": [
       "pizza-mods-especial"
-    ]
+    ],
+    "image": "/assets/menu/7-quesos-f17-20261116112930-960.webp",
+    "imageThumb": "/assets/menu/7-quesos-f17-20261116112930-240.webp",
+    "imageAlt": "Pizza con tomate, mozzarella, edam, gouda, roquefort, feta, cabra y cheddar"
   },
   {
     "id": "pz-especial",
@@ -1305,7 +1323,10 @@
     },
     "modifierGroupIds": [
       "pizza-mods-gourmet"
-    ]
+    ],
+    "image": "/assets/menu/bourbon-f18-20261116113000-960.webp",
+    "imageThumb": "/assets/menu/bourbon-f18-20261116113000-240.webp",
+    "imageAlt": "Pizza con nata, mozzarella, bacon, picada de ternera, queso cabra, cebolla caramelizada y salsa barbacoa"
   },
   {
     "id": "pz-trifasica",
@@ -1337,7 +1358,10 @@
     },
     "modifierGroupIds": [
       "pizza-mods-gourmet"
-    ]
+    ],
+    "image": "/assets/menu/trifasica-f19-20261116113034-960.webp",
+    "imageThumb": "/assets/menu/trifasica-f19-20261116113034-240.webp",
+    "imageAlt": "Pizza con nata, mozzarella, picada de ternera, pollo kebab, bacon, cheddar y cebolla crujiente"
   },
   {
     "id": "gr-benji",
@@ -1612,7 +1636,10 @@
           "price": 6.5
         }
       ]
-    }
+    },
+    "image": "/assets/menu/gratinado-goat-f20-20261116113120-960.webp",
+    "imageThumb": "/assets/menu/gratinado-goat-f20-20261116113120-240.webp",
+    "imageAlt": "Patatas fritas, nata, bacon, cebolla caramelizada, queso cabra, salsa barbacoa y mozzarella"
   },
   {
     "id": "gr-ranchero",
