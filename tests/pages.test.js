@@ -72,6 +72,13 @@ test('/carta/: sección a medias → ninguna miniatura en sus filas y sus fotos 
   const carrusel = html.match(CARRUSEL)[0];
   assert.match(carrusel, /aria-labelledby="dish-carousel-title"/);
   assert.match(carrusel, /data-carousel tabindex="0"/, 'la pista se puede pasar con el teclado');
+  assert.match(carrusel, /data-carousel-count aria-hidden="true"/, 'contador visible');
+  assert.match(
+    carrusel,
+    /data-carousel-status aria-live="polite"/,
+    'el lector de pantalla oye dónde está'
+  );
+  assert.ok(!/ disabled/.test(carrusel), 'nada disabled: los botones no pierden el foco');
   assert.match(
     carrusel,
     /<img src="\/assets\/menu\/margarita-960\.webp"[^>]*alt="Pizza margarita"/

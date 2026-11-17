@@ -271,17 +271,19 @@ function dishCarousel(slides) {
           <div class="dish-carousel-head">
             <h2 class="dish-carousel-title" id="dish-carousel-title">Así salen del horno</h2>
             <div class="dish-carousel-nav">
+              <span class="dish-carousel-count" data-carousel-count aria-hidden="true"></span>
               <button type="button" class="dish-carousel-btn" data-carousel-prev aria-label="Fotos anteriores">&lsaquo;</button>
               <button type="button" class="dish-carousel-btn" data-carousel-next aria-label="Más fotos">&rsaquo;</button>
             </div>
           </div>
+          <p class="visually-hidden" data-carousel-status aria-live="polite"></p>
           <ul class="dish-carousel-track" data-carousel tabindex="0" aria-label="Fotos de nuestros platos: ${
             slides.length
           }. Desliza o usa las flechas para ver más">
 ${slides
   .map((item) => {
     const set = item.imageThumb
-      ? ` srcset="${esc(item.imageThumb)} 240w, ${esc(item.image)} 960w" sizes="(min-width: 720px) 220px, 62vw"`
+      ? ` srcset="${esc(item.imageThumb)} 240w, ${esc(item.image)} 960w" sizes="(min-width: 960px) 25vw, (min-width: 600px) 50vw, 100vw"`
       : '';
     return `            <li class="dish-carousel-slide">
               <figure>

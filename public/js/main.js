@@ -399,8 +399,9 @@
   /* Carrusel "Así salen del horno": las fotos de los platos cuya sección aún no
      enseña miniaturas. Sin reproducción automática (nada se mueve solo); se
      pasa deslizando, con las flechas del teclado sobre la pista o con los
-     botones, que pone y mantiene ui.js (también en /carta/). Tocar una foto
-     abre su detalle; con teclado, el detalle está en el "Detalles" de su fila. */
+     botones, que pone y mantiene ui.js (también en /carta/), con el contador
+     "3 de 21". El nombre de cada foto es un botón que abre su detalle (tocar la
+     foto también); ui.js deja en el orden del tabulador solo los que se ven. */
   function renderDishCarousel(items) {
     var box = $('#dish-carousel');
     if (!box) return;
@@ -419,20 +420,22 @@
     return '<div class="dish-carousel-head">' +
         '<h3 class="dish-carousel-title" id="dish-carousel-title">Así salen del horno</h3>' +
         '<div class="dish-carousel-nav">' +
+          '<span class="dish-carousel-count" data-carousel-count aria-hidden="true"></span>' +
           '<button type="button" class="dish-carousel-btn" data-carousel-prev aria-label="Fotos anteriores">&lsaquo;</button>' +
           '<button type="button" class="dish-carousel-btn" data-carousel-next aria-label="Más fotos">&rsaquo;</button>' +
         '</div>' +
       '</div>' +
+      '<p class="visually-hidden" data-carousel-status aria-live="polite"></p>' +
       '<ul class="dish-carousel-track" data-carousel tabindex="0" ' +
         'aria-label="Fotos de nuestros platos: ' + slides.length + '. Desliza o usa las flechas para ver más">' +
       slides.map(function (p) {
         var set = p.imageThumb
-          ? ' srcset="' + esc(p.imageThumb) + ' 240w, ' + esc(p.image) + ' 960w" sizes="(min-width: 720px) 220px, 62vw"'
+          ? ' srcset="' + esc(p.imageThumb) + ' 240w, ' + esc(p.image) + ' 960w" sizes="(min-width: 960px) 25vw, (min-width: 600px) 50vw, 100vw"'
           : '';
         return '<li class="dish-carousel-slide" data-detail-id="' + esc(p.id) + '">' +
           '<figure>' +
             '<img src="' + esc(p.image) + '"' + set + ' alt="' + esc(p.imageAlt || '') + '" width="960" height="960" loading="lazy" decoding="async">' +
-            '<figcaption><span class="dish-carousel-name">' + esc(p.name) + '</span>' +
+            '<figcaption><button type="button" class="dish-carousel-name" data-detail-id="' + esc(p.id) + '">' + esc(p.name) + '</button>' +
               '<span class="dish-carousel-cat">' + esc(p.category || '') + '</span></figcaption>' +
           '</figure>' +
         '</li>';
