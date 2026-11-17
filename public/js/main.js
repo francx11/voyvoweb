@@ -194,6 +194,29 @@
     return photosMode === 'always' ? MENU_PLACEHOLDER : '';
   }
 
+  /* Secciones a medio fotografiar (decisión de socios, 2026-11-17): la fila
+     solo lleva miniatura cuando TODA su sección tiene foto, para que ninguna
+     sección parezca a medias. Las fotos de las demás van al carrusel de arriba
+     de la carta (renderDishCarousel), que se vacía solo según se completan.
+     Bebidas y Extras nunca llevan foto: ahí no ayuda a elegir. Misma regla en
+     /carta/ (photoSections de scripts/lib/pages.mjs); si tocas una, toca la otra. */
+  var NO_PHOTO_CATEGORIES = ['Bebidas', 'Extras'];
+  var completeSections = {};
+  function photoSections(items) {
+    var all = {};
+    items.forEach(function (p) {
+      var cat = p.category || '';
+      if (NO_PHOTO_CATEGORIES.indexOf(cat) !== -1) return;
+      all[cat] = all[cat] !== false && !!p.image;
+    });
+    return all; // categoría → true si todos sus platos tienen foto
+  }
+  // Foto de la fila (miniatura): '' si su sección aún no está completa.
+  function rowSrc(p) {
+    if (photosMode !== 'auto') return mediaSrc(p);
+    return p.image && completeSections[p.category || ''] === true ? p.image : '';
+  }
+
   /* Mismo algoritmo que el slug() de scripts/lib/pages.mjs — duplicado a
      propósito: main.js es un IIFE vanilla sin imports y /carta/ se genera en
      Node. Los ids de ancla de las dos vistas tienen que coincidir, así que si
@@ -292,11 +315,13 @@
   function renderMenuItem(p, overflow) {
     var canOrder = orderingConfig && orderingConfig.enabled && isOrderable(p);
     var priceStr = priceShort(p);
-    var src = mediaSrc(p);
+    var src = rowSrc(p);
     /* La descripción cabe entera en la fila (la más larga son 94 caracteres):
-       el detalle vale la pena por la foto grande, los alérgenos o el desglose
-       de tallas que "Desde X" resume. */
-    var hasDetail = !!((src && src !== MENU_PLACEHOLDER) || allergensAndTraces(p).length ||
+       el detalle vale la pena por la foto grande (también la de un plato cuya
+       sección aún no enseña miniaturas), los alérgenos o el desglose de tallas
+       que "Desde X" resume. */
+    var photo = mediaSrc(p);
+    var hasDetail = !!((photo && photo !== MENU_PLACEHOLDER) || allergensAndTraces(p).length ||
       priceDisplay(p) !== priceStr);
     return '<article class="menu-card menu-card--flat' + (src ? ' menu-card--thumb' : '') +
       (overflow ? ' menu-card--overflow' : '') + '">' +
@@ -339,6 +364,11 @@
        descuadra (decisión de socios, 2026-11-17). */
     var groups = groupByCategory(visible);
     wrap.classList.add('menu-cards--flat');
+    // Completa o no según la carta entera, no lo que deja el filtro de alérgenos:
+    // filtrar no puede hacer aparecer ni desaparecer miniaturas.
+    completeSections = photoSections(items.filter(function (p) {
+      return p.active !== false && !isDuplicatePromo(p);
+    }));
     wrap.innerHTML = groups.map(function (group) {
       var id = group.category ? slug(group.category) : '';
       // El conteo del botón sale de los platos que quedan tras el filtro de
@@ -364,6 +394,50 @@
       '</div>';
     }).join('');
     renderJumpNav(groups);
+  }
+
+  /* Carrusel "Así salen del horno": las fotos de los platos cuya sección aún no
+     enseña miniaturas. Sin reproducción automática (nada se mueve solo); se
+     pasa deslizando, con las flechas del teclado sobre la pista o con los
+     botones, que pone y mantiene ui.js (también en /carta/). Tocar una foto
+     abre su detalle; con teclado, el detalle está en el "Detalles" de su fila. */
+  function renderDishCarousel(items) {
+    var box = $('#dish-carousel');
+    if (!box) return;
+    var slides = photosMode === 'never' ? [] : items.filter(function (p) {
+      return p.active !== false && !isDuplicatePromo(p) && p.image &&
+        NO_PHOTO_CATEGORIES.indexOf(p.category || '') === -1 &&
+        completeSections[p.category || ''] !== true;
+    });
+    if (!slides.length) { box.hidden = true; box.innerHTML = ''; return; }
+    box.innerHTML = carouselHtml(slides);
+    box.hidden = false;
+  }
+
+  /* Mismo marcado que dishCarousel() de scripts/lib/pages.mjs (/carta/). */
+  function carouselHtml(slides) {
+    return '<div class="dish-carousel-head">' +
+        '<h3 class="dish-carousel-title" id="dish-carousel-title">Así salen del horno</h3>' +
+        '<div class="dish-carousel-nav">' +
+          '<button type="button" class="dish-carousel-btn" data-carousel-prev aria-label="Fotos anteriores">&lsaquo;</button>' +
+          '<button type="button" class="dish-carousel-btn" data-carousel-next aria-label="Más fotos">&rsaquo;</button>' +
+        '</div>' +
+      '</div>' +
+      '<ul class="dish-carousel-track" data-carousel tabindex="0" ' +
+        'aria-label="Fotos de nuestros platos: ' + slides.length + '. Desliza o usa las flechas para ver más">' +
+      slides.map(function (p) {
+        var set = p.imageThumb
+          ? ' srcset="' + esc(p.imageThumb) + ' 240w, ' + esc(p.image) + ' 960w" sizes="(min-width: 720px) 220px, 62vw"'
+          : '';
+        return '<li class="dish-carousel-slide" data-detail-id="' + esc(p.id) + '">' +
+          '<figure>' +
+            '<img src="' + esc(p.image) + '"' + set + ' alt="' + esc(p.imageAlt || '') + '" width="960" height="960" loading="lazy" decoding="async">' +
+            '<figcaption><span class="dish-carousel-name">' + esc(p.name) + '</span>' +
+              '<span class="dish-carousel-cat">' + esc(p.category || '') + '</span></figcaption>' +
+          '</figure>' +
+        '</li>';
+      }).join('') +
+      '</ul>';
   }
 
   /* Atajos a cada categoría. Anclan, no filtran: la fila de arriba
@@ -535,6 +609,7 @@
         VV.menuItems = items;
         initAllergenFilters(items);
         renderMenu(items);
+        renderDishCarousel(items);
         document.dispatchEvent(new CustomEvent('vv:menu-ready'));
       })
       .catch(function () { /* API unavailable: section keeps its default message */ });
@@ -599,6 +674,18 @@
   }
 
   /* ── Offers ("ofertas") ─────────────────────────────── */
+  /* La foto de la oferta va justo encima de su título, así que el alt no lo
+     repite: describe lo que se ve (imageAlt, del panel) y, sin él, la foto es
+     decorativa. Las del panel son 4:3 (1200×900) con su versión de 600 px. */
+  function offerPhoto(o) {
+    var set = o.imageThumb
+      ? ' srcset="' + esc(o.imageThumb) + ' 600w, ' + esc(o.image) + ' 1200w"' +
+        ' sizes="(max-width: 520px) 100vw, (max-width: 860px) 50vw, 33vw"'
+      : '';
+    return '<div class="offer-media"><img src="' + esc(o.image) + '"' + set +
+      ' alt="' + esc(o.imageAlt || '') + '" width="1200" height="900" loading="lazy" decoding="async"></div>';
+  }
+
   function loadOffers() {
     fetch(apiUrl('offers'))
       .then(function (r) { return r.json(); })
@@ -608,9 +695,7 @@
         if (data.intro) $('#offers-intro').textContent = data.intro;
         $('#offers-grid').innerHTML = items.map(function (o) {
           return '<article class="offer reveal">' +
-            (o.image
-              ? '<div class="offer-media"><img src="' + esc(o.image) + '" alt="' + esc(o.title) + '" loading="lazy"></div>'
-              : '') +
+            (o.image ? offerPhoto(o) : '') +
             '<div class="offer-body">' +
               '<h3>' + esc(o.title) + '</h3>' +
               (o.description ? '<p>' + esc(o.description) + '</p>' : '') +

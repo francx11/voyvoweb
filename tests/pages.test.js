@@ -33,38 +33,66 @@ test('"never" no promete fotos aunque haya alguna subida', async () => {
   assert.ok(!html.includes('con fotos'));
 });
 
-test('/carta/ escribe la miniatura en el HTML, con alt, tamaño y srcset', async () => {
+const FOTO = (name) => ({
+  image: `/assets/menu/${name}-960.webp`,
+  imageThumb: `/assets/menu/${name}-240.webp`,
+  imageAlt: `Pizza ${name}`,
+});
+const CARRUSEL = /<section class="dish-carousel"[\s\S]*?<\/section>/;
+
+test('/carta/: sección completa → miniatura en la fila, con alt, tamaño y srcset; sin carrusel', async () => {
   const menu = [
-    {
-      ...MENU[0],
-      image: '/assets/menu/pz-margarita-960.webp',
-      imageThumb: '/assets/menu/pz-margarita-240.webp',
-      imageAlt: 'Pizza con tomate, mozzarella y orégano',
-    },
-    MENU[1],
+    { ...MENU[0], ...FOTO('margarita'), imageAlt: 'Pizza con tomate, mozzarella y orégano' },
+    { ...MENU[1], ...FOTO('romana') },
   ];
   const html = await carta({ menu: { photos: 'auto' } }, menu);
   const imgs = html.match(/<img class="carta-item-photo"[^>]*>/g) || [];
-  assert.equal(imgs.length, 1, 'solo el plato con foto lleva <img>');
+  assert.equal(imgs.length, 2);
   const img = imgs[0];
-  assert.match(img, /src="\/assets\/menu\/pz-margarita-240\.webp"/);
+  assert.match(img, /src="\/assets\/menu\/margarita-240\.webp"/);
   assert.match(img, /srcset="[^"]*-240\.webp 240w, [^"]*-960\.webp 960w"/);
   assert.match(img, /alt="Pizza con tomate, mozzarella y orégano"/);
   assert.match(img, /width="240" height="240"/, 'sin tamaño la página salta al cargar');
   assert.match(img, /loading="lazy"/);
   // El nombre ya es el <h3> de al lado: el alt no lo repite.
   assert.ok(!/alt="Margarita"/.test(html));
+  assert.ok(!CARRUSEL.test(html), 'sin secciones a medias no hay carrusel');
   // JSON-LD: la foto grande, con URL absoluta.
-  assert.ok(html.includes('"image": "https://ejemplo.test/assets/menu/pz-margarita-960.webp"'));
-  assert.equal((html.match(/"image": "https:\/\/ejemplo\.test\/assets\/menu\//g) || []).length, 1);
+  assert.ok(html.includes('"image": "https://ejemplo.test/assets/menu/margarita-960.webp"'));
+});
+
+test('/carta/: sección a medias → ninguna miniatura en sus filas y sus fotos en el carrusel', async () => {
+  const menu = [
+    { ...MENU[0], ...FOTO('margarita') },
+    MENU[1],
+    { name: 'Coca Cola', category: 'Bebidas', active: true, price: 2, ...FOTO('coca') },
+  ];
+  const html = await carta({ menu: { photos: 'auto' } }, menu);
+  assert.ok(!html.includes('carta-item-photo'), 'Clásicas a medias no enseña miniaturas');
+  const carrusel = html.match(CARRUSEL)[0];
+  assert.match(carrusel, /aria-labelledby="dish-carousel-title"/);
+  assert.match(carrusel, /data-carousel tabindex="0"/, 'la pista se puede pasar con el teclado');
+  assert.match(
+    carrusel,
+    /<img src="\/assets\/menu\/margarita-960\.webp"[^>]*alt="Pizza margarita"/
+  );
+  assert.match(carrusel, /<span class="dish-carousel-name">Margarita<\/span>/);
+  assert.ok(!carrusel.includes('coca'), 'Bebidas nunca lleva foto, ni en el carrusel');
+  assert.ok(!/autoplay|setInterval/.test(carrusel));
+  // Google sigue viendo la foto: está en el carrusel y en el JSON-LD.
+  assert.ok(html.includes('"image": "https://ejemplo.test/assets/menu/margarita-960.webp"'));
 });
 
 test('/carta/: foto sin alt revisado sale decorativa (alt vacío), y "never" no pinta ninguna', async () => {
-  const menu = [{ ...MENU[0], image: '/assets/menu/x.webp' }, MENU[1]];
+  const menu = [
+    { ...MENU[0], image: '/assets/menu/x.webp' },
+    { ...MENU[1], image: '/assets/menu/y.webp' },
+  ];
   const auto = await carta({ menu: { photos: 'auto' } }, menu);
   assert.match(auto, /<img class="carta-item-photo" src="\/assets\/menu\/x\.webp" alt=""/);
   const never = await carta({ menu: { photos: 'never' } }, menu);
   assert.ok(!never.includes('carta-item-photo'));
+  assert.ok(!never.includes('dish-carousel'));
   assert.ok(!never.includes('"image": "https://ejemplo.test/assets/menu/'));
 });
 

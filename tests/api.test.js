@@ -254,6 +254,41 @@ test('offers: the photo survives a text save and dies with its card', async () =
   assert.equal(fs.existsSync(onDisk), false, 'la imagen huerfana tendria que borrarse');
 });
 
+test('offers: the panel photo fields (thumb, alt) survive a text save and die with the photo', async () => {
+  const { writeJSON } = require('../src/lib/json-store');
+  const dir = path.join(process.env.PUBLIC_DIR, 'assets', 'ofertas');
+  fs.mkdirSync(dir, { recursive: true });
+  for (const f of ['o-1200.webp', 'o-600.webp']) fs.writeFileSync(path.join(dir, f), 'x');
+  writeJSON('offers.json', {
+    active: true,
+    intro: '',
+    items: [
+      {
+        id: 'o1',
+        title: 'Oferta',
+        image: '/assets/ofertas/o-1200.webp',
+        imageThumb: '/assets/ofertas/o-600.webp',
+        imageAlt: 'Dos pizzas familiares sobre fondo crema',
+      },
+    ],
+  });
+  const kept = await api('PUT', '/api/offers', {
+    active: true,
+    intro: '',
+    items: [{ id: 'o1', title: 'Oferta (editada)', imageAlt: 'no viene del formulario' }],
+  });
+  assert.equal(kept.json.items[0].imageThumb, '/assets/ofertas/o-600.webp');
+  assert.equal(kept.json.items[0].imageAlt, 'Dos pizzas familiares sobre fondo crema');
+
+  await api('DELETE', '/api/offers/o1/image');
+  const after = (await api('GET', '/api/offers')).json.items[0];
+  assert.equal(after.image, undefined);
+  assert.equal(after.imageThumb, undefined);
+  assert.equal(after.imageAlt, undefined);
+  assert.equal(fs.existsSync(path.join(dir, 'o-600.webp')), false, 'la pequeña también se borra');
+  await api('PUT', '/api/offers', { active: true, intro: '', items: [] });
+});
+
 test('offers: uploading to an unknown card is a 404 and writes nothing', async () => {
   const dir = path.join(process.env.PUBLIC_DIR, 'assets', 'ofertas');
   const before = fs.existsSync(dir) ? fs.readdirSync(dir) : [];
