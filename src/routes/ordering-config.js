@@ -15,6 +15,23 @@ const SLUG = /^[a-z0-9-]{1,24}$/;
 
 const num = (v, max) => Math.min(Math.max(0, Number(v) || 0), max);
 
+// Pedido mínimo / envío propios de cada pueblo ({ "Santa Fe": { minimum: 8 } }),
+// solo para zonas que existen. Un campo ausente cae al general en /a-domicilio/
+// (envío) o sale como «Consúltanos» (mínimo). Devuelve null si no queda nada.
+function cleanZoneTerms(raw, zones) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const out = {};
+  for (const zone of zones) {
+    const t = raw[zone];
+    if (!t || typeof t !== 'object') continue;
+    const terms = {};
+    if (t.minimum != null && t.minimum !== '') terms.minimum = num(t.minimum, 999);
+    if (t.fee != null && t.fee !== '') terms.fee = num(t.fee, 99);
+    if (Object.keys(terms).length) out[zone] = terms;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 function sanitizeSizes(sizes) {
   if (!Array.isArray(sizes)) return [];
   return sizes
@@ -81,6 +98,8 @@ function sanitizeOrderingConfig(body, current) {
         .filter(Boolean)
         .slice(0, 20),
     };
+    const zoneTerms = cleanZoneTerms(body.delivery.zoneTerms, cfg.delivery.zones);
+    if (zoneTerms) cfg.delivery.zoneTerms = zoneTerms;
   }
 
   if (body.schedule && typeof body.schedule === 'object') {
@@ -124,6 +143,7 @@ router.get('/config', (_req, res) => {
       minimum: (cfg.delivery && cfg.delivery.minimum) || 0,
       minimumNote: (cfg.delivery && cfg.delivery.minimumNote) || '',
       zones: (cfg.delivery && cfg.delivery.zones) || [],
+      zoneTerms: (cfg.delivery && cfg.delivery.zoneTerms) || {},
     },
     stripeEnabled: enabled && stripeClient.isConfigured(),
     cancelWindowMinutes: Math.round(ORDER_CANCEL_WINDOW / 60000),

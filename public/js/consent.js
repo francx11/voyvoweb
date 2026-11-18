@@ -158,10 +158,17 @@
     var metodo = metodoDe(a);
     if (!metodo) return;
     var zona = a.closest('section[id], header, footer, nav');
+    var ubicacion = zona ? (zona.id || zona.tagName.toLowerCase()) : 'pagina';
+    // origen: el botón concreto, de su data-source (header, footer, carta,
+    // reparto-hero…); sin él, la zona de siempre. pagina: la ruta, para separar
+    // el «header» de /carta/ del de la portada. ubicacion se mantiene tal cual
+    // para no romper lo que ya lea GTM.
     window.dataLayer.push({
       event: 'contacto',
       metodo: metodo,
-      ubicacion: zona ? (zona.id || zona.tagName.toLowerCase()) : 'pagina',
+      ubicacion: ubicacion,
+      origen: a.getAttribute('data-source') || ubicacion,
+      pagina: location.pathname,
     });
   }, true);
 

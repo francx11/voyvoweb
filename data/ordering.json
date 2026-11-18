@@ -163,15 +163,19 @@
   "delivery": {
     "fee": 2,
     "minimum": 8,
-    "minimumNote": "en Santa Fe y Jau; en El Ventorrillo, Belicena, Purchil y Ambroz, consúltanos",
+    "minimumNote": "en Santa Fe y El Jau; en El Ventorrillo, Belicena, Purchil y Ambroz, consúltanos",
     "zones": [
       "Santa Fe",
-      "Jau",
+      "El Jau",
       "El Ventorrillo",
       "Belicena",
       "Purchil",
       "Ambroz"
-    ]
+    ],
+    "zoneTerms": {
+      "Santa Fe": { "minimum": 8 },
+      "El Jau": { "minimum": 8 }
+    }
   },
   "schedule": {
     "mon": [

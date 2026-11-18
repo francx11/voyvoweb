@@ -154,4 +154,44 @@
   }
   window.addEventListener('load', syncAll);
   syncAll();
+
+  /* ── Índice de categorías de /carta/ (.carta-nav) ──────
+     Los enlaces funcionan solos (anclas). Esto solo añade dos cosas: la altura
+     real de la cabecera en --header-h, para que el índice se pegue justo
+     debajo, y marcar con aria-current la categoría que se está leyendo,
+     deslizando la fila para que su píldora quede a la vista. */
+  var header = document.querySelector('.site-header');
+  function syncHeaderHeight() {
+    if (header) document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+  }
+  syncHeaderHeight();
+  window.addEventListener('resize', syncHeaderHeight);
+
+  var cartaNav = document.querySelector('.carta-nav');
+  if (cartaNav && 'IntersectionObserver' in window) {
+    var pills = {};
+    cartaNav.querySelectorAll('a[href^="#"]').forEach(function (a) {
+      pills[a.getAttribute('href').slice(1)] = a;
+    });
+    var current = null;
+    var mark = function (id) {
+      if (id === current || !pills[id]) return;
+      if (current && pills[current]) pills[current].removeAttribute('aria-current');
+      current = id;
+      var pill = pills[id];
+      pill.setAttribute('aria-current', 'true');
+      var list = pill.parentNode.parentNode;
+      if (list.scrollWidth > list.clientWidth) {
+        var offset = pill.getBoundingClientRect().left - list.getBoundingClientRect().left;
+        list.scrollTo({ left: list.scrollLeft + offset - (list.clientWidth - pill.offsetWidth) / 2, behavior: 'smooth' });
+      }
+    };
+    // Una sección «se está leyendo» cuando cruza la franja alta de la pantalla.
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) mark(entry.target.getAttribute('aria-labelledby'));
+      });
+    }, { rootMargin: '-25% 0px -70% 0px' });
+    document.querySelectorAll('.carta-group[aria-labelledby]').forEach(function (s) { io.observe(s); });
+  }
 })();

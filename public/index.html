@@ -52,7 +52,7 @@
     "servesCuisine": ["Pizza", "Cocina italiana"],
     "areaServed": [
       { "@type": "Place", "name": "Santa Fe" },
-      { "@type": "Place", "name": "Jau" },
+      { "@type": "Place", "name": "El Jau" },
       { "@type": "Place", "name": "Belicena" },
       { "@type": "Place", "name": "Purchil" },
       { "@type": "Place", "name": "Ambroz" },
@@ -77,7 +77,7 @@
       "addressCountry": "ES"
     },
     "hasMenu": "https://voyvolandosantafe.com/carta/",
-    "acceptsReservations": "False",
+    "acceptsReservations": false,
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",
@@ -161,7 +161,7 @@
         </ul>
       </nav>
       <div class="header-actions">
-        <a href="tel:958442847" class="nav-cta js-order js-tel-link" aria-label="Pedir por teléfono: 958 44 28 47"><svg class="icon-phone" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.18 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="nav-cta-label">Pedir</span><span class="nav-cta-phone js-phone">958 44 28 47</span></a>
+        <a href="tel:958442847" class="nav-cta js-order js-tel-link" data-source="header" aria-label="Pedir por teléfono: 958 44 28 47"><svg class="icon-phone" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.18 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="nav-cta-label">Pedir</span><span class="nav-cta-phone js-phone">958 44 28 47</span></a>
         <button id="theme-toggle" class="icon-btn theme-toggle" type="button" aria-pressed="false" aria-label="Activar modo oscuro">
           <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
           <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
@@ -186,7 +186,7 @@
           <!-- Texto sin "en el local": el negocio es solo domicilio y recogida. -->
           <p class="hero-sub" id="hero-sub">Ingredientes frescos y receta de siempre. Reparto en Santa Fe y alrededores, o pasa a recogerla por el local.</p>
           <div class="hero-actions">
-            <a href="tel:958442847" class="btn btn-primary js-order js-tel-link">Llamar · <span class="js-phone">958 44 28 47</span></a>
+            <a href="tel:958442847" data-source="portada-hero" class="btn btn-primary js-order js-tel-link">Llamar · <span class="js-phone">958 44 28 47</span></a>
             <a href="#menu" class="btn btn-outline">Ver la carta</a>
           </div>
           <p class="hero-since">Ingredientes frescos · Receta de siempre</p>
@@ -263,7 +263,7 @@
 
           <div class="airmail-rule" aria-hidden="true"></div>
           <p class="actions-row">
-            <a href="tel:958442847" class="btn btn-primary js-order js-tel-link">Pedir por teléfono</a>
+            <a href="tel:958442847" data-source="portada-carta" class="btn btn-primary js-order js-tel-link">Pedir por teléfono</a>
             <a href="/carta/" class="btn btn-outline">Ver la carta completa con precios</a>
           </p>
         </div>
@@ -285,7 +285,7 @@
             <span class="ms-badge" id="ms-badge" hidden></span>
             <h3 id="ms-name"></h3>
             <p id="ms-desc"></p>
-            <a href="tel:958442847" class="btn btn-primary js-tel-link" id="ms-cta">Llamar para pedirla</a>
+            <a href="tel:958442847" data-source="portada-especial" class="btn btn-primary js-tel-link" id="ms-cta">Llamar para pedirla</a>
           </div>
         </div>
       </div>
@@ -344,7 +344,7 @@
           <article class="service reveal">
             <span class="stamp stamp-sm" aria-hidden="true"><span class="stamp-mid">1</span></span>
             <h3>A domicilio</h3>
-            <p>Te la llevamos a casa. Llama al <a href="tel:958442847" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a> y te la enviamos lo antes posible. <span class="js-delivery-terms" hidden></span></p>
+            <p>Te la llevamos a casa. Llama al <a href="tel:958442847" data-source="portada-servicios" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a> y te la enviamos lo antes posible. <span class="js-delivery-terms" hidden></span></p>
           </article>
           <article class="service reveal">
             <span class="stamp stamp-sm" aria-hidden="true"><span class="stamp-mid">2</span></span>
@@ -406,7 +406,7 @@
         <div class="faq-list reveal">
           <details>
             <summary>¿Hacéis entrega a domicilio en Santa Fe?</summary>
-            <p>Sí. Llama al <a href="tel:958442847" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a> y te llevamos la pizza a casa lo antes posible. <span class="js-delivery-terms" hidden></span></p>
+            <p>Sí. Llama al <a href="tel:958442847" data-source="portada-faq" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a> y te llevamos la pizza a casa lo antes posible. <span class="js-delivery-terms" hidden></span></p>
           </details>
           <details>
             <summary>¿Puedo pedir para recoger?</summary>
@@ -433,7 +433,7 @@
             </div>
             <div class="info-item">
               <dt>Teléfono</dt>
-              <dd><a href="tel:958442847" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a></dd>
+              <dd><a href="tel:958442847" data-source="portada-contacto" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a></dd>
             </div>
             <div class="info-item">
               <dt>Email</dt>
@@ -488,7 +488,7 @@
             <span>Voy Volando</span>
           </a>
           <p>Pizza artesanal a domicilio y para recoger en Santa Fe (Granada). Sin sala: pide por teléfono, sin intermediarios.</p>
-          <a href="tel:958442847" class="btn btn-primary footer-call js-tel-link"><svg class="icon-phone" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.18 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="js-phone">958 44 28 47</span></a>
+          <a href="tel:958442847" class="btn btn-primary footer-call js-tel-link" data-source="footer"><svg class="icon-phone" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.18 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.1 9.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="js-phone">958 44 28 47</span></a>
         </div>
         <div class="footer-col">
           <h2 class="footer-title">Horario</h2>
@@ -502,7 +502,7 @@
           <h2 class="footer-title">Repartimos en</h2>
           <ul class="footer-list footer-zones">
             <li>Santa Fe</li>
-            <li>Jau</li>
+            <li>El Jau</li>
             <li>El Ventorrillo</li>
             <li>Belicena</li>
             <li>Purchil</li>

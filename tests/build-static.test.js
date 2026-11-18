@@ -132,7 +132,7 @@ test('el build estático reescribe el dominio en todas partes', () => {
       assert.ok(!page.includes(frase), `${name}: sigue diciendo "${frase}"`);
     }
   }
-  assert.ok(html.includes('"acceptsReservations": "False"'), 'la portada sigue aceptando reservas');
+  assert.ok(html.includes('"acceptsReservations": false'), 'la portada sigue aceptando reservas');
 
   // geo y sameAs son los que le dicen a Google cuál de los negocios llamados
   // Voy Volando de la provincia es este. Tienen que estar en las tres páginas
@@ -315,10 +315,19 @@ test('/a-domicilio/ lista las zonas, el envío y el horario de los datos', () =>
   const page = fs.readFileSync(path.join(OUT, 'a-domicilio', 'index.html'), 'utf-8');
   const ordering = JSON.parse(fs.readFileSync(path.join('data', 'ordering.json'), 'utf-8'));
   const config = JSON.parse(fs.readFileSync(path.join('data', 'config.json'), 'utf-8'));
-  for (const zone of ordering.delivery.zones) {
-    assert.ok(page.includes(`</span>${zone}</li>`), `/a-domicilio/ sin la zona ${zone}`);
-  }
   const euro = (n) => `${Number(n).toFixed(2).replace('.', ',')} €`;
+  for (const zone of ordering.delivery.zones) {
+    assert.ok(page.includes(`</span>${zone}</th>`), `/a-domicilio/ sin la zona ${zone}`);
+  }
+  // Tabla por localidad: mínimo propio si zoneTerms lo da, «Consúltanos» si no.
+  const terms = ordering.delivery.zoneTerms || {};
+  for (const zone of ordering.delivery.zones) {
+    const min = terms[zone] && terms[zone].minimum;
+    const fee = terms[zone] && terms[zone].fee != null ? terms[zone].fee : ordering.delivery.fee;
+    const row = `</span>${zone}</th><td>${min != null ? euro(min) : 'Consúltanos'}</td><td>${euro(fee)}</td>`;
+    assert.ok(page.includes(row), `/a-domicilio/: fila de ${zone} no cuadra con ordering.json`);
+  }
+  assert.ok(page.includes('Sin pedido mínimo'), 'sin la ficha de recogida');
   assert.ok(page.includes(`Envío ${euro(ordering.delivery.fee)}`), 'sin gastos de envío');
   assert.ok(page.includes(config.site.hours.split('\n')[0]), 'sin horario');
   assert.match(page, /<h1 class="page-title"[^>]*>Pizza a domicilio en Santa Fe/);

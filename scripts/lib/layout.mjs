@@ -57,7 +57,7 @@ ${links}
         </ul>
       </nav>
       <div class="header-actions">
-        <a href="${TEL}" class="nav-cta js-order js-tel-link" aria-label="Pedir por teléfono: ${PHONE}">${ICON_PHONE}<span class="nav-cta-label">Pedir</span><span class="nav-cta-phone js-phone">${PHONE}</span></a>
+        <a href="${TEL}" class="nav-cta js-order js-tel-link" data-source="header" aria-label="Pedir por teléfono: ${PHONE}">${ICON_PHONE}<span class="nav-cta-label">Pedir</span><span class="nav-cta-phone js-phone">${PHONE}</span></a>
         <button id="theme-toggle" class="icon-btn theme-toggle" type="button" aria-pressed="false" aria-label="Activar modo oscuro">
           <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
           <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
@@ -117,7 +117,7 @@ ${zones.map((z) => `            <li>${esc(z)}</li>`).join('\n')}
             <span>Voy Volando</span>
           </a>
           <p>Pizza artesanal a domicilio y para recoger en Santa Fe (Granada). Sin sala: pide por teléfono, sin intermediarios.</p>
-          <a href="${TEL}" class="btn btn-primary footer-call js-tel-link">${ICON_PHONE}<span class="js-phone">${PHONE}</span></a>
+          <a href="${TEL}" class="btn btn-primary footer-call js-tel-link" data-source="footer">${ICON_PHONE}<span class="js-phone">${PHONE}</span></a>
         </div>${hoursBlock}${zonesBlock}
         <div class="footer-col">
           <h2 class="footer-title">Dónde estamos</h2>
