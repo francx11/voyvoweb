@@ -618,8 +618,9 @@ export function renderContacto({ domain, site, ordering, business }) {
 //     sale «Consúltanos»: no se publica un mínimo que la tienda no ha dado para
 //     ese pueblo. Sin zoneTerms en absoluto, todos llevan el general, que es lo
 //     que se publicaba antes de existir el campo.
-// CONFIRMAR CON TIENDA: ¿Mantener El Ventorrillo? Y los mínimos de El
-// Ventorrillo, Belicena, Purchil y Ambroz, hoy «consúltanos» en minimumNote.
+// Confirmado con la tienda (2026-11-18): envío 2 € en todas las zonas; mínimo
+// 8 € en Santa Fe y El Jau; en El Ventorrillo, Belicena, Purchil y Ambroz el
+// mínimo depende del pedido, así que se queda en «Consúltanos» a propósito.
 export function zoneTermsOf(delivery = {}) {
   const per =
     delivery.zoneTerms && typeof delivery.zoneTerms === 'object' ? delivery.zoneTerms : null;
