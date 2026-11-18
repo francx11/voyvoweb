@@ -704,7 +704,7 @@ img { max-width: 100%; display: block; }
    Fotos de platos cuya sección aún no las enseña en la fila. Pista con scroll
    y snap: la siguiente foto asoma por el borde para que se vea que hay más.
    Botones de 44px (objetivo táctil) y foco visible en la pista. */
-.dish-carousel { margin: 0 0 1.8rem; }
+.dish-carousel { margin: 3rem 0 1rem; } /* va debajo de la lista de platos */
 .dish-carousel-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; }
 .dish-carousel-title {
   font-family: var(--heading); font-weight: 700; font-size: 1.15rem;

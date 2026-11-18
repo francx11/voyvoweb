@@ -193,7 +193,7 @@ test('security-meta: CSP con hash por script inline, tras <meta charset>', async
   assert.throws(() => applySecurityMeta('<head></head>', { csp: {}, referrer: 'x' }), /charset/);
 });
 
-test('/carta/: índice de categorías antes del carrusel, con un ancla por sección', async () => {
+test('/carta/: índice antes de la lista, carrusel debajo, un ancla por sección', async () => {
   const menu = [
     // Clásicas a medio fotografiar: su foto va al carrusel.
     { ...MENU[0], image: '/assets/menu/x.webp' },
@@ -203,7 +203,13 @@ test('/carta/: índice de categorías antes del carrusel, con un ancla por secci
   const html = await carta({ menu: { photos: 'auto' } }, menu);
   const nav = html.indexOf('class="carta-nav"');
   assert.ok(nav > 0, 'sin índice de categorías');
-  assert.ok(nav < html.indexOf('class="dish-carousel"'), 'el índice va antes del carrusel');
+  const carousel = html.indexOf('class="dish-carousel"');
+  assert.ok(carousel > 0, 'sin carrusel');
+  assert.ok(nav < html.indexOf('class="carta-group"'), 'el índice va antes de la lista');
+  assert.ok(
+    carousel > html.lastIndexOf('class="carta-group"'),
+    'el carrusel va debajo de la lista, no antes'
+  );
   for (const id of ['cat-pizzas-clasicas', 'cat-postres']) {
     assert.ok(html.includes(`href="#${id}"`), `sin enlace a ${id}`);
     assert.ok(html.includes(`id="${id}"`), `sin destino ${id}`);
