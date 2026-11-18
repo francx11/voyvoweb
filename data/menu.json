@@ -28,8 +28,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/margarita-f3-20261117103733-960.webp",
-    "imageThumb": "/assets/menu/margarita-f3-20261117103733-240.webp",
+    "image": "/assets/menu/margarita-f3-20261117181243-960.jpg",
+    "imageThumb": "/assets/menu/margarita-f3-20261117181243-240.jpg",
     "imageAlt": "Pizza con tomate, mozzarella y orégano"
   },
   {
@@ -2257,7 +2257,10 @@
       "mostaza",
       "sésamo"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/spaghetti-bolonesa-f30-20261116113944-960.jpg",
+    "imageThumb": "/assets/menu/spaghetti-bolonesa-f30-20261116113944-240.jpg",
+    "imageAlt": "Tomate, picada de ternera, mozzarella y orégano"
   },
   {
     "id": "pasta-carbonara",
@@ -2278,7 +2281,10 @@
       "mostaza",
       "sulfitos"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/tallarines-carbonara-f29-20261116113854-960.jpg",
+    "imageThumb": "/assets/menu/tallarines-carbonara-f29-20261116113854-240.jpg",
+    "imageAlt": "Nata, bacon, mozzarella y orégano"
   },
   {
     "id": "postre-tarta-3-chocolates",
@@ -2689,7 +2695,10 @@
           "price": 2
         }
       ]
-    }
+    },
+    "image": "/assets/menu/mitad-y-mitad-f26-20261116113709-960.jpg",
+    "imageThumb": "/assets/menu/mitad-y-mitad-f26-20261116113709-240.jpg",
+    "imageAlt": "Suplemento por pizza mitad de una y mitad de otra, según la categoría"
   },
   {
     "id": "extra-doble-de-masa",
@@ -2752,7 +2761,10 @@
     "traces": [
       "soja"
     ],
-    "active": true
+    "active": true,
+    "image": "/assets/menu/bordes-de-queso-f25-20261116113631-960.jpg",
+    "imageThumb": "/assets/menu/bordes-de-queso-f25-20261116113631-240.jpg",
+    "imageAlt": "Queso rodeado por el borde de la masa"
   },
   {
     "id": "extra-bordes-de-cheddar-o-roquefort",
