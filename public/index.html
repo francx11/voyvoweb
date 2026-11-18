@@ -241,9 +241,6 @@
           </header>
 
           <div id="menu-products">
-            <!-- Carrusel de fotos de platos cuya sección aún no tiene todas sus
-                 fotos (renderDishCarousel en main.js); oculto si no hay. -->
-            <section class="dish-carousel" id="dish-carousel" aria-labelledby="dish-carousel-title" hidden></section>
             <!-- Atajos a cada categoría: los rellena renderJumpNav() con los
                  grupos ya filtrados, y quedan ocultos si hay menos de tres. -->
             <nav class="menu-jump" id="menu-jump" aria-label="Categorías de la carta" hidden></nav>
@@ -254,6 +251,10 @@
             <div class="menu-cards" id="menu-cards">
               <p class="menu-empty">Cargando la carta…</p>
             </div>
+            <!-- Carrusel de fotos de platos cuya sección aún no tiene todas sus
+                 fotos (renderDishCarousel en main.js); oculto si no hay.
+                 Debajo de la lista, como en /carta/: primero se elige. -->
+            <section class="dish-carousel" id="dish-carousel" aria-labelledby="dish-carousel-title" hidden></section>
           </div>
 
           <div class="menu-pdf" id="menu-pdf" hidden>

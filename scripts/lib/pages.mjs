@@ -279,6 +279,10 @@ export function carouselItems(items, site) {
 
 // Mismo marcado que carouselHtml() de public/js/main.js; los botones los activa
 // ui.js. Va en el HTML, así Google ve las fotos sin ejecutar nada.
+// Va DEBAJO de la lista, en todos los anchos (decisión 2026-11-18): en /carta/
+// se viene a elegir y ver precios, y arriba empujaba la primera pizza a más de
+// una pantalla en móvil. Ninguna de las pizzerías de referencia mirada (Domino's,
+// Papa John's, Grosso) pone una galería entre el título y la carta.
 function dishCarousel(slides) {
   if (!slides.length) return '';
   return `        <section class="dish-carousel" aria-labelledby="dish-carousel-title">
@@ -320,8 +324,8 @@ ${slides
 }
 
 // Índice de categorías de /carta/ (auditoría móvil, nov-2026): a 390 px la
-// primera categoría empezaba a más de una pantalla de la cabecera, detrás del
-// carrusel. Va antes del carrusel y se queda pegado bajo la cabecera al bajar,
+// primera categoría empezaba a más de una pantalla de la cabecera. Va justo
+// antes de la lista y se queda pegado bajo la cabecera al bajar,
 // así que se salta a «Postres» con un toque desde cualquier punto de la carta.
 // Son enlaces normales a los id de los h2: sin JavaScript también funcionan.
 // ui.js solo marca la categoría que se está viendo.
@@ -408,8 +412,9 @@ ${group.items.map((item) => renderItem(item, tiers, rowPhoto(item))).join('\n')}
           <p class="carta-quick"><a href="tel:958442847" class="carta-quick-call" data-source="carta-cabecera">Pedir · 958 44 28 47</a><a href="/a-domicilio/#zonas">Zonas y condiciones de reparto</a></p>
         </header>
 
-${cartaNav(groups)}${dishCarousel(carouselItems(items, site))}${sections}
+${cartaNav(groups)}${sections}
 
+${dishCarousel(carouselItems(items, site))}
         <div class="airmail-rule" aria-hidden="true"></div>
         <p class="actions-row">
           <a href="tel:958442847" class="btn btn-primary" data-source="carta">Pedir por teléfono · 958 44 28 47</a>
