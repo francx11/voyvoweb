@@ -9,7 +9,7 @@ const vm = require('node:vm');
 
 const SRC = fs.readFileSync(path.join(__dirname, '..', 'public', 'js', 'consent.js'), 'utf8');
 
-function run(saved) {
+function run(saved, pathname = '/') {
   let onClick = null;
   const store = { vv_consent: saved };
   const window = {};
@@ -27,15 +27,15 @@ function run(saved) {
   const ctx = {
     window,
     document,
-    location: { hostname: 'voyvolandosantafe.com' },
+    location: { hostname: 'voyvolandosantafe.com', pathname },
     localStorage: { getItem: (k) => store[k] ?? null, setItem: (k, v) => (store[k] = v) },
     Date,
   };
   vm.runInNewContext(SRC, ctx);
-  const click = (href, { id = '', zona = null } = {}) => {
+  const click = (href, { id = '', zona = null, source = null } = {}) => {
     const a = {
       id,
-      getAttribute: () => href,
+      getAttribute: (k) => (k === 'href' ? href : k === 'data-source' ? source : null),
       closest: () => zona,
     };
     onClick({ target: { closest: () => a } });
@@ -63,6 +63,22 @@ test('con consentimiento: clasifica los enlaces de contacto', () => {
   assert.strictEqual(ev[0].ubicacion, 'contacto');
   assert.strictEqual(ev[2].ubicacion, 'footer');
   assert.strictEqual(ev[1].ubicacion, 'pagina');
+});
+
+test('origen sale de data-source (o de la zona) y pagina de la ruta', () => {
+  const { click, eventos } = run('granted', '/carta/');
+  click('tel:958442847', { zona: { id: '', tagName: 'HEADER' }, source: 'header' });
+  click('tel:958442847', { source: 'carta' });
+  click('tel:958442847', { zona: { id: 'faq', tagName: 'SECTION' } });
+  const ev = eventos();
+  assert.deepStrictEqual(
+    Array.from(ev, (e) => [e.origen, e.ubicacion, e.pagina]),
+    [
+      ['header', 'header', '/carta/'],
+      ['carta', 'pagina', '/carta/'],
+      ['faq', 'faq', '/carta/'],
+    ]
+  );
 });
 
 test('sin consentimiento (rechazado o sin decidir): no empuja nada', () => {

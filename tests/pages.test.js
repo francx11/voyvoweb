@@ -192,3 +192,42 @@ test('security-meta: CSP con hash por script inline, tras <meta charset>', async
   assert.strictEqual(applySecurityMeta(out, { csp: {}, referrer: 'x' }), out, 'no duplica');
   assert.throws(() => applySecurityMeta('<head></head>', { csp: {}, referrer: 'x' }), /charset/);
 });
+
+test('/carta/: índice de categorías antes del carrusel, con un ancla por sección', async () => {
+  const menu = [
+    // Clásicas a medio fotografiar: su foto va al carrusel.
+    { ...MENU[0], image: '/assets/menu/x.webp' },
+    MENU[1],
+    { name: 'Tiramisú', category: 'Postres', active: true, price: 4 },
+  ];
+  const html = await carta({ menu: { photos: 'auto' } }, menu);
+  const nav = html.indexOf('class="carta-nav"');
+  assert.ok(nav > 0, 'sin índice de categorías');
+  assert.ok(nav < html.indexOf('class="dish-carousel"'), 'el índice va antes del carrusel');
+  for (const id of ['cat-pizzas-clasicas', 'cat-postres']) {
+    assert.ok(html.includes(`href="#${id}"`), `sin enlace a ${id}`);
+    assert.ok(html.includes(`id="${id}"`), `sin destino ${id}`);
+  }
+  assert.ok(html.includes('href="/a-domicilio/#zonas"'), 'sin acceso a zonas y condiciones');
+});
+
+test('zoneTermsOf: mínimo propio, «Consúltanos» si falta y el general sin zoneTerms', async () => {
+  const { zoneTermsOf } = await import('../scripts/lib/pages.mjs');
+  const zones = ['Santa Fe', 'Belicena'];
+  assert.deepStrictEqual(zoneTermsOf({ fee: 2, minimum: 8, zones }), [
+    { name: 'Santa Fe', fee: 2, minimum: 8 },
+    { name: 'Belicena', fee: 2, minimum: 8 },
+  ]);
+  assert.deepStrictEqual(
+    zoneTermsOf({
+      fee: 2,
+      minimum: 8,
+      zones,
+      zoneTerms: { 'Santa Fe': { minimum: 8 }, Belicena: { fee: 3 } },
+    }),
+    [
+      { name: 'Santa Fe', fee: 2, minimum: 8 },
+      { name: 'Belicena', fee: 3, minimum: null },
+    ]
+  );
+});

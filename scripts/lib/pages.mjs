@@ -319,6 +319,28 @@ ${slides
 `;
 }
 
+// Índice de categorías de /carta/ (auditoría móvil, nov-2026): a 390 px la
+// primera categoría empezaba a más de una pantalla de la cabecera, detrás del
+// carrusel. Va antes del carrusel y se queda pegado bajo la cabecera al bajar,
+// así que se salta a «Postres» con un toque desde cualquier punto de la carta.
+// Son enlaces normales a los id de los h2: sin JavaScript también funcionan.
+// ui.js solo marca la categoría que se está viendo.
+function cartaNav(groups) {
+  if (groups.length < 2) return '';
+  return `        <nav class="carta-nav" aria-label="Categorías de la carta">
+          <ul class="carta-nav-list">
+${groups
+  .map(
+    (group) =>
+      `            <li><a href="#cat-${esc(slug(group.category))}">${esc(group.category)}</a></li>`
+  )
+  .join('\n')}
+          </ul>
+        </nav>
+
+`;
+}
+
 export function renderCarta({ domain, menu, ordering, site }) {
   const tiers = (ordering && ordering.tiers) || {};
   const items = cartaItems(menu, ordering);
@@ -383,13 +405,14 @@ ${group.items.map((item) => renderItem(item, tiers, rowPhoto(item))).join('\n')}
           <h1 class="section-title">La carta de Voy Volando en Santa Fe</h1>
           <div class="airmail-rule" aria-hidden="true"></div>
           <p class="section-intro" style="margin:0 auto">Clásicas y gourmet, con ingredientes frescos. Pídelas a domicilio en Santa Fe y alrededores o pasa a recogerlas por el local.</p>
+          <p class="carta-quick"><a href="tel:958442847" class="carta-quick-call" data-source="carta-cabecera">Pedir · 958 44 28 47</a><a href="/a-domicilio/#zonas">Zonas y condiciones de reparto</a></p>
         </header>
 
-${dishCarousel(carouselItems(items, site))}${sections}
+${cartaNav(groups)}${dishCarousel(carouselItems(items, site))}${sections}
 
         <div class="airmail-rule" aria-hidden="true"></div>
         <p class="actions-row">
-          <a href="tel:958442847" class="btn btn-primary">Pedir por teléfono · 958 44 28 47</a>
+          <a href="tel:958442847" class="btn btn-primary" data-source="carta">Pedir por teléfono · 958 44 28 47</a>
           <a href="/#menu" class="btn btn-outline">${
             hasPhotos ? 'Ver la carta con fotos' : 'Ver la carta y filtrar por alérgenos'
           }</a>${
@@ -531,7 +554,7 @@ export function renderContacto({ domain, site, ordering, business }) {
         <dl>
           <div class="info-item">
             <dt>Teléfono</dt>
-            <dd><a href="tel:958442847">958 44 28 47</a></dd>
+            <dd><a href="tel:958442847" data-source="contacto-ficha">958 44 28 47</a></dd>
           </div>
           <div class="info-item">
             <dt>Dirección</dt>
@@ -567,7 +590,7 @@ export function renderContacto({ domain, site, ordering, business }) {
 
         <div class="airmail-rule" aria-hidden="true"></div>
         <p class="actions-row">
-          <a href="tel:958442847" class="btn btn-primary">Llamar · 958 44 28 47</a>
+          <a href="tel:958442847" class="btn btn-primary" data-source="contacto">Llamar · 958 44 28 47</a>
           <a href="/carta/" class="btn btn-outline">Ver la carta</a>
         </p>
       </div>
@@ -584,6 +607,53 @@ export function renderContacto({ domain, site, ordering, business }) {
     jsonLd,
     body,
   });
+}
+
+// Condiciones de reparto pueblo a pueblo, para la tabla de /a-domicilio/.
+//
+// delivery.zoneTerms (ordering.json) es opcional y va por nombre de zona:
+// { "Santa Fe": { "minimum": 8 }, "Belicena": { "minimum": 12, "fee": 3 } }.
+//   - envío: el del pueblo, o el general (delivery.fee) si no tiene.
+//   - mínimo: el del pueblo. Si existe zoneTerms y el pueblo no tiene mínimo,
+//     sale «Consúltanos»: no se publica un mínimo que la tienda no ha dado para
+//     ese pueblo. Sin zoneTerms en absoluto, todos llevan el general, que es lo
+//     que se publicaba antes de existir el campo.
+// CONFIRMAR CON TIENDA: ¿Mantener El Ventorrillo? Y los mínimos de El
+// Ventorrillo, Belicena, Purchil y Ambroz, hoy «consúltanos» en minimumNote.
+export function zoneTermsOf(delivery = {}) {
+  const per =
+    delivery.zoneTerms && typeof delivery.zoneTerms === 'object' ? delivery.zoneTerms : null;
+  const num = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+  return (delivery.zones || []).map((name) => {
+    const own = (per && per[name]) || {};
+    const fee = own.fee != null ? num(own.fee) : num(delivery.fee);
+    const minimum = own.minimum != null ? num(own.minimum) : per ? null : num(delivery.minimum);
+    return { name, fee, minimum };
+  });
+}
+
+const minimumText = (m) => (m == null ? 'Consúltanos' : m === 0 ? 'Sin mínimo' : euro(m));
+const feeText = (f) => (f == null ? 'Consúltanos' : f === 0 ? 'Gratis' : euro(f));
+
+function zoneTable(rows) {
+  return `        <div class="zone-table-wrap">
+          <table class="zone-table">
+            <caption class="visually-hidden">Pedido mínimo y gastos de envío por localidad</caption>
+            <thead>
+              <tr><th scope="col">Localidad</th><th scope="col">Pedido mínimo</th><th scope="col">Envío</th></tr>
+            </thead>
+            <tbody>
+${rows
+  .map(
+    (r) =>
+      `              <tr><th scope="row"><span class="zone-pin" aria-hidden="true"></span>${esc(
+        r.name
+      )}</th><td>${esc(minimumText(r.minimum))}</td><td>${esc(feeText(r.fee))}</td></tr>`
+  )
+  .join('\n')}
+            </tbody>
+          </table>
+        </div>`;
 }
 
 const joinList = (items) =>
@@ -641,24 +711,39 @@ export function renderADomicilio({ domain, site, ordering, business }) {
     breadcrumb(domain, 'Pizza a domicilio', '/a-domicilio/'),
   ];
 
+  // Las dos modalidades lado a lado (en móvil, una encima de otra): recoger no
+  // tiene mínimo ni envío; el reparto depende del pueblo y va en la tabla. Las
+  // zonas, el envío y los mínimos salen de ordering.json, como el pie y el
+  // areaServed del JSON-LD: un solo sitio para el dato.
   const zonesSection = zones.length
     ? `
     <section class="section" id="zonas" aria-labelledby="zonas-title">
       <div class="container">
         <span class="eyebrow">Dónde repartimos</span>
-        <h2 class="section-title" id="zonas-title">${zones.length} zonas, un mismo horno</h2>
-        <ul class="zone-grid">
-${zones
-  .map(
-    (z) =>
-      `          <li class="zone-card"><span class="zone-pin" aria-hidden="true"></span>${esc(z)}</li>`
-  )
-  .join('\n')}
-        </ul>${
-          termsText
-            ? `\n        <p class="zone-terms"><strong>Condiciones:</strong> ${esc(termsText)}</p>`
-            : ''
-        }
+        <h2 class="section-title" id="zonas-title">Recoger o a domicilio: ${zones.length} zonas, un mismo horno</h2>
+        <div class="mode-grid">
+          <article class="mode-card" aria-labelledby="modo-recogida">
+            <span class="mode-tag">Recogida</span>
+            <h3 class="mode-title" id="modo-recogida">Recógela en el local</h3>
+            <ul class="mode-facts">
+              <li><strong>Sin pedido mínimo</strong> y sin gastos de envío</li>
+              <li>${esc(address)}, ${esc(city)}</li>
+            </ul>
+            <p class="mode-actions">
+              <a href="tel:958442847" class="btn btn-primary" data-source="reparto-recogida">Pedir para recoger</a>
+              <a href="${esc(business.mapsUrl)}" class="btn btn-outline" target="_blank" rel="noopener">Cómo llegar</a>
+            </p>
+          </article>
+          <article class="mode-card mode-card--delivery" aria-labelledby="modo-reparto">
+            <span class="mode-tag">Reparto</span>
+            <h3 class="mode-title" id="modo-reparto">Te la llevamos a casa</h3>
+            <p class="mode-lead">Pedido mínimo y envío según la localidad:</p>
+${zoneTable(zoneTermsOf(delivery))}
+            <p class="mode-actions">
+              <a href="tel:958442847" class="btn btn-primary" data-source="reparto-domicilio">Pedir a domicilio</a>
+            </p>
+          </article>
+        </div>
       </div>
     </section>
 `
@@ -695,7 +780,7 @@ ${hours.map((h) => `          <li>${esc(h)}</li>`).join('\n')}
           zones.length ? ` en ${esc(zoneText)}` : ''
         }. Pide por teléfono: sin plataformas ni comisiones.</p>
         <div class="hero-actions">
-          <a href="tel:958442847" class="btn btn-primary">Llamar · 958 44 28 47</a>
+          <a href="tel:958442847" class="btn btn-primary" data-source="reparto-hero">Llamar · 958 44 28 47</a>
           <a href="/carta/" class="btn btn-outline">Ver la carta</a>
         </div>
       </div>
@@ -734,7 +819,7 @@ ${hoursSection}
 ${faqItems}
         </div>
         <p class="actions-row">
-          <a href="tel:958442847" class="btn btn-primary">Pedir ahora · 958 44 28 47</a>
+          <a href="tel:958442847" class="btn btn-primary" data-source="reparto-faq">Pedir ahora · 958 44 28 47</a>
         </p>
       </div>
     </section>`;

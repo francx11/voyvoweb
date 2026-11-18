@@ -1784,6 +1784,9 @@
         .value.split('\n')
         .map((z) => z.trim())
         .filter(Boolean),
+      // Mínimos/envío por pueblo: aún sin casillas en el panel (se editan en
+      // data/ordering.json). Se reenvían tal cual para que guardar no los borre.
+      zoneTerms: (ORDERING_DRAFT.delivery && ORDERING_DRAFT.delivery.zoneTerms) || undefined,
     };
     try {
       await api('PUT', '/api/ordering/settings', ORDERING_DRAFT);

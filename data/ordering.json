@@ -171,7 +171,11 @@
       "Belicena",
       "Purchil",
       "Ambroz"
-    ]
+    ],
+    "zoneTerms": {
+      "Santa Fe": { "minimum": 8 },
+      "Jau": { "minimum": 8 }
+    }
   },
   "schedule": {
     "mon": [
