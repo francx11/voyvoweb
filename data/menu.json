@@ -28,8 +28,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/margarita-f3-20261117181243-960.jpg",
-    "imageThumb": "/assets/menu/margarita-f3-20261117181243-240.jpg",
+    "image": "/assets/menu/margarita-f3-20261119074537-960.webp",
+    "imageThumb": "/assets/menu/margarita-f3-20261119074537-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella y orégano"
   },
   {
@@ -62,8 +62,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/prosciutto-f4-20261116114218-960.webp",
-    "imageThumb": "/assets/menu/prosciutto-f4-20261116114218-240.webp",
+    "image": "/assets/menu/prosciutto-f4-20261119074658-960.webp",
+    "imageThumb": "/assets/menu/prosciutto-f4-20261119074658-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella y jamón york"
   },
   {
@@ -127,8 +127,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/bolonesa-f8-20261116112220-960.webp",
-    "imageThumb": "/assets/menu/bolonesa-f8-20261116112220-240.webp",
+    "image": "/assets/menu/bolonesa-f8-20261119074729-960.webp",
+    "imageThumb": "/assets/menu/bolonesa-f8-20261119074729-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, picada de ternera y cebolla"
   },
   {
@@ -319,8 +319,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/cuatro-estaciones-f10-20261116112442-960.webp",
-    "imageThumb": "/assets/menu/cuatro-estaciones-f10-20261116112442-240.webp",
+    "image": "/assets/menu/cuatro-estaciones-f10-20261119074828-960.webp",
+    "imageThumb": "/assets/menu/cuatro-estaciones-f10-20261119074828-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, jamón york, bacon, atún y champiñones"
   },
   {
@@ -389,8 +389,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/kebab-f12-20261117123848-960.webp",
-    "imageThumb": "/assets/menu/kebab-f12-20261117123848-240.webp",
+    "image": "/assets/menu/kebab-f12-20261119074846-960.webp",
+    "imageThumb": "/assets/menu/kebab-f12-20261119074846-240.webp",
     "imageAlt": "Pizza con salsa de yogurt, mozzarella, bacon y pollo kebab"
   },
   {
@@ -546,8 +546,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/primavera-f5-20261116111736-960.webp",
-    "imageThumb": "/assets/menu/primavera-f5-20261116111736-240.webp",
+    "image": "/assets/menu/primavera-f5-20261119074903-960.webp",
+    "imageThumb": "/assets/menu/primavera-f5-20261119074903-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, jamón york, maíz y champiñones"
   },
   {
@@ -612,8 +612,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/cheddar-f6-20261116111834-960.webp",
-    "imageThumb": "/assets/menu/cheddar-f6-20261116111834-240.webp",
+    "image": "/assets/menu/cheddar-f6-20261119075117-960.webp",
+    "imageThumb": "/assets/menu/cheddar-f6-20261119075117-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, picada de ternera, bacon y cheddar"
   },
   {
@@ -707,8 +707,8 @@
     "modifierGroupIds": [
       "pizza-mods"
     ],
-    "image": "/assets/menu/italiana-f7-20261116112148-960.webp",
-    "imageThumb": "/assets/menu/italiana-f7-20261116112148-240.webp",
+    "image": "/assets/menu/italiana-f7-20261119075135-960.webp",
+    "imageThumb": "/assets/menu/italiana-f7-20261119075135-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, jamón york, aceitunas negras, cherrys y rúcula"
   },
   {
@@ -741,8 +741,8 @@
     "modifierGroupIds": [
       "pizza-mods-especial"
     ],
-    "image": "/assets/menu/gaucha-f13-20261116112647-960.webp",
-    "imageThumb": "/assets/menu/gaucha-f13-20261116112647-240.webp",
+    "image": "/assets/menu/gaucha-f13-20261119075208-960.webp",
+    "imageThumb": "/assets/menu/gaucha-f13-20261119075208-240.webp",
     "imageAlt": "Pizza con salsa gaucha, mozzarella, picada de ternera y pepperoni"
   },
   {
@@ -903,8 +903,8 @@
     "modifierGroupIds": [
       "pizza-mods-especial"
     ],
-    "image": "/assets/menu/burger-f14-20261116112722-960.webp",
-    "imageThumb": "/assets/menu/burger-f14-20261116112722-240.webp",
+    "image": "/assets/menu/burger-f14-20261119075224-960.webp",
+    "imageThumb": "/assets/menu/burger-f14-20261119075224-240.webp",
     "imageAlt": "Pizza con salsa burger, mozzarella, pepinillos, cherrys, cebolla, picada de ternera y bacon"
   },
   {
