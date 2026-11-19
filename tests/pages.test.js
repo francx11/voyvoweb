@@ -1,5 +1,4 @@
-// La carta estática: cómo decide /carta/ qué prometer en su enlace de vuelta a
-// la portada. Se prueba aquí y no en build-static.test.js porque aquel ejecuta
+// La carta estática (/carta/) y las secciones opcionales de la portada. Se prueba aquí y no en build-static.test.js porque aquel ejecuta
 // el build real contra data/ de verdad, así que no puede fijar un escenario.
 const test = require('node:test');
 const assert = require('node:assert');
@@ -15,22 +14,13 @@ async function carta(site, menu = MENU) {
   return renderCarta({ domain: 'ejemplo.test', menu, ordering: ORDERING, site });
 }
 
-test('sin fotos subidas, /carta/ no promete fotos en la portada', async () => {
-  const html = await carta({ menu: { mode: 'products' } });
-  assert.ok(!html.includes('con fotos'), 'la carta promete fotos que no existen');
-  assert.ok(html.includes('filtrar por alérgenos'), 'falta lo que la portada sí ofrece');
-});
-
-test('con una sola foto subida, "auto" ya promete fotos', async () => {
+test('/carta/ no lleva botón de vuelta a la carta de la portada (el carrusel ya está aquí)', async () => {
   const menu = [{ ...MENU[0], image: '/assets/menu/abc.webp' }, MENU[1]];
-  const html = await carta({ menu: { photos: 'auto' } }, menu);
-  assert.ok(html.includes('Ver la carta con fotos'));
-});
-
-test('"never" no promete fotos aunque haya alguna subida', async () => {
-  const menu = [{ ...MENU[0], image: '/assets/menu/abc.webp' }, MENU[1]];
-  const html = await carta({ menu: { photos: 'never' } }, menu);
-  assert.ok(!html.includes('con fotos'));
+  for (const photos of ['auto', 'always', 'never']) {
+    const html = await carta({ menu: { photos } }, menu);
+    assert.ok(!html.includes('href="/#menu"'), photos);
+    assert.ok(!html.includes('Ver la carta'), photos);
+  }
 });
 
 const FOTO = (name) => ({
@@ -106,11 +96,6 @@ test('/carta/: foto sin alt revisado sale decorativa (alt vacío), y "never" no 
 test('"always" no inventa fotos en /carta/: el placeholder no es una foto', async () => {
   const html = await carta({ menu: { photos: 'always' } });
   assert.ok(!html.includes('carta-item-photo'));
-});
-
-test('"always" promete fotos aunque no haya ninguna subida', async () => {
-  const html = await carta({ menu: { photos: 'always' } });
-  assert.ok(html.includes('Ver la carta con fotos'));
 });
 
 test('Just Eat: sin interruptor o encendido se publica; apagado se quita entera', async () => {
