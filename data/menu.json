@@ -937,8 +937,8 @@
     "modifierGroupIds": [
       "pizza-mods-especial"
     ],
-    "image": "/assets/menu/voy-volando-f16-20261116112859-960.webp",
-    "imageThumb": "/assets/menu/voy-volando-f16-20261116112859-240.webp",
+    "image": "/assets/menu/voy-volando-f16-20261119075252-960.webp",
+    "imageThumb": "/assets/menu/voy-volando-f16-20261119075252-240.webp",
     "imageAlt": "Pizza con salsa Voy Volando, mozzarella, pollo kebab, picada de ternera y maíz"
   },
   {
@@ -972,8 +972,8 @@
     "modifierGroupIds": [
       "pizza-mods-especial"
     ],
-    "image": "/assets/menu/santa-fe-f15-20261116112826-960.webp",
-    "imageThumb": "/assets/menu/santa-fe-f15-20261116112826-240.webp",
+    "image": "/assets/menu/santa-fe-f15-20261119075312-960.webp",
+    "imageThumb": "/assets/menu/santa-fe-f15-20261119075312-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, bacon, pollo kebab, cebolla, gouda y rúcula"
   },
   {
@@ -1039,8 +1039,8 @@
     "modifierGroupIds": [
       "pizza-mods-especial"
     ],
-    "image": "/assets/menu/francis-f34-20261116114400-960.webp",
-    "imageThumb": "/assets/menu/francis-f34-20261116114400-240.webp",
+    "image": "/assets/menu/francis-f34-20261119075347-960.webp",
+    "imageThumb": "/assets/menu/francis-f34-20261119075347-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, picada de ternera, bacon, jamón york y champiñones"
   },
   {
@@ -1072,8 +1072,8 @@
     "modifierGroupIds": [
       "pizza-mods-especial"
     ],
-    "image": "/assets/menu/7-quesos-f17-20261116112930-960.webp",
-    "imageThumb": "/assets/menu/7-quesos-f17-20261116112930-240.webp",
+    "image": "/assets/menu/7-quesos-f17-20261119075405-960.webp",
+    "imageThumb": "/assets/menu/7-quesos-f17-20261119075405-240.webp",
     "imageAlt": "Pizza con tomate, mozzarella, edam, gouda, roquefort, feta, cabra y cheddar"
   },
   {
@@ -1324,8 +1324,8 @@
     "modifierGroupIds": [
       "pizza-mods-gourmet"
     ],
-    "image": "/assets/menu/bourbon-f18-20261116113000-960.webp",
-    "imageThumb": "/assets/menu/bourbon-f18-20261116113000-240.webp",
+    "image": "/assets/menu/bourbon-f18-20261119075421-960.webp",
+    "imageThumb": "/assets/menu/bourbon-f18-20261119075421-240.webp",
     "imageAlt": "Pizza con nata, mozzarella, bacon, picada de ternera, queso cabra, cebolla caramelizada y salsa barbacoa"
   },
   {
@@ -1359,8 +1359,8 @@
     "modifierGroupIds": [
       "pizza-mods-gourmet"
     ],
-    "image": "/assets/menu/trifasica-f19-20261116113034-960.webp",
-    "imageThumb": "/assets/menu/trifasica-f19-20261116113034-240.webp",
+    "image": "/assets/menu/trifasica-f19-20261119075438-960.webp",
+    "imageThumb": "/assets/menu/trifasica-f19-20261119075438-240.webp",
     "imageAlt": "Pizza con nata, mozzarella, picada de ternera, pollo kebab, bacon, cheddar y cebolla crujiente"
   },
   {
@@ -1637,8 +1637,8 @@
         }
       ]
     },
-    "image": "/assets/menu/gratinado-goat-f20-20261116113120-960.webp",
-    "imageThumb": "/assets/menu/gratinado-goat-f20-20261116113120-240.webp",
+    "image": "/assets/menu/gratinado-goat-f20-20261119075457-960.webp",
+    "imageThumb": "/assets/menu/gratinado-goat-f20-20261119075457-240.webp",
     "imageAlt": "Patatas fritas, nata, bacon, cebolla caramelizada, queso cabra, salsa barbacoa y mozzarella"
   },
   {
@@ -1764,8 +1764,8 @@
       "mostaza"
     ],
     "active": true,
-    "image": "/assets/menu/taco-frances-royal-f21-20261116113309-960.webp",
-    "imageThumb": "/assets/menu/taco-frances-royal-f21-20261116113309-240.webp",
+    "image": "/assets/menu/taco-frances-royal-f21-20261119075517-960.webp",
+    "imageThumb": "/assets/menu/taco-frances-royal-f21-20261119075517-240.webp",
     "imageAlt": "Tortilla trigo, patatas fritas, salsa gaucha, salsa barbacoa, fingers de pollo y mozzarella"
   },
   {
@@ -1838,8 +1838,8 @@
       "sulfitos"
     ],
     "active": true,
-    "image": "/assets/menu/campero-lomo-f22-20261116113350-960.webp",
-    "imageThumb": "/assets/menu/campero-lomo-f22-20261116113350-240.webp",
+    "image": "/assets/menu/campero-lomo-f22-20261119075542-960.webp",
+    "imageThumb": "/assets/menu/campero-lomo-f22-20261119075542-240.webp",
     "imageAlt": "Lomo de cerdo, lechuga, bacon, mozzarella, huevo y mayonesa"
   },
   {
@@ -1858,8 +1858,8 @@
       "sulfitos"
     ],
     "active": true,
-    "image": "/assets/menu/alitas-7-unidades-f23-20261116113435-960.webp",
-    "imageThumb": "/assets/menu/alitas-7-unidades-f23-20261116113435-240.webp",
+    "image": "/assets/menu/alitas-7-unidades-f23-20261119075615-960.webp",
+    "imageThumb": "/assets/menu/alitas-7-unidades-f23-20261119075615-240.webp",
     "imageAlt": "Van sin salsa. Salsa: por encima, +0,50 €; en bote aparte, +0,70 €"
   },
   {
