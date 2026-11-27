@@ -411,6 +411,10 @@
     var box = $('#dish-carousel');
     if (!box) return;
     var slides = photosMode === 'never' ? [] : items.filter(function (p) {
+      // Mismo filtro de alérgenos que la lista: con «Sin gluten» marcado no
+      // puede seguir enseñando fotos de platos con gluten.
+      var al = allergensAndTraces(p);
+      for (var a of excludedAllergens) if (al.indexOf(a) !== -1) return false;
       return p.active !== false && !isDuplicatePromo(p) && p.image &&
         NO_PHOTO_CATEGORIES.indexOf(p.category || '') === -1 &&
         completeSections[p.category || ''] !== true;
@@ -473,6 +477,7 @@
 
   /* ── "Ver más" detail modal (reuses the shared .modal-overlay skeleton) ── */
   var detailOverlay = null;
+  var detailReturnFocus = null;
   function ensureDetailModal() {
     if (detailOverlay) return;
     document.body.insertAdjacentHTML('beforeend',
@@ -486,7 +491,16 @@
     $('#vv-detail-close').addEventListener('click', closeDetail);
     detailOverlay.addEventListener('click', function (e) { if (e.target === detailOverlay) closeDetail(); });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && detailOverlay.classList.contains('open')) closeDetail();
+      if (!detailOverlay.classList.contains('open')) return;
+      if (e.key === 'Escape') { closeDetail(); return; }
+      // Tab no sale del diálogo mientras está abierto (aria-modal lo promete).
+      if (e.key !== 'Tab') return;
+      var focusables = detailOverlay.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
+      if (!focusables.length) return;
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
     // The "Pedir" button inside the detail modal is a .btn-add-item, so cart.js
     // opens the add-to-cart modal for it; we just close the detail modal first.
@@ -498,6 +512,9 @@
     if (!detailOverlay) return;
     detailOverlay.classList.remove('open');
     document.body.classList.remove('cart-scroll-lock');
+    // Devuelve el foco a lo que abrió el detalle, para no perder el sitio.
+    if (detailReturnFocus && document.contains(detailReturnFocus)) detailReturnFocus.focus();
+    detailReturnFocus = null;
   }
   function openDetail(id) {
     var p = (VV.menuItems || []).filter(function (x) { return x.id === id; })[0];
@@ -537,8 +554,10 @@
        título, así que el CSS lo devuelve al flujo con esta clase. */
     $('#vv-detail-overlay').querySelector('.menu-detail')
       .classList.toggle('menu-detail--flat', !src);
+    detailReturnFocus = document.activeElement;
     detailOverlay.classList.add('open');
     document.body.classList.add('cart-scroll-lock');
+    $('#vv-detail-close').focus();
   }
   document.addEventListener('click', function (e) {
     if (!e.target.closest) return;
@@ -581,6 +600,7 @@
         b.setAttribute('aria-pressed', String(on));
         if (on) excludedAllergens.add(a); else excludedAllergens.delete(a);
         renderMenu(items);
+        renderDishCarousel(items);
       });
       box.appendChild(b);
     });
@@ -742,7 +762,7 @@
         }
         grid.innerHTML = files.map(function (f, i) {
           return '<div class="gallery-cell">' +
-            '<img src="' + f.url + '" alt="' + esc(f.alt || 'Pizzería Voy Volando, Santa Fe') + '"' +
+            '<img src="' + esc(f.url) + '" alt="' + esc(f.alt || 'Pizzería Voy Volando, Santa Fe') + '"' +
             (i > 1 ? ' loading="lazy"' : '') + '>' +
           '</div>';
         }).join('');

@@ -139,6 +139,10 @@
 
   <!-- theme.css primero: define los tokens de color que main.css consume. -->
   <link rel="stylesheet" href="/css/theme.css">
+  <!-- Tema elegido a mano (ui.js lo guarda en vv_theme): se aplica aquí, antes
+       de pintar, para que no parpadee el del sistema. La CSP del build lo
+       autoriza por su hash (scripts/lib/security-meta.mjs). -->
+  <script>try{var t=localStorage.getItem('vv_theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
   <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
@@ -444,7 +448,7 @@
             <p>Sí. Pide por teléfono y recoge en nuestro local en unos minutos, sin esperas.</p>
           </details>
           <details>
-            <summary>¿Dónde está la pizzería?</summary>
+            <summary>¿Dónde está la pizzería Voy Volando?</summary>
             <p>En <span class="js-address">C. Cristóbal Colón, 7</span>, <span class="js-city">18320 Santa Fe, Granada</span>. Trabajamos solo a domicilio y para recoger: no hay comedor.</p>
           </details>
         </div>

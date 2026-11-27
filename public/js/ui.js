@@ -14,6 +14,54 @@
 
   var root = document.documentElement;
 
+  /* Posición al recargar. Safari restaura el scroll antes de que main.js
+     pinte la carta y las ofertas (llegan por fetch y meten ~10 000 px por
+     encima), así que al recargar a media página te dejaba casi al final.
+     Se restaura a mano, cuando la altura de la página deja de crecer. */
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+    var scrollKey = 'vv-scroll:' + location.pathname;
+    var jumpTo = function (y) {
+      var prev = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(0, y);
+      root.style.scrollBehavior = prev;
+    };
+    // Espera a que el alto se quede quieto (3 lecturas iguales, máx. 3 s).
+    var whenSettled = function (fn) {
+      var last = -1;
+      var same = 0;
+      var tries = 0;
+      var timer = setInterval(function () {
+        var h = root.scrollHeight;
+        same = h === last ? same + 1 : 0;
+        last = h;
+        if (same >= 3 || ++tries > 30) {
+          clearInterval(timer);
+          fn();
+        }
+      }, 100);
+    };
+    window.addEventListener('pagehide', function () {
+      try { sessionStorage.setItem(scrollKey, String(Math.round(window.scrollY))); } catch (e) { /* modo privado */ }
+    });
+    window.addEventListener('load', function () {
+      var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      var saved = null;
+      try { saved = sessionStorage.getItem(scrollKey); } catch (e) { /* modo privado */ }
+      if (nav && (nav.type === 'reload' || nav.type === 'back_forward') && saved !== null) {
+        whenSettled(function () { jumpTo(Number(saved) || 0); });
+      } else if (location.hash.length > 1) {
+        // Ancla (/#offers, /#story…): el navegador saltó antes de pintarse
+        // la carta; se recoloca cuando el contenido ya está.
+        whenSettled(function () {
+          var target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+          if (target) target.scrollIntoView();
+        });
+      }
+    });
+  }
+
   /* ── Modo oscuro: sigue al sistema salvo que se fuerce a mano (localStorage) ── */
   var themeBtn = document.getElementById('theme-toggle');
   if (themeBtn) {
@@ -48,11 +96,21 @@
       var open = nav.classList.toggle('open');
       navToggle.setAttribute('aria-expanded', String(open));
     });
+    var closeNav = function (refocus) {
+      if (!nav.classList.contains('open')) return;
+      nav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      if (refocus) navToggle.focus();
+    };
     nav.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') {
-        nav.classList.remove('open');
-        navToggle.setAttribute('aria-expanded', 'false');
-      }
+      if (e.target.tagName === 'A') closeNav(false);
+    });
+    // Escape y un toque fuera del menú también lo cierran.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeNav(true);
+    });
+    document.addEventListener('click', function (e) {
+      if (!nav.contains(e.target) && !navToggle.contains(e.target)) closeNav(false);
     });
   }
 
