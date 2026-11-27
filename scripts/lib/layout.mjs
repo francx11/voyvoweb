@@ -131,6 +131,7 @@ ${zones.map((z) => `            <li>${esc(z)}</li>`).join('\n')}
           </ul>
         </div>
       </div>
+      <p class="footer-wordmark" aria-hidden="true">Voy Volando</p>
       <div class="footer-bottom">
         <p>© 2026 Pizzería Voy Volando</p>
         <ul class="footer-legal">
