@@ -1,5 +1,11 @@
 # Tokens web — Dirección A "Correo Aéreo"
 
+> **Actualización 2026-11-27 — paleta del logo.** El oro `#f0c24b` y el rojo `#b00e14` se
+> sustituyen por los colores medidos en el logo: **arena `#eec687`** (cara y masa; mismo papel
+> que el oro: solo sobre azul o rojo, nunca texto sobre crema, 1,4:1) y **rojo ladrillo
+> `#a42a1e`** (letras y pañuelo; blanco encima 7,2:1, sobre crema 6,4:1). Valores vigentes en
+> `data/themes/correo-aereo.json`; lo de abajo queda como histórico.
+
 Sustitución directa del bloque de variables de [public/css/main.css](../../public/css/main.css).
 Mismos nombres de variable que ya usa el sitio, para que el cambio sea de una sola tacada.
 La única variable nueva es `--gold`.
