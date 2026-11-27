@@ -217,6 +217,26 @@
     ambient.forEach(function (v) { vio.observe(v); });
   }
 
+  /* Mapa del pie: el iframe de Google Maps se crea solo al pulsar «Ver mapa».
+     Así, quien solo mira la web no le pasa su IP a Google sin pedirlo. */
+  document.querySelectorAll('.footer-map').forEach(function (box) {
+    var btn = box.querySelector('.footer-map-load');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var frame = document.createElement('iframe');
+      frame.src = box.getAttribute('data-map-src');
+      frame.title = 'Mapa: Pizzería Voy Volando en Santa Fe (Granada)';
+      frame.loading = 'lazy';
+      frame.referrerPolicy = 'no-referrer-when-downgrade';
+      frame.className = 'footer-map-frame';
+      box.classList.add('is-loaded');
+      box.querySelector('.footer-map-art').replaceWith(frame);
+      btn.remove();
+      var note = box.querySelector('.footer-map-note');
+      if (note) note.remove();
+    });
+  });
+
   // El hero solo cambia a modo vídeo cuando el vídeo se está viendo de verdad.
   document.querySelectorAll('.js-hero-video').forEach(function (v) {
     v.addEventListener('playing', function () {

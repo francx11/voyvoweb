@@ -25,6 +25,17 @@ const PHONE = '958 44 28 47';
 const TEL = 'tel:958442847';
 const EMAIL = 'info@voyvolandosantafe.com';
 const INSTAGRAM = 'https://www.instagram.com/voy_volando_santafe/';
+// Mapa del pie. El iframe NO va en el HTML: ui.js lo crea al pulsar «Ver
+// mapa», para que Google no reciba la IP de quien solo está mirando la web
+// (mismo criterio que con las fuentes y la analítica; ver /privacidad/).
+const MAP_EMBED =
+  'https://www.google.com/maps?q=' +
+  encodeURIComponent('Pizzería Voy Volando, C. Cristóbal Colón 7, 18320 Santa Fe, Granada') +
+  '&output=embed';
+const MAP_DIRECTIONS =
+  'https://www.google.com/maps/dir/?api=1&destination=' +
+  encodeURIComponent('Pizzería Voy Volando, Santa Fe, Granada') +
+  '&destination_place_id=ChIJk6fHXwz_cQ0R2Wk0sAhpZ9s';
 
 // Navegación corta a propósito: cuatro destinos y el teléfono siempre visible.
 // «Ofertas» no va aquí porque la sección se oculta sola cuando no hay ofertas
@@ -129,6 +140,20 @@ ${zones.map((z) => `            <li>${esc(z)}</li>`).join('\n')}
             <li><a href="mailto:${EMAIL}" class="js-email-link"><span class="js-email">${EMAIL}</span></a></li>
             <li><a href="${INSTAGRAM}" target="_blank" rel="noopener">Instagram</a></li>
           </ul>
+        </div>
+      </div>
+      <div class="footer-map" data-map-src="${esc(MAP_EMBED)}">
+        <div class="footer-map-art" aria-hidden="true">
+          <span class="footer-map-pin"><img src="/assets/logo-voyvolando.png" alt="" width="56" height="56" loading="lazy"></span>
+        </div>
+        <div class="footer-map-card">
+          <p class="footer-map-title">Estamos en el centro de Santa Fe</p>
+          <p class="footer-map-address">${esc(address)} · ${esc(city)}</p>
+          <div class="footer-map-actions">
+            <button type="button" class="btn btn-primary footer-map-load">Ver mapa</button>
+            <a href="${esc(MAP_DIRECTIONS)}" class="btn btn-outline" target="_blank" rel="noopener">Cómo llegar</a>
+          </div>
+          <p class="footer-map-note">«Ver mapa» carga Google Maps aquí mismo; Google recibirá tu dirección IP.</p>
         </div>
       </div>
       <p class="footer-wordmark" aria-hidden="true">Voy Volando</p>
