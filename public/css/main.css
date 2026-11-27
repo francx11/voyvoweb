@@ -1771,7 +1771,7 @@ body.cart-scroll-lock { overflow: hidden; }
   text-decoration: none;
 }
 .footer-more:hover { text-decoration: underline; }
-/* Rótulo gigante al pie, cortado por abajo como un letrero que no cabe. */
+/* Firma de la marca al pie, entre el mapa y el aviso legal. */
 /* ── Mapa del pie ──
    Mapa ilustrado (calles en CSS y la mascota como chincheta) con la
    dirección y dos botones: «Ver mapa» cambia la ilustración por el iframe de
@@ -1837,11 +1837,13 @@ body.cart-scroll-lock { overflow: hidden; }
 .section-navy .footer-wordmark {
   margin: clamp(2.5rem, 5vw, 4rem) 0 0;
   font-family: var(--display); font-weight: 400;
-  font-size: clamp(2.4rem, 14.5cqw, 10.4rem); line-height: 0.9;
+  font-size: clamp(1.8rem, 6cqw, 3.4rem); line-height: 1;
   overflow: hidden;
-  letter-spacing: -0.01em; white-space: nowrap; text-align: center;
-  color: var(--gold);
-  padding-bottom: 0.08em;
+  letter-spacing: 0.01em; white-space: nowrap; text-align: center;
+  /* Discreto: blanco del pie atenuado, como una marca de agua, y a tamaño
+     de firma, no de cartel (preferencia de socios, 2026-11-27). */
+  color: color-mix(in srgb, var(--on-navy) 38%, transparent);
+  padding-bottom: 0.3em;
 }
 .footer-bottom {
   margin-top: 0; padding-top: 1.4rem;
