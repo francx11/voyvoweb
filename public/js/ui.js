@@ -194,4 +194,34 @@
     }, { rootMargin: '-25% 0px -70% 0px' });
     document.querySelectorAll('.carta-group[aria-labelledby]').forEach(function (s) { io.observe(s); });
   }
+
+  /* Vídeos de ambiente (fondo del hero de la portada): sin autoplay en el
+     HTML. Se reproducen solo mientras se ven, para no gastar datos del móvil
+     en un vídeo que nadie mira, y nunca con «reducir movimiento»: ahí se
+     queda el póster. Sin <source> (aún no hay vídeo) play() falla y también
+     se queda el póster, que es lo que se quiere. */
+  var ambient = document.querySelectorAll('.js-ambient-video');
+  if (ambient.length && 'IntersectionObserver' in window) {
+    var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var vio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var v = entry.target;
+        if (entry.isIntersecting && !still.matches) {
+          var p = v.play();
+          if (p && p.catch) p.catch(function () {});
+        } else {
+          v.pause();
+        }
+      });
+    }, { threshold: 0.25 });
+    ambient.forEach(function (v) { vio.observe(v); });
+  }
+
+  // El hero solo cambia a modo vídeo cuando el vídeo se está viendo de verdad.
+  document.querySelectorAll('.js-hero-video').forEach(function (v) {
+    v.addEventListener('playing', function () {
+      var hero = v.closest('.hero');
+      if (hero) hero.classList.add('hero--video');
+    });
+  });
 })();

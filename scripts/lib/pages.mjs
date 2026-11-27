@@ -397,11 +397,10 @@ ${group.items.map((item) => renderItem(item, tiers, rowPhoto(item))).join('\n')}
 
   const body = `    <section class="section">
       <div class="container">
-        <header class="menu-header">
+        <header class="carta-header">
           <span class="eyebrow">Nuestras pizzas</span>
           <h1 class="section-title">La carta de Voy Volando en Santa Fe</h1>
-          <div class="airmail-rule" aria-hidden="true"></div>
-          <p class="section-intro" style="margin:0 auto">Clásicas y gourmet, con ingredientes frescos. Pídelas a domicilio en Santa Fe y alrededores o pasa a recogerlas por el local.</p>
+          <p class="section-intro">Clásicas y gourmet, con ingredientes frescos. Pídelas a domicilio en Santa Fe y alrededores o pasa a recogerlas por el local.</p>
           <p class="carta-quick"><a href="tel:958442847" class="carta-quick-call" data-source="carta-cabecera">Pedir · 958 44 28 47</a><a href="/a-domicilio/#zonas">Zonas y condiciones de reparto</a></p>
         </header>
 
