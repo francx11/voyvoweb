@@ -96,11 +96,21 @@
       var open = nav.classList.toggle('open');
       navToggle.setAttribute('aria-expanded', String(open));
     });
+    var closeNav = function (refocus) {
+      if (!nav.classList.contains('open')) return;
+      nav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      if (refocus) navToggle.focus();
+    };
     nav.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') {
-        nav.classList.remove('open');
-        navToggle.setAttribute('aria-expanded', 'false');
-      }
+      if (e.target.tagName === 'A') closeNav(false);
+    });
+    // Escape y un toque fuera del menú también lo cierran.
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeNav(true);
+    });
+    document.addEventListener('click', function (e) {
+      if (!nav.contains(e.target) && !navToggle.contains(e.target)) closeNav(false);
     });
   }
 

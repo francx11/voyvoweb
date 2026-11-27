@@ -196,6 +196,10 @@ ${jsonLd.map(jsonLdBlock).join('\n')}
 
   <!-- theme.css primero: define los tokens de color que main.css consume. -->
   <link rel="stylesheet" href="/css/theme.css">
+  <!-- Tema elegido a mano (ui.js lo guarda en vv_theme): se aplica aquí, antes
+       de pintar, para que no parpadee el del sistema. La CSP del build lo
+       autoriza por su hash (scripts/lib/security-meta.mjs). -->
+  <script>try{var t=localStorage.getItem('vv_theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
   <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
