@@ -694,6 +694,13 @@
       ' alt="' + esc(o.imageAlt || '') + '" width="1200" height="900" loading="lazy" decoding="async"></div>';
   }
 
+  /* El precio es lo primero que se busca en una oferta: la cifra con su €
+     ("10 €", "6,50 €") sale grande y en rojo. Se escapa antes de envolver,
+     así que el título sigue sin poder inyectar HTML. */
+  function priceMarked(title) {
+    return esc(title).replace(/(\d+(?:,\d+)?\s?€)/, '<span class="offer-price">$1</span>');
+  }
+
   function loadOffers() {
     fetch(apiUrl('offers'))
       .then(function (r) { return r.json(); })
@@ -705,13 +712,19 @@
           return '<article class="offer reveal">' +
             (o.image ? offerPhoto(o) : '') +
             '<div class="offer-body">' +
-              '<h3>' + esc(o.title) + '</h3>' +
+              '<h3>' + priceMarked(o.title) + '</h3>' +
               (o.description ? '<p>' + esc(o.description) + '</p>' : '') +
             '</div>' +
           '</article>';
         }).join('');
         $('#offers').hidden = false;
         observeReveals('#offers');
+        // La primera oferta sube al hero, para verla sin bajar.
+        var deal = $('#hero-deal');
+        if (deal) {
+          $('#hero-deal-text').textContent = items[0].title;
+          deal.hidden = false;
+        }
       })
       .catch(function () {});
   }
