@@ -2074,19 +2074,17 @@ body.cart-scroll-lock { overflow: hidden; }
   .hero-stamp, .hero-note { display: none; }
   .hero-logo { width: 30%; left: -10%; top: 2%; }
 
-  /* Cupones en fila deslizable; cada uno, horizontal y bajo: foto redonda a
-     la izquierda, línea de corte, y título con el precio en grande. */
+  /* Cupones uno debajo de otro, enteros (nada cortado por el borde); cada
+     uno, horizontal y bajo para que la lista no se haga eterna: foto
+     redonda a la izquierda, línea de corte y título con el precio grande. */
   .offers-grid {
-    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 86%;
-    gap: 0.9rem; overflow-x: auto; scroll-snap-type: x mandatory;
-    overscroll-behavior-x: contain; scrollbar-width: none;
-    margin: 1.6rem -1.5rem 0; padding: 0.6rem 1.5rem 1rem; scroll-padding-inline: 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem; margin-top: 1.6rem;
   }
-  .offers-grid::-webkit-scrollbar { display: none; }
   #offers { padding-block: 2.4rem 2rem; }
   #offers .section-intro { font-size: 0.98rem; }
   .offer, .offer:nth-child(n) {
-    scroll-snap-align: start; transform: none;
+    transform: none;
     display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center;
     outline-width: 4px;
   }
@@ -2105,10 +2103,7 @@ body.cart-scroll-lock { overflow: hidden; }
   .offer-body::before, .offer-body::after { display: none; }
   .offer-body h3 { font-size: 1.1rem; margin-bottom: 0.3rem; }
   .offer-price { font-size: 2.1em; }
-  .offer-body p {
-    font-size: 0.82rem; line-height: 1.35;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  }
+  .offer-body p { font-size: 0.85rem; line-height: 1.4; }
 }
 @media (max-width: 640px) and (hover: hover) {
   .offer:hover { transform: none; }
