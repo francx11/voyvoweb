@@ -204,7 +204,10 @@
 
 body { transition: background 0.25s ease, color 0.25s ease; }
 
-html { scroll-behavior: smooth; }
+/* Red de seguridad: nada puede abrir scroll horizontal en la página. clip y
+   no hidden, para no romper position: sticky de la cabecera. */
+html { scroll-behavior: smooth; overflow-x: clip; }
+body { overflow-x: clip; }
 
 body {
   background: var(--grain), var(--paper);
@@ -1739,10 +1742,73 @@ body.cart-scroll-lock { overflow: hidden; }
 }
 .footer-more:hover { text-decoration: underline; }
 /* Rótulo gigante al pie, cortado por abajo como un letrero que no cabe. */
+/* ── Mapa del pie ──
+   Mapa ilustrado (calles en CSS y la mascota como chincheta) con la
+   dirección y dos botones: «Ver mapa» cambia la ilustración por el iframe de
+   Google Maps (ui.js) y «Cómo llegar» abre la ruta en Google Maps. El
+   iframe no existe hasta que se pulsa: sin clic, Google no recibe nada. */
+.footer-map {
+  display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  border: 2px solid var(--line-strong); border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.footer-map-art, .footer-map-frame { min-height: clamp(240px, 30vw, 340px); }
+.footer-map-art {
+  position: relative;
+  background:
+    linear-gradient(28deg, transparent 47.5%, color-mix(in srgb, var(--on-navy) 26%, transparent) 47.5% 52.5%, transparent 52.5%),
+    linear-gradient(-62deg, transparent 48.5%, color-mix(in srgb, var(--on-navy) 16%, transparent) 48.5% 51.5%, transparent 51.5%),
+    repeating-linear-gradient(0deg, transparent 0 44px, color-mix(in srgb, var(--on-navy) 7%, transparent) 44px 46px),
+    repeating-linear-gradient(90deg, transparent 0 60px, color-mix(in srgb, var(--on-navy) 7%, transparent) 60px 62px),
+    color-mix(in srgb, var(--navy) 82%, var(--on-navy));
+}
+.footer-map-pin {
+  position: absolute; left: 50%; top: 50%;
+  width: 76px; height: 76px; margin: -50px 0 0 -38px;
+  display: grid; place-items: center;
+  background: var(--gold); border-radius: var(--radius-round);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--gold) 35%, transparent);
+  animation: map-pulse 2.4s ease-out infinite;
+}
+.footer-map-pin::after {
+  content: ''; position: absolute; left: 50%; bottom: -14px; margin-left: -10px;
+  border: 10px solid transparent; border-top: 14px solid var(--gold); border-bottom: 0;
+}
+.footer-map-pin img { width: 60px; height: 60px; object-fit: contain; }
+@keyframes map-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--gold) 55%, transparent); }
+  100% { box-shadow: 0 0 0 26px transparent; }
+}
+.footer-map-frame { display: block; width: 100%; height: 100%; border: 0; }
+.footer-map-card {
+  padding: clamp(1.4rem, 3vw, 2.2rem);
+  display: flex; flex-direction: column; justify-content: center; gap: 0.6rem;
+}
+.footer-map-title {
+  font-family: var(--heading); font-weight: 700; text-transform: uppercase;
+  font-size: clamp(1.6rem, 3vw, 2.2rem); line-height: 0.95;
+}
+.footer-map-address { color: var(--ink-soft); }
+.footer-map-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 0.6rem; }
+.footer-map-actions .btn { min-height: 44px; padding: 0.6rem 1.3rem; font-size: 0.95rem; }
+.footer-map .btn-outline { color: var(--ink); border-color: var(--ink); }
+.footer-map .btn-outline:hover { background: var(--ink); color: var(--navy); }
+.footer-map-note { font-size: 0.8rem; color: var(--ink-soft); }
+@media (max-width: 760px) {
+  .footer-map { grid-template-columns: 1fr; }
+}
+
+/* Mide con cqw (ancho del pie), no con vw: en Safari de iPhone un texto en
+   vw que desborda un poco ensancha la página, el vw crece con ella y el
+   rótulo vuelve a desbordar, en bucle, hasta que la web sale "alejada". El
+   overflow recorta por si una fuente de respaldo es más ancha. */
+.footer-inner { container-type: inline-size; }
 .section-navy .footer-wordmark {
   margin: clamp(2.5rem, 5vw, 4rem) 0 0;
   font-family: var(--display); font-weight: 400;
-  font-size: clamp(2.6rem, 11.2vw, 10.4rem); line-height: 0.9;
+  font-size: clamp(2.4rem, 14.5cqw, 10.4rem); line-height: 0.9;
+  overflow: hidden;
   letter-spacing: -0.01em; white-space: nowrap; text-align: center;
   color: var(--gold);
   padding-bottom: 0.08em;
@@ -1899,7 +1965,7 @@ body.cart-scroll-lock { overflow: hidden; }
   .reveal { opacity: 1; transform: none; transition: none; }
   /* Bucles infinitos: parados del todo. Con la duración mínima de abajo
      girarían a toda velocidad en vez de quedarse quietos. */
-  .hero-pizza, .ticker-track { animation: none !important; }
+  .hero-pizza, .ticker-track, .footer-map-pin { animation: none !important; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;

@@ -130,6 +130,9 @@ module.exports = {
       'https://*.analytics.google.com',
       'https://*.googletagmanager.com',
     ],
+    // Mapa del pie (scripts/lib/layout.mjs): el iframe de Google Maps solo se
+    // crea cuando el visitante pulsa «Ver mapa» (ui.js), nunca al cargar.
+    'frame-src': ['https://www.google.com'],
     'object-src': ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"],
