@@ -136,6 +136,9 @@
   <!-- Typography -->
   <link rel="preload" href="/assets/fonts/barlow-400-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/alfa-slab-one-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- La condensada 700 es la del titular del hero: sin precargarla, llegaba
+       tarde y el titular cambiaba de 3 a 2 líneas al cargar (salto de CLS). -->
+  <link rel="preload" href="/assets/fonts/barlow-condensed-700-latin.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- theme.css primero: define los tokens de color que main.css consume. -->
   <link rel="stylesheet" href="/css/theme.css">
@@ -211,7 +214,7 @@
           <a href="#offers" class="hero-deal" id="hero-deal" hidden><span class="hero-deal-tag">Oferta</span><span class="hero-deal-text" id="hero-deal-text"></span><span class="hero-deal-more" aria-hidden="true">Ver todas →</span></a>
         </div>
         <div class="hero-visual">
-          <img src="/assets/hero-pizza-960.webp" srcset="/assets/hero-pizza-560.webp 560w, /assets/hero-pizza-960.webp 960w" sizes="(max-width: 860px) 80vw, 46vw" alt="Pizza Santa Fe recién hecha, con jamón, rúcula y mozzarella" width="960" height="960" class="hero-pizza" fetchpriority="high">
+          <img src="/assets/hero-pizza-960.webp" srcset="/assets/hero-pizza-560.webp 560w, /assets/hero-pizza-720.webp 720w, /assets/hero-pizza-960.webp 960w" sizes="(max-width: 640px) 74vw, (max-width: 860px) 80vw, 46vw" alt="Pizza Santa Fe recién hecha, con jamón, rúcula y mozzarella" width="960" height="960" class="hero-pizza" fetchpriority="high">
           <img src="/assets/logo-voyvolando.png" alt="" width="260" height="260" class="hero-logo" aria-hidden="true">
           <span class="stamp stamp-word hero-stamp" aria-hidden="true">
             <span class="stamp-top">Pizzería en</span>

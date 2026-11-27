@@ -23,6 +23,7 @@ import {
   applyJustEat,
   justEatVisible,
   applyGallery,
+  applyHeroDeal,
   galleryVisible,
   cartaItems,
   menuPhoto,
@@ -117,6 +118,7 @@ async function rewriteHtml() {
   html = html.replace(marker, `<script>window.VV_STATIC = true;</script>\n  ${marker}`);
   html = applyJustEat(html, await readSnapshot('site'));
   html = applyGallery(html, await readSnapshot('site'));
+  html = applyHeroDeal(html, await readSnapshot('offers'));
   await fs.writeFile(index, html);
 
   const canonical = html.match(/<link rel="canonical" href="https:\/\/([^/"]+)\//);

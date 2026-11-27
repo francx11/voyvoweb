@@ -708,7 +708,7 @@
   function offerPhoto(o) {
     var set = o.imageThumb
       ? ' srcset="' + esc(o.imageThumb) + ' 600w, ' + esc(o.image) + ' 1200w"' +
-        ' sizes="(max-width: 520px) 100vw, (max-width: 860px) 50vw, 33vw"'
+        ' sizes="(max-width: 640px) 84px, (max-width: 860px) 50vw, 33vw"'
       : '';
     return '<div class="offer-media"><img src="' + esc(o.image) + '"' + set +
       ' alt="' + esc(o.imageAlt || '') + '" width="1200" height="900" loading="lazy" decoding="async"></div>';

@@ -53,6 +53,24 @@ export function applyGallery(html, site) {
   return html.replace(GALLERY, '');
 }
 
+// Píldora de oferta del hero: en el build va ya escrita con la primera oferta
+// de offers.json. Si la rellenara solo main.js, aparecería tarde y empujaría
+// el hero hacia abajo (CLS 0,28 medido en móvil). Sin ofertas activas, se
+// queda oculta como venía.
+const HERO_DEAL =
+  /<a href="#offers" class="hero-deal" id="hero-deal" hidden>(<span class="hero-deal-tag">[^<]*<\/span>)<span class="hero-deal-text" id="hero-deal-text"><\/span>/;
+
+export function applyHeroDeal(html, offers) {
+  if (!HERO_DEAL.test(html)) throw new Error('index.html: píldora #hero-deal no encontrada');
+  const first = offers && offers.active && Array.isArray(offers.items) && offers.items[0];
+  if (!first || !first.title) return html;
+  return html.replace(
+    HERO_DEAL,
+    (_, tag) =>
+      `<a href="#offers" class="hero-deal" id="hero-deal">${tag}<span class="hero-deal-text" id="hero-deal-text">${esc(first.title)}</span>`
+  );
+}
+
 export function esc(value) {
   return String(value ?? '').replace(/[&<>"]/g, (c) => escapeMap[c]);
 }
@@ -193,6 +211,7 @@ ${jsonLd.map(jsonLdBlock).join('\n')}
 
   <link rel="preload" href="/assets/fonts/barlow-400-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/alfa-slab-one-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/barlow-condensed-700-latin.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- theme.css primero: define los tokens de color que main.css consume. -->
   <link rel="stylesheet" href="/css/theme.css">

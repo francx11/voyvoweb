@@ -222,3 +222,24 @@ test('zoneTermsOf: mínimo propio, «Consúltanos» si falta y el general sin zo
     ]
   );
 });
+
+// La píldora de oferta del hero va escrita en el HTML del build: si la pusiera
+// solo main.js, aparecería tarde y empujaría el hero (CLS medido: 0,28).
+test('píldora de oferta del hero: la escribe el build con la primera oferta', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const { applyHeroDeal } = await import('../scripts/lib/pages.mjs');
+  const index = fs.readFileSync(path.join(__dirname, '..', 'public', 'index.html'), 'utf-8');
+
+  const con = applyHeroDeal(index, { active: true, items: [{ title: 'Familiar <b>a</b> 10 €' }] });
+  assert.match(con, /<a href="#offers" class="hero-deal" id="hero-deal">/);
+  assert.ok(
+    con.includes('id="hero-deal-text">Familiar &lt;b&gt;a&lt;/b&gt; 10 €</span>'),
+    'título sin escapar'
+  );
+
+  // Sin ofertas activas no se toca: queda oculta.
+  assert.strictEqual(applyHeroDeal(index, { active: false, items: [{ title: 'x' }] }), index);
+  assert.strictEqual(applyHeroDeal(index, { active: true, items: [] }), index);
+  assert.throws(() => applyHeroDeal('<main></main>', { active: true, items: [] }), /hero-deal/);
+});
