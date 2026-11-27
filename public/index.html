@@ -189,16 +189,6 @@
          (foto de la carta, recortada en public/assets/hero-pizza-*.webp para
          que no dependa del fichero del panel) saliéndose por la derecha. -->
     <section class="hero" aria-label="Presentación">
-      <!-- Vídeo de fondo del hero. Sin vídeo (o con «reducir movimiento», o
-           si el móvil no lo reproduce) el hero se queda como está: la pizza
-           girando a la derecha. Cuando el vídeo empieza a reproducirse,
-           ui.js pone .hero--video y el vídeo pasa a ser el fondo. Para
-           activarlo: deja horno.mp4 (y horno.webm) en public/assets/video/ y
-           descomenta las dos <source>. Detalle en docs/marca/video-banda.md. -->
-      <video class="hero-video js-ambient-video js-hero-video" muted loop playsinline preload="none" aria-hidden="true">
-        <!-- <source src="/assets/video/horno.webm" type="video/webm"> -->
-        <!-- <source src="/assets/video/horno.mp4" type="video/mp4"> -->
-      </video>
       <div class="hero-inner">
         <div class="hero-text">
           <span class="hero-kicker" id="hero-eyebrow">Santa Fe, Granada · Desde siempre</span>
@@ -214,6 +204,13 @@
           <a href="#offers" class="hero-deal" id="hero-deal" hidden><span class="hero-deal-tag">Oferta</span><span class="hero-deal-text" id="hero-deal-text"></span><span class="hero-deal-more" aria-hidden="true">Ver todas →</span></a>
         </div>
         <div class="hero-visual">
+          <!-- Vídeo del horno (vertical). Sin autoplay: ui.js lo reproduce
+               solo mientras se ve y nunca con «reducir movimiento»; mientras
+               no se reproduce, se ve la pizza. Cómo cambiarlo:
+               docs/marca/video-banda.md. -->
+          <video class="hero-video js-ambient-video js-hero-video" muted loop playsinline preload="none" aria-hidden="true">
+            <source src="/assets/video/horno.mp4" type="video/mp4">
+          </video>
           <img src="/assets/hero-pizza-960.webp" srcset="/assets/hero-pizza-560.webp 560w, /assets/hero-pizza-720.webp 720w, /assets/hero-pizza-960.webp 960w" sizes="(max-width: 640px) 74vw, (max-width: 860px) 80vw, 46vw" alt="Pizza Santa Fe recién hecha, con jamón, rúcula y mozzarella" width="960" height="960" class="hero-pizza" fetchpriority="high">
           <img src="/assets/logo-voyvolando.png" alt="" width="260" height="260" class="hero-logo" aria-hidden="true">
           <span class="stamp stamp-word hero-stamp" aria-hidden="true">
