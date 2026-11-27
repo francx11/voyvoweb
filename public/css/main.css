@@ -513,6 +513,26 @@ img { max-width: 100%; display: block; }
 .hero .btn-outline { color: var(--on-navy); border-color: var(--on-navy); }
 .hero .btn-outline:hover { background: var(--on-navy); color: var(--navy); }
 
+/* Teaser de la mejor oferta, bajo los botones del hero: etiqueta roja, el
+   título de la oferta y «Ver todas». Lleva a la banda de ofertas. */
+.hero-deal {
+  display: inline-flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+  margin-top: 1.6rem; padding: 0.45rem 1.1rem 0.45rem 0.45rem;
+  border: 2px solid color-mix(in srgb, var(--on-navy) 55%, transparent);
+  border-radius: var(--radius-pill);
+  color: var(--on-navy); text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.hero-deal:hover { border-color: var(--gold); background: color-mix(in srgb, var(--on-navy) 8%, transparent); }
+.hero-deal-tag {
+  font-family: var(--heading); font-weight: 700; font-size: 0.9rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: var(--tomato-btn); color: var(--on-tomato);
+  padding: 0.3rem 0.8rem; border-radius: var(--radius-pill);
+}
+.hero-deal-text { font-family: var(--display); font-size: clamp(1rem, 1.8vw, 1.2rem); }
+.hero .hero-deal-more { font-family: var(--heading); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); }
+
 /* La pizza manda en la columna derecha y se sale del cartel por la derecha;
    gira muy despacio, como en el expositor. La mascota y el sello van encima,
    torcidos, como pegatinas. */
@@ -591,9 +611,11 @@ img { max-width: 100%; display: block; }
 /* ── Cinta ──
    Banda roja con el texto pasando, como la marquesina de un mostrador. Se
    para con prefers-reduced-motion (bloque general más abajo). */
+/* Oro y no rojo: justo debajo va la banda roja de ofertas, y dos rojos
+   seguidos se fundían en una sola mancha. */
 .ticker {
   overflow: hidden; white-space: nowrap;
-  background: var(--tomato-btn); color: var(--on-tomato);
+  background: var(--gold); color: var(--on-gold);
   border-block: 3px solid var(--ink);
 }
 .ticker-track {
@@ -604,7 +626,7 @@ img { max-width: 100%; display: block; }
   font-size: clamp(1.1rem, 2.2vw, 1.5rem); letter-spacing: 0.06em; text-transform: uppercase;
   padding: 0.55rem 0 0.5rem;
 }
-.ticker span::after { content: '✦'; color: var(--on-tomato); opacity: 0.75; margin: 0 1.4rem; }
+.ticker span::after { content: '✦'; color: var(--tomato-btn); margin: 0 1.4rem; }
 @keyframes ticker { to { transform: translateX(-50%); } }
 
 /* ── Sections ── */
@@ -1118,12 +1140,14 @@ button.dish-carousel-name:hover { color: var(--tomato); }
 #offers > .container > .section-title,
 #offers > .container > .section-intro { color: var(--on-tomato); }
 #offers .eyebrow::before { background: var(--gold); }
+/* minmax(0, 1fr) y no 1fr: Safari mide la columna por el ancho natural de la
+   foto (1200 px) y la tarjeta se salía de la pantalla del iPhone. */
 .offers-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.8rem; margin-top: 2.5rem;
 }
 .offer {
-  position: relative;
+  position: relative; min-width: 0;
   display: flex; flex-direction: column;
   background: var(--grain), var(--paper);
   border: 2px dashed var(--line-strong);
@@ -1159,6 +1183,12 @@ button.dish-carousel-name:hover { color: var(--tomato); }
   font-size: 1.7rem; line-height: 1; letter-spacing: 0.01em; margin-bottom: 0.5rem;
 }
 .offer-body p { color: var(--ink-soft); font-size: 0.95rem; margin: 0; }
+/* La cifra de la oferta, en grande: es lo que se viene a buscar. */
+.offer-price {
+  display: block; margin-top: 0.15rem;
+  font-family: var(--display); font-weight: 400; text-transform: none;
+  font-size: 2.3em; line-height: 1; color: var(--tomato);
+}
 
 /* ── Tarjeta de sellos ──
    La tarjeta se dibuja como una de crédito (proporción 85,6 × 54) en azul
@@ -2005,11 +2035,24 @@ body.cart-scroll-lock { overflow: hidden; }
   .monthly-special-box { grid-template-columns: 1fr; text-align: center; }
   .monthly-special-stamp { margin: 0 auto; }
   .monthly-special-box.has-image { grid-template-columns: 1fr; }
-  .offers-grid { grid-template-columns: repeat(2, 1fr); }
+  .offers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 520px) {
-  .offers-grid { grid-template-columns: 1fr; }
+  /* Móvil: cupones en fila deslizable (el siguiente asoma por el borde) en
+     vez de cinco pantallas de cupones apilados antes de llegar a la carta. */
+  .offers-grid {
+    grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 84%;
+    gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain; scrollbar-width: none;
+    margin-inline: -1.5rem; padding: 0.8rem 1.5rem 1.2rem; scroll-padding-inline: 1.5rem;
+  }
+  .offers-grid::-webkit-scrollbar { display: none; }
+  .offer { scroll-snap-align: start; }
+  /* En móvil la píldora no cabe en una línea: fuera «Ver todas» (toda la
+     píldora ya es el enlace) y el título puede partir. */
+  .hero-deal { flex-wrap: nowrap; max-width: 100%; }
+  .hero-deal-more { display: none; }
   .form-row { grid-template-columns: 1fr; }
   .menu-line { flex-wrap: wrap; }
   .menu-dots { min-width: 1rem; }

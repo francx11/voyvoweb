@@ -202,6 +202,9 @@
             <a href="tel:958442847" data-source="portada-hero" class="btn btn-primary js-order js-tel-link">Llamar · <span class="js-phone">958 44 28 47</span></a>
             <a href="#menu" class="btn btn-outline">Ver la carta</a>
           </div>
+          <!-- La mejor oferta, a la vista sin bajar: la rellena main.js con la
+               primera de data/offers.json y queda oculta si no hay ofertas. -->
+          <a href="#offers" class="hero-deal" id="hero-deal" hidden><span class="hero-deal-tag">Oferta</span><span class="hero-deal-text" id="hero-deal-text"></span><span class="hero-deal-more" aria-hidden="true">Ver todas →</span></a>
         </div>
         <div class="hero-visual">
           <img src="/assets/hero-pizza-960.webp" srcset="/assets/hero-pizza-560.webp 560w, /assets/hero-pizza-960.webp 960w" sizes="(max-width: 860px) 80vw, 46vw" alt="Pizza Santa Fe recién hecha, con jamón, rúcula y mozzarella" width="960" height="960" class="hero-pizza" fetchpriority="high">
@@ -225,33 +228,33 @@
       </div>
     </div>
 
-    <!-- STORY -->
-    <section class="section story" id="story" aria-labelledby="story-title">
-      <div class="container story-grid">
-        <div class="story-text reveal">
-          <span class="eyebrow">Nuestra historia</span>
-          <h2 class="section-title" id="story-title">Pasión por la pizza auténtica</h2>
-          <p id="story-p1">En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.</p>
-          <p id="story-p2">Nuestro secreto está en la masa: fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro.</p>
-          <address class="story-address">
-            <strong>Pizzería Voy Volando</strong>
-            <span><span class="js-address">C. Cristóbal Colón, 7</span> · <span class="js-city">18320 Santa Fe, Granada</span></span>
-          </address>
-        </div>
-        <div class="story-photos reveal">
-          <figure class="print print--back">
-            <img src="/assets/story-caja-2.webp" alt="Pizza con tomate y pimientos en su caja de cartón" width="720" height="960" loading="lazy">
-          </figure>
-          <figure class="print print--front">
-            <img src="/assets/story-caja.webp" alt="Pizza con rúcula, jamón y cebolla caramelizada en su caja, lista para salir" width="720" height="960" loading="lazy">
-            <figcaption>Así sale de la cocina</figcaption>
-          </figure>
-          <span class="stamp stamp-lg story-stamp" aria-hidden="true">
-            <span class="stamp-top">Más de</span>
-            <span class="stamp-mid">30</span>
-            <span class="stamp-bot">años</span>
-          </span>
-          <p class="visually-hidden">Más de 30 años haciendo pizza.</p>
+    <!-- OFFERS (hidden until enabled from the panel) -->
+    <section class="section section-alt" id="offers" aria-labelledby="offers-title" hidden>
+      <div class="container">
+        <span class="eyebrow">Promociones</span>
+        <h2 class="section-title" id="offers-title">Ofertas</h2>
+        <p class="section-intro" id="offers-intro"></p>
+        <div class="offers-grid" id="offers-grid"></div>
+      </div>
+    </section>
+
+    <!-- MONTHLY SPECIAL (hidden until enabled from the panel) -->
+    <section class="section" id="monthly-special" aria-labelledby="ms-name" hidden>
+      <div class="container-narrow">
+        <div class="monthly-special-box reveal">
+          <div class="ms-visual">
+            <img class="ms-photo" id="ms-image" alt="" hidden loading="lazy">
+            <div class="monthly-special-stamp" aria-hidden="true">
+              <span class="st-top">Pizza del</span>
+              <span class="st-mid">Mes</span>
+            </div>
+          </div>
+          <div class="monthly-special-text">
+            <span class="ms-badge" id="ms-badge" hidden></span>
+            <h3 id="ms-name"></h3>
+            <p id="ms-desc"></p>
+            <a href="tel:958442847" data-source="portada-especial" class="btn btn-primary js-tel-link" id="ms-cta">Llamar para pedirla</a>
+          </div>
         </div>
       </div>
     </section>
@@ -295,34 +298,40 @@
       </div>
     </section>
 
-    <!-- MONTHLY SPECIAL (hidden until enabled from the panel) -->
-    <section class="section" id="monthly-special" aria-labelledby="ms-name" hidden>
-      <div class="container-narrow">
-        <div class="monthly-special-box reveal">
-          <div class="ms-visual">
-            <img class="ms-photo" id="ms-image" alt="" hidden loading="lazy">
-            <div class="monthly-special-stamp" aria-hidden="true">
-              <span class="st-top">Pizza del</span>
-              <span class="st-mid">Mes</span>
-            </div>
-          </div>
-          <div class="monthly-special-text">
-            <span class="ms-badge" id="ms-badge" hidden></span>
-            <h3 id="ms-name"></h3>
-            <p id="ms-desc"></p>
-            <a href="tel:958442847" data-source="portada-especial" class="btn btn-primary js-tel-link" id="ms-cta">Llamar para pedirla</a>
-          </div>
+    <!-- SERVICES -->
+    <section class="section section-navy services" id="services" aria-labelledby="services-title">
+      <div class="container services-frame">
+        <span class="eyebrow">Cómo pedir</span>
+        <h2 class="section-title" id="services-title">Como quieras, donde quieras</h2>
+        <div class="services-grid">
+          <article class="service reveal">
+            <span class="service-num" aria-hidden="true">1</span>
+            <h3>A domicilio</h3>
+            <p>Te la llevamos a casa. Llama al <a href="tel:958442847" data-source="portada-servicios" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a> y te la enviamos lo antes posible. <span class="js-delivery-terms" hidden></span></p>
+          </article>
+          <article class="service reveal">
+            <span class="service-num" aria-hidden="true">2</span>
+            <h3>Para llevar</h3>
+            <p>Pide por teléfono y recoge en unos minutos, sin esperas. Tu pizza lista cuando llegues.</p>
+          </article>
+          <article class="service reveal">
+            <span class="service-num" aria-hidden="true">3</span>
+            <h3>Directo por teléfono</h3>
+            <p>Pides directamente a la pizzería: el precio es el de la carta, sin comisiones de por medio, y el pedido lo prepara quien lo coge.</p>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- OFFERS (hidden until enabled from the panel) -->
-    <section class="section section-alt" id="offers" aria-labelledby="offers-title" hidden>
+    <!-- JUST EAT -->
+    <section class="section section-alt" id="just-eat" aria-labelledby="just-eat-title">
       <div class="container">
-        <span class="eyebrow">Promociones</span>
-        <h2 class="section-title" id="offers-title">Ofertas</h2>
-        <p class="section-intro" id="offers-intro"></p>
-        <div class="offers-grid" id="offers-grid"></div>
+        <span class="eyebrow">También por app</span>
+        <h2 class="section-title" id="just-eat-title">Pide en Just Eat</h2>
+        <p class="section-intro">Si prefieres pedir desde la app, también estamos en Just Eat.</p>
+        <p class="actions-row">
+          <a href="https://www.just-eat.es/restaurants-pizzeria-voy-volando-santa-fe-santa-fe/menu#pre-order" class="btn btn-primary" target="_blank" rel="noopener">Pedir en Just Eat</a>
+        </p>
       </div>
     </section>
 
@@ -360,40 +369,34 @@
       </div>
     </section>
 
-    <!-- SERVICES -->
-    <section class="section section-navy services" id="services" aria-labelledby="services-title">
-      <div class="container services-frame">
-        <span class="eyebrow">Cómo pedir</span>
-        <h2 class="section-title" id="services-title">Como quieras, donde quieras</h2>
-        <div class="services-grid">
-          <article class="service reveal">
-            <span class="service-num" aria-hidden="true">1</span>
-            <h3>A domicilio</h3>
-            <p>Te la llevamos a casa. Llama al <a href="tel:958442847" data-source="portada-servicios" class="js-tel-link"><span class="js-phone">958 44 28 47</span></a> y te la enviamos lo antes posible. <span class="js-delivery-terms" hidden></span></p>
-          </article>
-          <article class="service reveal">
-            <span class="service-num" aria-hidden="true">2</span>
-            <h3>Para llevar</h3>
-            <p>Pide por teléfono y recoge en unos minutos, sin esperas. Tu pizza lista cuando llegues.</p>
-          </article>
-          <article class="service reveal">
-            <span class="service-num" aria-hidden="true">3</span>
-            <h3>Directo por teléfono</h3>
-            <p>Pides directamente a la pizzería: el precio es el de la carta, sin comisiones de por medio, y el pedido lo prepara quien lo coge.</p>
-          </article>
+    <!-- STORY -->
+    <section class="section section-alt story" id="story" aria-labelledby="story-title">
+      <div class="container story-grid">
+        <div class="story-text reveal">
+          <span class="eyebrow">Nuestra historia</span>
+          <h2 class="section-title" id="story-title">Pasión por la pizza auténtica</h2>
+          <p id="story-p1">En Voy Volando llevamos décadas perfeccionando cada pizza. Recetas transmitidas de generación en generación, con ingredientes frescos seleccionados a diario.</p>
+          <p id="story-p2">Nuestro secreto está en la masa: fermentada el tiempo justo para conseguir esa textura crujiente por fuera y esponjosa por dentro.</p>
+          <address class="story-address">
+            <strong>Pizzería Voy Volando</strong>
+            <span><span class="js-address">C. Cristóbal Colón, 7</span> · <span class="js-city">18320 Santa Fe, Granada</span></span>
+          </address>
         </div>
-      </div>
-    </section>
-
-    <!-- JUST EAT -->
-    <section class="section section-alt" id="just-eat" aria-labelledby="just-eat-title">
-      <div class="container">
-        <span class="eyebrow">También por app</span>
-        <h2 class="section-title" id="just-eat-title">Pide en Just Eat</h2>
-        <p class="section-intro">Si prefieres pedir desde la app, también estamos en Just Eat.</p>
-        <p class="actions-row">
-          <a href="https://www.just-eat.es/restaurants-pizzeria-voy-volando-santa-fe-santa-fe/menu#pre-order" class="btn btn-primary" target="_blank" rel="noopener">Pedir en Just Eat</a>
-        </p>
+        <div class="story-photos reveal">
+          <figure class="print print--back">
+            <img src="/assets/story-caja-2.webp" alt="Pizza con tomate y pimientos en su caja de cartón" width="720" height="960" loading="lazy">
+          </figure>
+          <figure class="print print--front">
+            <img src="/assets/story-caja.webp" alt="Pizza con rúcula, jamón y cebolla caramelizada en su caja, lista para salir" width="720" height="960" loading="lazy">
+            <figcaption>Así sale de la cocina</figcaption>
+          </figure>
+          <span class="stamp stamp-lg story-stamp" aria-hidden="true">
+            <span class="stamp-top">Más de</span>
+            <span class="stamp-mid">30</span>
+            <span class="stamp-bot">años</span>
+          </span>
+          <p class="visually-hidden">Más de 30 años haciendo pizza.</p>
+        </div>
       </div>
     </section>
 
